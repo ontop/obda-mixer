@@ -19,6 +19,7 @@ import java.util.Map;
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
 import it.unibz.inf.mixer_main.statistics.Statistics;
+import it.unibz.inf.mixer_main.time.Chrono;
 import it.unibz.inf.mixer_main.utils.*;
 
 public class MixerThread extends Thread {
@@ -31,12 +32,16 @@ public class MixerThread extends Thread {
 	private int nWUps; // Number of warm-up runs
 	private int timeout; // timeout time
 	
+	private Chrono chrono;
+	
 	public MixerThread(Mixer m, int nRuns, int nWUps, int timeout, Statistics stat, File[] listOfFiles){
 		this.stat = stat;
 		this.mixer = m;
 		this.nRuns = nRuns;
 		this.nWUps = nWUps;
 		this.timeout = timeout;
+		
+		chrono = new Chrono();
 	}
 	
 	public void setUp(){
@@ -45,64 +50,37 @@ public class MixerThread extends Thread {
 	
 	 public void run() {
 		 
-		 
-		 
 		 // Establish the connection
 		 DBMSConnection db = new DBMSConnection(mixer.getConfiguration());
 		 
+		 TemplateQuerySelector tqs = new TemplateQuerySelector(mixer.getConfiguration(), db);
+		 
 		 // Warm up
-		 warmUp(listOfFiles);
+		 warmUp(tqs); 
 		 
-				 
-				 // Access the templates
-				 // replace
-		 // do the warm up (therefore, DO NOT collect stats in this phase)
-		 // do the tests
-		 
-		 // It should launch an "execution thread, TO BE KILLED if it > timeout"
-		 String query = null;
-		 mixer.query(query);
+		 // The actual tests
+		 test(tqs);
      }
 	
-	 private void warmUp(File[] listOfFiles) {
-		 for( int j = 0; j < nWUps; ++j ){
-			 for( int i = 0; i < listOfFiles.length; ++i ){				 
-				 if( !listOfFiles[i].isFile() ) continue;
-				 
-				 String sparqlTemplate = 
-				 
-				 String inFile = mixer.getConfiguration().getTemplatesDir() + listOfFiles[i].getName();
-				 String confFile = mixer.getConfiguration().getTemplatesConfDir() + listOfFiles[i].getName();
-				 BufferedReader in = new BufferedReader(new FileReader(inFile));
-				 
-				 StringBuilder queryBuilder = new StringBuilder();
-				 String curLine = null;
-				 
-				 while( (curLine = in.readLine()) != null ){
-					 queryBuilder.append(curLine + "\n");
-				 }
-				 in.close();
-				 Template sparqlQueryTemplate = new Template(queryBuilder.toString(), "$");
-				 
-				 // Get the placeholders
-				 in = new BufferedReader(new FileReader(confFile));
-				 
-				 List<QualifiedName> qNames = new ArrayList<QualifiedName>();
-				 while( (curLine = in.readLine()) != null ){
-					 qNames.add(new QualifiedName(curLine));
-				 }
-					
-				 in.close();
-				 
-				 // Find a mix
-				 fillPlaceholders(sparqlQueryTemplate, qNames);
-				 
-				 mixer.query(sparqlQueryTemplate.getFilled());
-			 }
-		 }
+	 private void test(TemplateQuerySelector tqs) {
+		// TODO Auto-generated method stub
+		
 	}
 
-
+	private void warmUp(TemplateQuerySelector tqs) {
+		 for( int j = 0; j < nWUps; ++j ){
+			 boolean stop = false;
+			 while( !stop ){
+				 String query = tqs.getNextQuery();
+				 if( query == null ){
+					 stop = true;
+				 }
+				 else{
+					 if( timeout == 0 ) mixer.query(query); else mixer.query(query, timeout);
+				 }
+			 }
+		 }
+	 }
 }
 
 class DBMSConnection{
@@ -151,12 +129,15 @@ class TemplateQuerySelector{
 	// Pointers in the database
 	private Map<String, Integer> resultSetPointer = new HashMap<String, Integer>();
 	
+	// Connection to the database
+	DBMSConnection db;
 	
-	public TemplateQuerySelector(Conf configuration){
+	public TemplateQuerySelector(Conf configuration, DBMSConnection db){
 		index = 0;
 		templatesDir = configuration.getTemplatesDir();
 		templatesConfDir = configuration.getTemplatesConfDir();
 		
+		this.db = db;
 		
 		// Query templates
 		File folder = new File(templatesDir);
@@ -164,6 +145,8 @@ class TemplateQuerySelector{
 	}
 	
 	public String getNextQuery(){
+		
+		if( index >= listOfFiles.length -1 ) return null;
 		
 		while( !listOfFiles[index++].isFile() ); 
 		
@@ -224,8 +207,16 @@ class TemplateQuerySelector{
 
 			 String query = "SELECT DISTINCT " + qN.getSecond() + " FROM " 
 					 + qN.getFirst() + " LIMIT " + pointer+ ", 1";
-
-			 PreparedStatement stmt = db.getPreparedStatement(query);
+			 
+			 Connection conn = db.getConnection();
+			 
+			 PreparedStatement stmt = null;
+			 
+			 try {
+				 stmt = conn.prepareStatement(query);
+			 } catch (SQLException e1) {
+				 e1.printStackTrace();
+			 }
 
 			 try {
 				 ResultSet rs = stmt.executeQuery();
@@ -236,7 +227,7 @@ class TemplateQuerySelector{
 							 + qN.getFirst() + " LIMIT " + 0 + ", 1";
 					 resultSetPointer.put(qN.toString(), 1);
 
-					 stmt = db.getPreparedStatement(query);
+					 stmt = conn.prepareStatement(query);
 
 					 rs = stmt.executeQuery();
 					 if( !rs.next() ){
@@ -253,4 +244,4 @@ class TemplateQuerySelector{
 			 sparqlQueryTemplate.setNthPlaceholder(i, fillers.get(i-1));
 		 }
 	 }
-}
+};
