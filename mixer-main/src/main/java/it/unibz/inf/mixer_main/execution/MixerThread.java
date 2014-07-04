@@ -72,7 +72,7 @@ public class MixerThread extends Thread {
 			 boolean stop = false;
 			 while( !stop ){
 				 String query = tqs.getNextQuery();
-				 if( query == null ){//
+				 if( query == null ){
 					 stop = true;
 				 }
 				 else{
