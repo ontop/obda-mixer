@@ -26,18 +26,25 @@ public abstract class Mixer {
 	public abstract void load();
 	
 	/**
-	 * 
-	 * @param query A <b>SPARQL</b> query.
+	 * Issues a query with an execution timeout
+	 * @param query
+	 * @return a result set
 	 */
-	public abstract void query(String query);
+	public abstract Object executeQuery(String query);
 	
 	/**
 	 * Issues a query with an execution timeout
 	 * @param query
 	 * @param timeout
+	 * @return a result set
 	 */
-	public abstract void query(String query, int timeout);
+	public abstract Object executeQuery(String query, int timeout);
 	
+	/**
+	 * Traverse the set of results obtained by issuing the query
+	 * @return The number of results
+	 */
+	public abstract int traverseResultSet(Object resultSet);
 	// ------------------------------------------- //
 	
 	// ------------- Time statistics ------------- //

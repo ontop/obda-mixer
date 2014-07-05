@@ -87,9 +87,14 @@ public class MixerThread extends Thread {
 					 stop = true;
 				 }
 				 else{
+					 Object resultSet = null;
 					 chrono.start();
-					 if( timeout == 0 ) mixer.query(query); else mixer.query(query, timeout);
-					 localStat.addTime("response_time#"+tqs.getCurQueryName(), chrono.stop());
+					 if( timeout == 0 ) resultSet = mixer.executeQuery(query); else resultSet = mixer.executeQuery(query, timeout);
+					 localStat.addTime("execution_time#"+tqs.getCurQueryName(), chrono.stop());
+					 chrono.start();
+					 int numResults = mixer.traverseResultSet(resultSet);
+					 localStat.addTime("resultset_traversal_time#"+tqs.getCurQueryName(), chrono.stop());
+					 localStat.addInt("num_results#"+tqs.getCurQueryName(), numResults);
 					 chrono.start();
 					 if( this.rwAndUnf ){
 						 localStat.addTime("rewriting_time#"+tqs.getCurQueryName(), mixer.getRewritingTime());
@@ -112,7 +117,7 @@ public class MixerThread extends Thread {
 					 stop = true;
 				 }
 				 else{
-					 if( timeout == 0 ) mixer.query(query); else mixer.query(query, timeout);
+					 if( timeout == 0 ) mixer.executeQuery(query); else mixer.executeQuery(query, timeout);
 				 }
 			 }
 		 }

@@ -6,4 +6,12 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>mixer-mastro</artifactId>
+  
+  <dependencies>
+  	<dependency>
+  		<artifactId>mixer-interface</artifactId>
+  		<groupId>it.unibz.inf.mixer</groupId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
 </project>
