@@ -9,6 +9,8 @@ import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
@@ -29,11 +31,15 @@ import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLStatement;
 
 public class MixerOntop extends Mixer {
 	
+	private static Logger log = LoggerFactory.getLogger(MixerOntop.class);
+
+	
 	private OBDAModel obdaModel;
 	private OWLOntology ontology;
 	private QuestOWL reasoner;
 	private long rewritingTime;
 	private long unfoldingTime;
+	private QuestOWLConnection conn;
 
 	public MixerOntop(Conf configuration) {
 		super(configuration);
@@ -43,6 +49,7 @@ public class MixerOntop extends Mixer {
 		reasoner = null;
 		rewritingTime = 0;
 		unfoldingTime = 0;
+		conn = null;
 	}
 
 	@Override
@@ -56,10 +63,9 @@ public class MixerOntop extends Mixer {
 	
 	@Override
 	public Object executeQuery(String query) {
-		QuestOWLConnection conn;
 		QuestOWLResultSet rs = null;
 		try {
-			conn = new QuestOWLConnection(reasoner.getQuestInstance().getConnection());
+			if(conn == null) conn = new QuestOWLConnection(reasoner.getQuestInstance().getConnection());
 			QuestOWLStatement st = conn.createStatement();
 			rs = st.executeTuple(query);
 			this.rewritingTime = st.getQuestStatement().getRewritingTime();
@@ -164,6 +170,7 @@ public class MixerOntop extends Mixer {
 
 	private void loadOntology() {
 		try{
+			log.debug("Loading the ontology");
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			this.ontology = manager.loadOntologyFromOntologyDocument(new File(this.configuration.getOwlFile()));
 		}catch(Exception e){

@@ -62,7 +62,7 @@ public class ConfParser {
 	}
 	/** Returns the path to the file containing the mappings **/
 	public  String mappingsFile(){
-		return searchTag("mapings-file");
+		return searchTag("mappings-file");
 	}
 	/** Returns the path to the owl file **/
 	public String owlFile(){

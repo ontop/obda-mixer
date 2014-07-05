@@ -186,17 +186,26 @@ class TemplateQuerySelector{
 	}
 	
 	public String getCurQueryName(){
-		return listOfFiles[index].getName();
+		return listOfFiles[index-1].getName();
 	}
 	
 	public String getNextQuery(){
 		
-		if( index >= listOfFiles.length -1 ) return null;
+		if(index >= listOfFiles.length){
+			index = 0;
+			return null;
+		}
 		
-		while( !listOfFiles[index++].isFile() ); 
+		while( !listOfFiles[index].isFile() ){
+			++index;
+			if( index >= listOfFiles.length ){
+				index = 0;
+				return null;
+			}
+		}; 
 		
-		String inFile = templatesDir + listOfFiles[index].getName(); // TODO Replace with relativePath
-		String confFile = templatesConfDir + listOfFiles[index].getName();
+		String inFile = templatesDir + "/" + listOfFiles[index].getName(); // TODO Replace with relativePath
+		String confFile = templatesConfDir + "/" + listOfFiles[index].getName();
 		
 		String result = null;
 		
@@ -229,6 +238,7 @@ class TemplateQuerySelector{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		++index;
 		return result;
 	}
 	

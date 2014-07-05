@@ -20,5 +20,18 @@
   		<version>0.0.1-SNAPSHOT</version>
   		<scope>compile</scope>
   	</dependency>
+  	<dependency>
+		<groupId>mysql</groupId>
+		<artifactId>mysql-connector-java</artifactId>
+  </dependency>
+  	<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>			
+		</dependency>
+		
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+		</dependency>
   </dependencies>
 </project>
