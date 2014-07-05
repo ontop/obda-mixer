@@ -14,7 +14,7 @@ public class Chrono {
 		start = System.currentTimeMillis();
 	}
 	
-	public long end(){
+	public long stop(){
 		start = 0;
 		return System.currentTimeMillis() - start;
 	}

@@ -2,11 +2,9 @@ package it.unibz.inf.mixer_main.execution;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,6 +16,7 @@ import java.util.Map;
 
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
+import it.unibz.inf.mixer_main.statistics.SimpleStatistics;
 import it.unibz.inf.mixer_main.statistics.Statistics;
 import it.unibz.inf.mixer_main.time.Chrono;
 import it.unibz.inf.mixer_main.utils.*;
@@ -32,9 +31,14 @@ public class MixerThread extends Thread {
 	private int nWUps; // Number of warm-up runs
 	private int timeout; // timeout time
 	
-	private Chrono chrono;
+	// Do I (me, thread) have to collect rewriting and unfolding time?
+	boolean rwAndUnf = false;
 	
-	public MixerThread(Mixer m, int nRuns, int nWUps, int timeout, Statistics stat, File[] listOfFiles){
+	// Time statistics
+	private Chrono chrono;
+	private Chrono chronoMix;
+	
+	public MixerThread(Mixer m, int nRuns, int nWUps, int timeout, Statistics stat, File[] listOfFiles, boolean rwAndUnf){
 		this.stat = stat;
 		this.mixer = m;
 		this.nRuns = nRuns;
@@ -42,6 +46,9 @@ public class MixerThread extends Thread {
 		this.timeout = timeout;
 		
 		chrono = new Chrono();
+		chronoMix = new Chrono();
+		
+		this.rwAndUnf = rwAndUnf;
 	}
 	
 	public void setUp(){
@@ -62,11 +69,40 @@ public class MixerThread extends Thread {
 		 test(tqs);
      }
 	
+	 /**
+	  * It performs the mixes, and collects the statistics
+	  * @param tqs
+	  */
 	 private void test(TemplateQuerySelector tqs) {
-		// TODO Auto-generated method stub
-		
-	}
-
+		 for( int j = 0; j < nRuns; ++j ){
+			 long timeWasted = 0;
+			 chronoMix.start();
+			 SimpleStatistics localStat = stat.getSimpleStatsInstance("run#"+j);
+			 boolean stop = false;
+			 while( !stop ){
+				 chrono.start();
+				 String query = tqs.getNextQuery();
+				 timeWasted += chrono.stop();
+				 if( query == null ){
+					 stop = true;
+				 }
+				 else{
+					 chrono.start();
+					 if( timeout == 0 ) mixer.query(query); else mixer.query(query, timeout);
+					 localStat.addTime("response_time#"+tqs.getCurQueryName(), chrono.stop());
+					 chrono.start();
+					 if( this.rwAndUnf ){
+						 localStat.addTime("rewriting_time#"+tqs.getCurQueryName(), mixer.getRewritingTime());
+						 localStat.addTime("unfolding_time#"+tqs.getCurQueryName(), mixer.getUnfoldingTime());
+					 }
+					 timeWasted += chrono.stop();
+				 }
+			 }
+			 // mix time
+			 localStat.addTime("mix_time#"+j, chronoMix.stop() - timeWasted);
+		 }
+	 }
+	 
 	private void warmUp(TemplateQuerySelector tqs) {
 		 for( int j = 0; j < nWUps; ++j ){
 			 boolean stop = false;
@@ -144,13 +180,17 @@ class TemplateQuerySelector{
 		listOfFiles = folder.listFiles();
 	}
 	
+	public String getCurQueryName(){
+		return listOfFiles[index].getName();
+	}
+	
 	public String getNextQuery(){
 		
 		if( index >= listOfFiles.length -1 ) return null;
 		
 		while( !listOfFiles[index++].isFile() ); 
 		
-		String inFile = templatesDir + listOfFiles[index].getName();
+		String inFile = templatesDir + listOfFiles[index].getName(); // TODO Replace with relativePath
 		String confFile = templatesConfDir + listOfFiles[index].getName();
 		
 		String result = null;
