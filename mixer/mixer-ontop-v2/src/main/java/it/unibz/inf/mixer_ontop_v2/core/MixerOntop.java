@@ -1,4 +1,4 @@
-package it.unibz.inf.mixer_ontop.core;
+package it.unibz.inf.mixer_ontop_v2.core;
 
 /*
  * #%L

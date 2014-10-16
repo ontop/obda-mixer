@@ -20,10 +20,10 @@ diskosv:		http://sws.ifi.uio.no/vocab/diskos#
 
 [SourceDeclaration]
 sourceUri	x
-connectionUrl	jdbc:postgresql://10.7.20.39/npd_no_spatial
-username	postgres
-password	postgres
-driverClass	org.postgresql.Driver
+connectionUrl	jdbc:mysql://10.7.20.39/npd
+username	test
+password	test
+driverClass	com.mysql.jdbc.Driver
 
 [MappingDeclaration] @collection [[
 mappingId	Mapping:00001:Literal:wellbore_coordinates:wlbNsMin

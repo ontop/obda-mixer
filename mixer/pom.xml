@@ -225,5 +225,6 @@
 		<module>mixer-mastro</module>
 		<module>mixer-distribution</module>
 		<module>mixer-main</module>
+		<module>mixer-ontop-v2</module>
 	</modules>
 </project>

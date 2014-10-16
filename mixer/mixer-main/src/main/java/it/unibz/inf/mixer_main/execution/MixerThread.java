@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,6 +35,8 @@ import java.util.Map;
 
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
+import it.unibz.inf.mixer_main.connection.DBMSConnection;
+import it.unibz.inf.mixer_main.connection.DBMSConnectionPostgres;
 import it.unibz.inf.mixer_main.statistics.SimpleStatistics;
 import it.unibz.inf.mixer_main.statistics.Statistics;
 import it.unibz.inf.mixer_main.time.Chrono;
@@ -78,7 +79,7 @@ public class MixerThread extends Thread {
 	 public void run() {
 		 
 		 // Establish the connection
-		 DBMSConnection db = new DBMSConnection(mixer.getConfiguration());
+		 DBMSConnection db = new DBMSConnectionPostgres(mixer.getConfiguration());
 		 
 		 TemplateQuerySelector tqs = new TemplateQuerySelector(mixer.getConfiguration(), db);
 		 
@@ -142,40 +143,6 @@ public class MixerThread extends Thread {
 			 }
 		 }
 	 }
-}
-
-class DBMSConnection{
-	
-	// Connection Parameters
-	private String jdbcConnector;
-	private String databaseUrl;
-	private String username;
-	private String password;
-	
-	// A JDBC connection (Note that each MixerThread has its own JDBC connection)
-	private Connection connection;
-	
-	DBMSConnection(Conf conf){
-		jdbcConnector = "jdbc:mysql";
-		databaseUrl = conf.getDatabaseUrl();
-		username = conf.getDatabaseUser();
-		password = conf.getDatabasePwd();
-		
-		String url = 
-				jdbcConnector + "://" + databaseUrl 
-				+ "?useServerPrepStmts=false&rewriteBatchedStatements=true&user=" + username 
-				+ "&password=" + password;
-		try {
-			connection = DriverManager.getConnection(url, username, password);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}		
-	}
-	
-	Connection getConnection(){
-		return connection;
-	}
-	
 }
 
 class TemplateQuerySelector{
@@ -279,9 +246,17 @@ class TemplateQuerySelector{
 			 else{
 				 resultSetPointer.put(qN.toString(), 1);
 			 }
-
+			 
 			 String query = "SELECT DISTINCT " + qN.getSecond() + " FROM " 
 					 + qN.getFirst() + " LIMIT " + pointer+ ", 1";
+			 
+			 if( db.getJdbcConnector().equals("jdbc:postgresql") ){
+				 query = "SELECT DISTINCT \""+
+									qN.getSecond()+ 
+									"\" FROM \""+qN.getFirst()+"\" WHERE \""
+									+qN.getSecond()+"\" IS NOT NULL LIMIT 1" +
+									" OFFSET " + pointer;
+			 }
 			 
 			 Connection conn = db.getConnection();
 			 
@@ -301,18 +276,33 @@ class TemplateQuerySelector{
 					 query = "SELECT DISTINCT " + qN.getSecond() + " FROM " 
 							 + qN.getFirst() + " LIMIT " + 0 + ", 1";
 					 resultSetPointer.put(qN.toString(), 1);
+					 
+					 if( db.getJdbcConnector().equals("jdbc:postgresql") ){
+						 query = "SELECT DISTINCT \""+
+											qN.getSecond()+ 
+											"\" FROM \""+qN.getFirst()+"\" WHERE \""
+											+qN.getSecond()+"\" IS NOT NULL LIMIT 1" +
+											" OFFSET " + 0;
+					 }
 
 					 stmt = conn.prepareStatement(query);
 
 					 rs = stmt.executeQuery();
 					 if( !rs.next() ){
 						 System.err.println("Problem");
+						 System.exit(1);
 					 }
 				 }
 				 fillers.add( rs.getString(qN.getSecond()) );
 
 			 } catch (SQLException e) {
 				 e.printStackTrace();
+				 try {
+					conn.close();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+				 System.exit(1);
 			 }
 		 }
 		 for( int i = 1; i <= fillers.size(); ++i ){
