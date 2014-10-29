@@ -23,27 +23,27 @@ package it.unibz.inf.mixer_ontop_v2.core;
 import java.io.File;
 import java.io.IOException;
 
-import org.semanticweb.ontop.exception.InvalidMappingException;
-import org.semanticweb.ontop.exception.InvalidPredicateDeclarationException;
-import org.semanticweb.ontop.io.ModelIOManager;
-import org.semanticweb.ontop.model.OBDADataFactory;
-import org.semanticweb.ontop.model.OBDAModel;
-import org.semanticweb.ontop.model.impl.OBDADataFactoryImpl;
-import org.semanticweb.ontop.owlrefplatform.core.QuestConstants;
-import org.semanticweb.ontop.owlrefplatform.core.QuestPreferences;
-import org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWL;
-import org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWLConnection;
-import org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWLFactory;
-import org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWLResultSet;
-import org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWLStatement;
-import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.OWLException;
-import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.semanticweb.ontop.exception.InvalidMappingException;
+//import org.semanticweb.ontop.exception.InvalidPredicateDeclarationException;
+//import org.semanticweb.ontop.io.ModelIOManager;
+//import org.semanticweb.ontop.model.OBDADataFactory;
+//import org.semanticweb.ontop.model.OBDAModel;
+//import org.semanticweb.ontop.model.impl.OBDADataFactoryImpl;
+//import org.semanticweb.ontop.owlrefplatform.core.QuestConstants;
+//import org.semanticweb.ontop.owlrefplatform.core.QuestPreferences;
+//import org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWL;
+//import org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWLConnection;
+//import org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWLFactory;
+//import org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWLResultSet;
+//import org.semanticweb.ontop.owlrefplatform.owlapi3.QuestOWLStatement;
+//import org.semanticweb.owlapi.apibinding.OWLManager;
+//import org.semanticweb.owlapi.model.OWLException;
+//import org.semanticweb.owlapi.model.OWLObject;
+//import org.semanticweb.owlapi.model.OWLOntology;
+//import org.semanticweb.owlapi.model.OWLOntologyManager;
+//import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
@@ -51,42 +51,42 @@ import it.unibz.inf.mixer_interface.core.Mixer;
 
 public class MixerOntopV2 extends Mixer {
 	
-	private static Logger log = LoggerFactory.getLogger(MixerOntopV2.class);
-
-	
-	private OBDAModel obdaModel;
-	private OWLOntology ontology;
-	private QuestOWL reasoner;
-	private long rewritingTime;
-	private long unfoldingTime;
-	private int rewritingSize;
-	private int unfoldingSize;
-	private QuestOWLConnection conn;
+//	private static Logger log = LoggerFactory.getLogger(MixerOntopV2.class);
+//
+//	
+//	private OBDAModel obdaModel;
+//	private OWLOntology ontology;
+//	private QuestOWL reasoner;
+//	private long rewritingTime;
+//	private long unfoldingTime;
+//	private int rewritingSize;
+//	private int unfoldingSize;
+//	private QuestOWLConnection conn;
 
 	public MixerOntopV2(Conf configuration) {
 		super(configuration);
 		
-		obdaModel = null;
-		ontology = null;
-		reasoner = null;
-		rewritingTime = 0;
-		unfoldingTime = 0;
-		rewritingSize = 0;
-		unfoldingSize = 0;
-		conn = null;
+//		obdaModel = null;
+//		ontology = null;
+//		reasoner = null;
+//		rewritingTime = 0;
+//		unfoldingTime = 0;
+//		rewritingSize = 0;
+//		unfoldingSize = 0;
+//		conn = null;
 	}
 	
 	public MixerOntopV2(Conf configuration, boolean rewriting){
 		super(configuration, rewriting);
-		
-		obdaModel = null;
-		ontology = null;
-		reasoner = null;
-		rewritingTime = 0;
-		unfoldingTime = 0;
-		rewritingSize = 0;
-		unfoldingSize = 0;
-		conn = null;
+//		
+//		obdaModel = null;
+//		ontology = null;
+//		reasoner = null;
+//		rewritingTime = 0;
+//		unfoldingTime = 0;
+//		rewritingSize = 0;
+//		unfoldingSize = 0;
+//		conn = null;
 	}
 
 	@Override
@@ -151,12 +151,14 @@ public class MixerOntopV2 extends Mixer {
 	}
 	@Override
 	public long getRewritingTime() {
-		return rewritingTime;
+//		return rewritingTime;
+		return 0;
 	}
 
 	@Override
 	public long getUnfoldingTime() {
-		return unfoldingTime;
+//		return unfoldingTime;
+		return 0;
 	}
 
 	@Override
