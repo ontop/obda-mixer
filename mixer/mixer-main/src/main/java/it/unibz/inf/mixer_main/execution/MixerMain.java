@@ -32,11 +32,14 @@ import it.unibz.inf.mixer_main.configuration.ConfParser;
 import it.unibz.inf.mixer_main.statistics.Statistics;
 import it.unibz.inf.mixer_main.time.Chrono;
 import it.unibz.inf.mixer_ontop.core.MixerOntop;
-import it.unibz.inf.vig_options.core.IntOption;
-import it.unibz.inf.vig_options.core.Option;
-import it.unibz.inf.vig_options.core.StringOptionWithRange;
-import it.unibz.inf.vig_options.ranges.IntRange;
-import it.unibz.inf.vig_options.ranges.StringRange;
+//import it.unibz.inf.mixer_ontop.core.MixerOntop; //TODO
+//import it.unibz.inf.mixer_ontop_v2.core.MixerOntopV2;
+import it.unibz.inf.utils_options.core.BooleanOption;
+import it.unibz.inf.utils_options.core.IntOption;
+import it.unibz.inf.utils_options.core.Option;
+import it.unibz.inf.utils_options.core.StringOptionWithRange;
+import it.unibz.inf.utils_options.ranges.IntRange;
+import it.unibz.inf.utils_options.ranges.StringRange;
 
 public class MixerMain {
 		
@@ -50,6 +53,7 @@ public class MixerMain {
 	private IntOption optNumWarmUps = new IntOption("--warm-ups", "Number of warm up runs.", "Mixer", 10, new IntRange(1, Integer.MAX_VALUE, true, true));
 	private IntOption optTimeout = new IntOption("--timeout", "Maximum execution time allowed to a query, in seconds. A value of zero means no timeout.", "Mixer", 0, new IntRange(0, Integer.MAX_VALUE, true, true));
 	private IntOption optNumClients = new IntOption("--clients", "Number of clients querying the system in parallel. Rewriting and unfolding times are unavailable in multi-client mode", "Mixer", 1, new IntRange(1, 64, true, true));
+	private BooleanOption optRewriting = new BooleanOption("--rewriting", "On or Off?", "Mixer", false);
 	
 	// Command-line option deciding which Mixer implementation should be used
 	private StringOptionWithRange optOBDASystem = new StringOptionWithRange("--obda", "The OBDA system under test", "Mixer", "ontop", new StringRange("[ontop]"));
@@ -59,6 +63,7 @@ public class MixerMain {
 	private int numWarmUps;
 	private int timeout;
 	private int numClients;
+	private boolean rewriting;
 	private List<Statistics> threadStatistics;
 	
 	public MixerMain(String[] args){
@@ -71,6 +76,7 @@ public class MixerMain {
 		this.numWarmUps = optNumWarmUps.getValue();
 		this.timeout = optTimeout.getValue();
 		this.numClients = optNumClients.getValue();
+		this.rewriting = optRewriting.getValue();
 		
 		this.threadStatistics = new ArrayList<Statistics>();
 
@@ -93,8 +99,8 @@ public class MixerMain {
 		String system = optOBDASystem.getValue();
 		
 		if( system.equals("ontop") ){
-			mixer = new MixerOntop(configuration);
-		}		
+			mixer = new MixerOntop(configuration, rewriting); 
+		}
 	}
 
 	private void do_tests(){

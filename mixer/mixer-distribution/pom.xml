@@ -43,5 +43,4 @@
 		</plugins>
 	</build>
 	<groupId>it.unibz.ing.mixer</groupId>
-	<version>0.0.1-SNAPSHOT</version>
-</project>
+	</project>

@@ -31,9 +31,17 @@ public abstract class Mixer {
 	
 	// Configuration parameters
 	protected Conf configuration;
+	
+	protected boolean rewriting;
 		
 	public Mixer(Conf configuration){
 		this.configuration = configuration;
+		this.rewriting = false;
+	}
+	
+	public Mixer(Conf configuration, boolean rewriting){
+		this.configuration = configuration;
+		this.rewriting = rewriting;
 	}
 	
 	// ******************** Abstract Methods Section ********************* //
@@ -97,10 +105,24 @@ public abstract class Mixer {
 	
 	/**
 	 * 
+	 * @return The size of the unfolded query, in terms of 
+	 *         number of datalog rules
+	 */
+	public abstract int getUnfoldingSize();
+	
+	/**
+	 * 
 	 * @return The query rewritten in order to 
 	 *         take into account for reasoning.
 	 */
 	public abstract String getRewriting();
+	
+	/**
+	 * 
+	 * @return The size of the rewritten query, in terms of 
+	 *         number of datalog rules
+	 */
+	public abstract int getRewritingSize();
 	// ------------------------------------------- //
 	
 	// ------------- Configuration --------------- //

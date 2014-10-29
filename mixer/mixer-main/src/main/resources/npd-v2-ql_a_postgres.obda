@@ -3842,7 +3842,7 @@ source		SELECT "wlbNamePart1" , "wlbNamePart2" , "dateSyncNPD" FROM "wellbore_sh
 
 
 mappingId	Mapping:00772:Literal:Extra:ex6:wlbNamePart1
-target		npd:quadrant/{wlbNamePart1} npdv:name {wlbNamePart1}^^xsd:integer . 
+target		npd:quadrant/{wlbNamePart1} npdv:name {wlbNamePart1} . 
 source		SELECT "wlbNamePart1" FROM  "wellbore_exploration_all" 
 
 
@@ -3892,7 +3892,7 @@ source		SELECT "lsuNpdidLithoStrat" , "lsuNpdidLithoStratParent" FROM  "wellbore
 
 
 mappingId	Mapping:00782:Literal:Extra:ex9:wlbNamePart2
-target		npd:block/{wlbNamePart1}/{wlbNamePart2} npdv:name {wlbNamePart2}^^xsd:integer . 
+target		npd:block/{wlbNamePart1}/{wlbNamePart2} npdv:name {wlbNamePart2}. 
 source		SELECT "wlbNamePart1" , "wlbNamePart2" FROM  "wellbore_exploration_all" 
 
 
@@ -3902,7 +3902,7 @@ source		SELECT "wlbNamePart1" , "wlbNamePart2" FROM  "wellbore_exploration_all"
 
 
 mappingId	Mapping:00784:Literal:Extra:ex5:wlbNamePart1
-target		npd:quadrant/{wlbNamePart1} npdv:name {wlbNamePart1}^^xsd:integer . 
+target		npd:quadrant/{wlbNamePart1} npdv:name {wlbNamePart1}. 
 source		SELECT "wlbNamePart1" FROM  "wellbore_development_all" 
 
 
@@ -3977,7 +3977,7 @@ source		SELECT "wlbWell" FROM  "wellbore_npdid_overview"
 
 
 mappingId	Mapping:00800:Literal:Extra:ex10:wlbNamePart2
-target		npd:block/{wlbNamePart1}/{wlbNamePart2} npdv:name {wlbNamePart2}^^xsd:integer . 
+target		npd:block/{wlbNamePart1}/{wlbNamePart2} npdv:name {wlbNamePart2} . 
 source		SELECT "wlbNamePart1" , "wlbNamePart2" FROM  "wellbore_shallow_all" 
 
 
@@ -3987,7 +3987,7 @@ source		SELECT "wlbNpdidWellbore" , "wlbNumberOfCores" FROM  "wellbore_core"
 
 
 mappingId	Mapping:00802:Literal:Extra:ex8:wlbNamePart2
-target		npd:block/{wlbNamePart1}/{wlbNamePart2} npdv:name {wlbNamePart2}^^xsd:integer . 
+target		npd:block/{wlbNamePart1}/{wlbNamePart2} npdv:name {wlbNamePart2} . 
 source		SELECT "wlbNamePart1" , "wlbNamePart2" FROM  "wellbore_development_all" 
 
 

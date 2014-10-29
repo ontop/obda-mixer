@@ -25,5 +25,5 @@ WHERE {
        npdv:licenceLicensee [ npdv:name ?company ] ;
        npdv:dateLicenseeValidFrom ?licenseeFrom .
  	
-   FILTER(?licenseeFrom > '$')
+   FILTER(?licenseeFrom > "$"^^xsd:dateTime)
 } ORDER BY ?licence ASC(?licenseeFrom)

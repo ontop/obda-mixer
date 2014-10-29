@@ -87,5 +87,17 @@ public class MixerMastro extends Mixer {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	@Override
+	public int getUnfoldingSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getRewritingSize() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 }

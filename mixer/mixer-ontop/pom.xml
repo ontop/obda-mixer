@@ -6,8 +6,6 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>mixer-ontop</artifactId>
-  <groupId>it.unibz.inf.mixer</groupId>	
-  <version>0.0.1-SNAPSHOT</version>
   
   <dependencies>
   	<dependency>
@@ -20,7 +18,7 @@
 	<dependency>
 		<groupId>it.unibz.inf.ontop</groupId>
 		<artifactId>ontop-quest-owlapi3</artifactId>
-		<version>1.11.0</version>
+		<version>1.13.1-BENCHMARK</version>
 	</dependency>
   </dependencies>
 </project>

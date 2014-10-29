@@ -20,7 +20,8 @@ package it.unibz.inf.mixer_main.configuration;
  * #L%
  */
 
-import it.unibz.inf.vig_options.core.StringOption;
+
+import it.unibz.inf.utils_options.core.StringOption;
 
 import java.io.*;
 

@@ -120,6 +120,10 @@ public class MixerThread extends Thread {
 					 if( this.rwAndUnf ){
 						 localStat.addTime("rewriting_time#"+tqs.getCurQueryName(), mixer.getRewritingTime());
 						 localStat.addTime("unfolding_time#"+tqs.getCurQueryName(), mixer.getUnfoldingTime());
+						 
+						 localStat.setInt("rewritingUCQ_size#"+tqs.getCurQueryName(),mixer.getRewritingSize());
+						 localStat.setInt("unfoldingUCQ_size#"+tqs.getCurQueryName(),mixer.getUnfoldingSize());
+						 
 					 }
 					 timeWasted += chrono.stop();
 				 }
@@ -191,7 +195,7 @@ class TemplateQuerySelector{
 			}
 		}; 
 		
-		String inFile = templatesDir + "/" + listOfFiles[index].getName(); // TODO Replace with relativePath
+		String inFile = templatesDir + "/" + listOfFiles[index].getName(); 
 		String confFile = templatesConfDir + "/" + listOfFiles[index].getName();
 		
 		String result = null;

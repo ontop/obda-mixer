@@ -56,17 +56,25 @@
   </build>
   
   <dependencies>
-  	<dependency>
+ <!--   	<dependency>
   		<groupId>it.unibz.inf.mixer</groupId>
    		<artifactId>mixer-interface</artifactId>
     	<version>0.0.1-SNAPSHOT</version>
     	<scope>compile</scope>
   	</dependency>
-  	<dependency>
+  	-->
+    	<dependency>
   		<artifactId>mixer-ontop</artifactId>
   		<groupId>it.unibz.inf.mixer</groupId>	
   		<version>0.0.1-SNAPSHOT</version>
   		<scope>compile</scope>
+  	</dependency>
+  	
+  	<dependency>
+  		<groupId>it.unibz.inf.mixer</groupId>
+    	<artifactId>mixer-ontop-v2</artifactId>	
+    	<version>0.0.1-SNAPSHOT</version>
+    	<scope>compile</scope>
   	</dependency>
   	<dependency>
 		<groupId>mysql</groupId>

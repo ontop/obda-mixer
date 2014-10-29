@@ -26,6 +26,6 @@ WHERE {
       	npdv:licenceOperatorCompany [ npdv:name ?company ] ;
       	npdv:operatorForLicence ?licenceURI .
 
-	FILTER(?date > '$')
+	FILTER(?date > "$"^^xsd:dateTime)
     
 } ORDER BY ?licenceURI

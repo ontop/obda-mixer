@@ -19,7 +19,7 @@ WHERE {
       [] a npdv:DiscoveryWellbore ;
          npdv:name ?wellbore; 
         npdv:dateUpdated ?date .
-FILTER (?date > "$")
+FILTER (?date > "$"^^xsd:dateTime)
 }
 ORDER BY ?wellbore
 

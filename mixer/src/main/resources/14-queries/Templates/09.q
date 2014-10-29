@@ -23,7 +23,7 @@ WHERE {
       npdv:name ?facility ;
       npdv:registeredInCountry ?country;
       npdv:idNPD ?id . 
-FILTER (?id > $)
+FILTER (?id > "$"^^xsd:integer)
 }
 ORDER BY ?facility
 

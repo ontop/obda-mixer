@@ -59,6 +59,8 @@ public class MixerOntop extends Mixer {
 	private QuestOWL reasoner;
 	private long rewritingTime;
 	private long unfoldingTime;
+	private int rewritingSize;
+	private int unfoldingSize;
 	private QuestOWLConnection conn;
 
 	public MixerOntop(Conf configuration) {
@@ -69,8 +71,24 @@ public class MixerOntop extends Mixer {
 		reasoner = null;
 		rewritingTime = 0;
 		unfoldingTime = 0;
+		rewritingSize = 0;
+		unfoldingSize = 0;
 		conn = null;
 	}
+	
+	public MixerOntop(Conf configuration, boolean rewriting){
+		super(configuration, rewriting);
+		
+		obdaModel = null;
+		ontology = null;
+		reasoner = null;
+		rewritingTime = 0;
+		unfoldingTime = 0;
+		rewritingSize = 0;
+		unfoldingSize = 0;
+		conn = null;
+	}
+	
 
 	@Override
 	public void load() {
@@ -88,8 +106,11 @@ public class MixerOntop extends Mixer {
 			if(conn == null) conn = new QuestOWLConnection(reasoner.getQuestInstance().getConnection());
 			QuestOWLStatement st = conn.createStatement();
 			rs = st.executeTuple(query);
-			this.rewritingTime = st.getQuestStatement().getRewritingTime();
-			this.unfoldingTime = st.getQuestStatement().getUnfoldingTime();
+			this.rewritingTime = st.getRewritingTime();
+			this.unfoldingTime = st.getUnfoldingTime();
+			
+			this.rewritingSize = st.getUCQSizeAfterRewriting();
+			this.unfoldingSize = st.getUCQSizeAfterUnfolding();
 			
 		} catch (OBDAException | OWLException e) {
 			e.printStackTrace();
@@ -99,17 +120,18 @@ public class MixerOntop extends Mixer {
 
 	@Override
 	public Object executeQuery(String query, int timeout) {
-		// TODO Auto-generated method stub
+		System.err.println("MixerOntop.executeQuery(String, int) is not implemented yet");
+		// TODO 
 		return null;
 	}
 	
 	@Override
 	public int traverseResultSet(Object resultSet) {
-		
+		if(resultSet == null) return 0;
 		QuestOWLResultSet rs = (QuestOWLResultSet) resultSet;
 		int resultsCount = 0;
 		try {
-			int columnSize = rs.getColumCount();
+			int columnSize = rs.getColumnCount();
 			// Traverse the result set
 			while (rs.nextRow()) {
 				for (int idx = 1; idx <= columnSize; idx++) {
@@ -151,6 +173,16 @@ public class MixerOntop extends Mixer {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public int getUnfoldingSize() {
+		return this.unfoldingSize;
+	}
+
+	@Override
+	public int getRewritingSize() {
+		return this.rewritingSize;
+	}
 
 	@Override
 	public void rewritingOFF() {
@@ -176,8 +208,10 @@ public class MixerOntop extends Mixer {
 		QuestPreferences preference = new QuestPreferences();
 		preference.setCurrentValueOf(QuestPreferences.ABOX_MODE, QuestConstants.VIRTUAL);
 		
-//		preference.setCurrentValueOf(QuestPreferences.REFORMULATION_TECHNIQUE, QuestConstants.TW);
-//		preference.setCurrentValueOf(QuestPreferences.REWRITE, QuestConstants.TRUE);
+		if(this.rewriting){
+			preference.setCurrentValueOf(QuestPreferences.REFORMULATION_TECHNIQUE, QuestConstants.TW);
+			preference.setCurrentValueOf(QuestPreferences.REWRITE, QuestConstants.TRUE);
+		}
 		
 		/*
 		 * Create the instance of Quest OWL reasoner.
@@ -226,7 +260,5 @@ public class MixerOntop extends Mixer {
 				| InvalidMappingException e) {
 			e.printStackTrace();
 		}
-		
 	}
-	
 }

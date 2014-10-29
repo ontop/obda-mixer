@@ -1,4 +1,3 @@
-
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX npd: <http://sws.ifi.uio.no/data/npd-v2/>
 PREFIX void: <http://rdfs.org/ns/void#>
