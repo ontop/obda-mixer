@@ -103,7 +103,9 @@ public class MixerOntop extends Mixer {
 	public Object executeQuery(String query) {
 		QuestOWLResultSet rs = null;
 		try {
-			if(conn == null) conn = new QuestOWLConnection(reasoner.getQuestInstance().getConnection());
+			
+			if(conn == null) conn = reasoner.getConnection(); // Warn: this methods will return always 
+			                                                  //       the same connection
 			QuestOWLStatement st = conn.createStatement();
 			rs = st.executeTuple(query);
 			this.rewritingTime = st.getRewritingTime();
