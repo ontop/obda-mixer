@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
@@ -308,6 +309,11 @@ class TemplateQuerySelector{
 				}
 				 System.exit(1);
 			 }
+		 }
+		 if( qNames.isEmpty() ){ // LIMIT clause
+			 Random rand = new Random();
+			 Integer next = rand.nextInt(100000);
+			 fillers.add(next.toString());
 		 }
 		 for( int i = 1; i <= fillers.size(); ++i ){
 			 sparqlQueryTemplate.setNthPlaceholder(i, fillers.get(i-1));
