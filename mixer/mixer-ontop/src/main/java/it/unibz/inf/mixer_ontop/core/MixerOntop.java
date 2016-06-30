@@ -61,7 +61,9 @@ public class MixerOntop extends Mixer {
 	private long unfoldingTime;
 	private int rewritingSize;
 	private int unfoldingSize;
+	private int sqlCharsNumber;
 	private QuestOWLConnection conn;
+	int subQuery;
 
 	public MixerOntop(Conf configuration) {
 		super(configuration);
@@ -73,7 +75,9 @@ public class MixerOntop extends Mixer {
 		unfoldingTime = 0;
 		rewritingSize = 0;
 		unfoldingSize = 0;
+		this.sqlCharsNumber = 0;
 		conn = null;
+		subQuery = 0;
 	}
 	
 	public MixerOntop(Conf configuration, boolean rewriting){
@@ -86,7 +90,9 @@ public class MixerOntop extends Mixer {
 		unfoldingTime = 0;
 		rewritingSize = 0;
 		unfoldingSize = 0;
+		this.sqlCharsNumber = 0;
 		conn = null;
+		subQuery = 0;
 	}
 	
 
@@ -113,7 +119,8 @@ public class MixerOntop extends Mixer {
 			
 			this.rewritingSize = st.getUCQSizeAfterRewriting();
 			this.unfoldingSize = st.getUCQSizeAfterUnfolding();
-			
+//			this.sqlCharsNumber = st.getSQLCharsNumber();
+						
 		} catch (OBDAException | OWLException e) {
 			e.printStackTrace();
 		} 
@@ -196,6 +203,11 @@ public class MixerOntop extends Mixer {
 	public void rewritingON() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public int getSQLCharsNumber() {
+		return this.sqlCharsNumber;
 	}
 
 	

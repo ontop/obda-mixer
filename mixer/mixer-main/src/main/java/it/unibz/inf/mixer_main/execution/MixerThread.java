@@ -42,6 +42,7 @@ import it.unibz.inf.mixer_main.statistics.SimpleStatistics;
 import it.unibz.inf.mixer_main.statistics.Statistics;
 import it.unibz.inf.mixer_main.time.Chrono;
 import it.unibz.inf.mixer_main.utils.*;
+import it.unibz.inf.mixer_ontop.core.LogToFile;
 
 public class MixerThread extends Thread {
 	
@@ -99,6 +100,7 @@ public class MixerThread extends Thread {
 		 for( int j = 0; j < nRuns; ++j ){
 			 long timeWasted = 0;
 			 chronoMix.start();
+			 int i = 0;
 			 SimpleStatistics localStat = stat.getSimpleStatsInstance("run#"+j);
 			 boolean stop = false;
 			 while( !stop ){
@@ -109,6 +111,15 @@ public class MixerThread extends Thread {
 					 stop = true;
 				 }
 				 else{
+					 LogToFile l = LogToFile.getInstance();
+					 try {
+						l.openFile("listQueries"+(++i));
+						l.appendLine(tqs.getCurQueryName());
+						l.closeFile();
+					 } catch (IOException e) {
+						e.printStackTrace();
+					}
+					 
 					 Object resultSet = null;
 					 chrono.start();
 					 if( timeout == 0 ) resultSet = mixer.executeQuery(query); else resultSet = mixer.executeQuery(query, timeout);
@@ -124,6 +135,8 @@ public class MixerThread extends Thread {
 						 
 						 localStat.setInt("rewritingUCQ_size#"+tqs.getCurQueryName(),mixer.getRewritingSize());
 						 localStat.setInt("unfoldingUCQ_size#"+tqs.getCurQueryName(),mixer.getUnfoldingSize());
+						 
+						 localStat.setInt("sqlCharsNumber#"+tqs.getCurQueryName(), mixer.getSQLCharsNumber());
 						 
 					 }
 					 timeWasted += chrono.stop();

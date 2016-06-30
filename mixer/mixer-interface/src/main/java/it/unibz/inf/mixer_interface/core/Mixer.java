@@ -128,6 +128,16 @@ public abstract class Mixer {
 	// ------------- Configuration --------------- //
 	
 	/**
+	 * 
+	 * @return The size of the rewritten query, in terms of 
+	 *         number of datalog rules
+	 */
+	public abstract int getSQLCharsNumber();
+	// ------------------------------------------- //
+	
+	// ------------- Configuration --------------- //
+	
+	/**
 	 * It turns off the rewriting.
 	 */
 	public abstract void rewritingOFF();
