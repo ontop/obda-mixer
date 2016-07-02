@@ -49,6 +49,10 @@ public class ConfParser {
 		return instance;
 	}
 	
+	public String dbDriver() {
+	    return searchTag("driver-class");
+	}
+	
 	/** Returns the url of the database **/
 	public  String dbUrl(){
 		return searchTag("db-url");

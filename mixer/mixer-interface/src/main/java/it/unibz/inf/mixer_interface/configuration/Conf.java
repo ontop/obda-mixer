@@ -26,6 +26,7 @@ public class Conf {
 	protected final String mappingsFile;
 	
 	// Database credentials
+	protected final String driverClass;
 	protected final String databaseUrl;
 	protected final String databaseUser;
 	protected final String databasePwd;
@@ -38,6 +39,7 @@ public class Conf {
 	public Conf(
 			String owlFile, 
 			String mappingsFile, 
+			String driverClass,
 			String databaseUrl,
 			String databaseUser,
 			String databasePwd,
@@ -47,6 +49,7 @@ public class Conf {
 			){
 		this.owlFile = owlFile;
 		this.mappingsFile = mappingsFile;
+		this.driverClass = driverClass;
 		this.databaseUrl = databaseUrl;
 		this.databaseUser = databaseUser;
 		this.databasePwd = databasePwd;
@@ -85,5 +88,9 @@ public class Conf {
 
 	public String getTemplatesConfDir() {
 		return templatesConfDir;
+	}
+
+	public String getDriverClass() {
+	    return this.driverClass;
 	}
 }

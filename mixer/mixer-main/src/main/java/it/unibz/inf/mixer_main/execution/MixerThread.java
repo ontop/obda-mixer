@@ -37,6 +37,7 @@ import java.util.Random;
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
 import it.unibz.inf.mixer_main.connection.DBMSConnection;
+import it.unibz.inf.mixer_main.connection.DBMSConnectionMysql;
 import it.unibz.inf.mixer_main.connection.DBMSConnectionPostgres;
 import it.unibz.inf.mixer_main.statistics.SimpleStatistics;
 import it.unibz.inf.mixer_main.statistics.Statistics;
@@ -46,6 +47,8 @@ import it.unibz.inf.mixer_ontop.core.LogToFile;
 
 public class MixerThread extends Thread {
 	
+    private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
+    
 	// Logging
 	private Statistics stat;
 	private Mixer mixer;
@@ -60,7 +63,7 @@ public class MixerThread extends Thread {
 	// Time statistics
 	private Chrono chrono;
 	private Chrono chronoMix;
-	
+		
 	public MixerThread(Mixer m, int nRuns, int nWUps, int timeout, Statistics stat, File[] listOfFiles, boolean rwAndUnf){
 		this.stat = stat;
 		this.mixer = m;
@@ -80,17 +83,25 @@ public class MixerThread extends Thread {
 	
 	 public void run() {
 		 
-		 // Establish the connection
-		 DBMSConnection db = new DBMSConnectionPostgres(mixer.getConfiguration());
-		 
-		 TemplateQuerySelector tqs = new TemplateQuerySelector(mixer.getConfiguration(), db);
-		 
-		 // Warm up
-		 warmUp(tqs); 
-		 
-		 // The actual tests
-		 test(tqs);
-     }
+	     // Establish the connection
+	     Conf conf = mixer.getConfiguration();
+	     String driver = conf.getDriverClass();
+	     
+	     DBMSConnection db = null;
+	     if( driver.equals(MYSQL_DRIVER) ){
+		 db = new DBMSConnectionMysql(conf);
+	     }
+	     else{
+		 db = new DBMSConnectionPostgres(conf);
+	     }
+	     TemplateQuerySelector tqs = new TemplateQuerySelector(conf, db);
+
+	     // Warm up
+	     warmUp(tqs); 
+
+	     // The actual tests
+	     test(tqs);
+	 }
 	
 	 /**
 	  * It performs the mixes, and collects the statistics
@@ -106,6 +117,7 @@ public class MixerThread extends Thread {
 			 while( !stop ){
 				 chrono.start();
 				 String query = tqs.getNextQuery();
+				 System.out.println(query);
 				 timeWasted += chrono.stop();
 				 if( query == null ){
 					 stop = true;
@@ -152,6 +164,7 @@ public class MixerThread extends Thread {
 			 boolean stop = false;
 			 while( !stop ){
 				 String query = tqs.getNextQuery();
+				 System.out.println(query);
 				 if( query == null ){
 					 stop = true;
 				 }
@@ -178,6 +191,9 @@ class TemplateQuerySelector{
 	// Connection to the database
 	DBMSConnection db;
 	
+	// State
+	private int nExecutedTemplate;
+	
 	public TemplateQuerySelector(Conf configuration, DBMSConnection db){
 		index = 0;
 		templatesDir = configuration.getTemplatesDir();
@@ -188,6 +204,8 @@ class TemplateQuerySelector{
 		// Query templates
 		File folder = new File(templatesDir);
 		listOfFiles = folder.listFiles();
+		
+		this.nExecutedTemplate = 0;
 	}
 	
 	public String getCurQueryName(){
@@ -250,6 +268,10 @@ class TemplateQuerySelector{
 	private void fillPlaceholders(Template sparqlQueryTemplate,
 			 List<QualifiedName> qNames) {
 
+	    this.resultSetPointer.clear();
+	    
+	    ++this.nExecutedTemplate;
+	    
 		 if(sparqlQueryTemplate.getNumPlaceholders() == 0) return;
 
 		 List<String> fillers = new ArrayList<String>();
@@ -265,12 +287,15 @@ class TemplateQuerySelector{
 				 resultSetPointer.put(qN.toString(), 1);
 			 }
 			 
-			 String query = "SELECT DISTINCT " + qN.getSecond() + " FROM " 
+			 pointer += this.nExecutedTemplate;
+			 
+			 String query = "SELECT  " + "*" + " FROM " 
 					 + qN.getFirst() + " LIMIT " + pointer+ ", 1";
 			 
 			 if( db.getJdbcConnector().equals("jdbc:postgresql") ){
-				 query = "SELECT DISTINCT \""+
-									qN.getSecond()+ 
+				 query = "SELECT  \""+
+					 "*" +
+					 // qN.getSecond()+ 
 									"\" FROM \""+qN.getFirst()+"\" WHERE \""
 									+qN.getSecond()+"\" IS NOT NULL LIMIT 1" +
 									" OFFSET " + pointer;
@@ -291,12 +316,12 @@ class TemplateQuerySelector{
 
 				 if ( !rs.next() ){
 					 stmt.close();
-					 query = "SELECT DISTINCT " + qN.getSecond() + " FROM " 
+					 query = "SELECT  " + "*" + " FROM " 
 							 + qN.getFirst() + " LIMIT " + 0 + ", 1";
 					 resultSetPointer.put(qN.toString(), 1);
 					 
 					 if( db.getJdbcConnector().equals("jdbc:postgresql") ){
-						 query = "SELECT DISTINCT \""+
+						 query = "SELECT  \""+
 											qN.getSecond()+ 
 											"\" FROM \""+qN.getFirst()+"\" WHERE \""
 											+qN.getSecond()+"\" IS NOT NULL LIMIT 1" +
@@ -310,6 +335,9 @@ class TemplateQuerySelector{
 						 System.err.println("Problem");
 						 System.exit(1);
 					 }
+				 }
+				 if( qN.getSecond().equals("propertyText1") ){
+				     System.out.println("DEBUG");
 				 }
 				 fillers.add( rs.getString(qN.getSecond()) );
 

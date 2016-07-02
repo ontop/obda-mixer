@@ -83,6 +83,7 @@ public class MixerMain {
 		Conf configuration = new Conf(
 				cP.owlFile(), 
 				cP.mappingsFile(), 
+				cP.dbDriver(),
 				cP.dbUrl(), 
 				cP.dbUsername(),
 				cP.dbPassword(), 
