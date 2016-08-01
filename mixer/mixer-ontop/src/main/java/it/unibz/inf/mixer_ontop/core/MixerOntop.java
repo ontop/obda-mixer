@@ -117,8 +117,8 @@ public class MixerOntop extends Mixer {
 			this.rewritingTime = st.getRewritingTime();
 			this.unfoldingTime = st.getUnfoldingTime();
 			
-			this.rewritingSize = st.getUCQSizeAfterRewriting();
-			this.unfoldingSize = st.getUCQSizeAfterUnfolding();
+			this.rewritingSize = 0 ;// st.getUCQSizeAfterRewriting(); FIXME
+			this.unfoldingSize = 0; //st.getUCQSizeAfterUnfolding(); FIXME
 //			this.sqlCharsNumber = st.getSQLCharsNumber();
 						
 		} catch (OBDAException | OWLException e) {

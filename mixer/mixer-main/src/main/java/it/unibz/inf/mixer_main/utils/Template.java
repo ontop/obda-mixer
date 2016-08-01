@@ -33,20 +33,52 @@ public class Template{
 	private String[] splits;
 	private String[] fillers;
 	private String template;
-	private String placeholder;
+	private static final String placeholder = "$";
+	
+	public class PlaceholderInfo{    
+	    private QualifiedName qN;
+	    private int id;
+	    
+	    private PlaceholderInfo(String s){
+		// {1:blabla}
+		this.qN = new QualifiedName( s.substring( s.indexOf(":") +1, s.indexOf(".") ), s.substring(s.indexOf(".") + 1, s.length() - 1) );
+		this.id = Integer.parseInt(s.substring( 1, s.indexOf(":") ));
+	    }
+	    
+	    public int getId(){
+		return this.id;
+	    }
+	    public QualifiedName getQN(){
+		return this.qN;
+	    }
+	    
+	    @Override
+	    public String toString(){
+		return "id = "+this.id + ", qN = " + this.qN;
+	    }
+	    
+	    @Override 
+	    public boolean equals(Object other) {
+		if( this == other ) return true; // If they are the same object, then fine
+		boolean result = false;
+		if (other instanceof PlaceholderInfo) {
+		    PlaceholderInfo that = (PlaceholderInfo) other;
+		    result = this.getId() == that.getId() && this.getQN().toString().equals(that.getQN().toString());
+		}
+		return result;
+	    }
+	    
+	    @Override
+	    public int hashCode(){
+		return this.toString().hashCode();
+	    }
+	};
 	
 	public Template(String templateString){
 		template = templateString;
-		placeholder = "?";
 		parseTemplate();
 	}
-	
-	public Template(String templateString, String placeholder){
-		template = templateString;
-		this.placeholder = placeholder;
-		parseTemplate();
-	}
-	
+		
 	/** 
 	 * 
 	 * @param n value greater than 1
@@ -54,6 +86,16 @@ public class Template{
 	 */
 	public void setNthPlaceholder(int n, String filler) {
 		fillers[n-1] = filler;
+	}
+	
+	/**
+	 * n value greater than 1
+	 * @param n
+	 * @return
+	 */
+	public PlaceholderInfo getNthPlaceholderInfo(int n){
+	    String s = splits[n];
+	    return new PlaceholderInfo(s.substring( s.indexOf("{"), s.indexOf("}") + 1) );
 	}
 	
 	private void parseTemplate(){
@@ -67,9 +109,11 @@ public class Template{
 	
 	public String getFilled(){
 		StringBuilder temp = new StringBuilder();
-		for( int i = 0; i < splits.length; i++ ){
-			temp.append(splits[i]);
-			if( i < fillers.length ) temp.append(fillers[i]);
+		temp.append( splits[0] ); // Part before first occurrence of '$'
+		temp.append(fillers[0]);
+		for( int i = 1; i < splits.length; i++ ){
+		    temp.append( splits[i].substring(splits[i].indexOf("}") +1, splits[i].length()) );
+		    if( i < fillers.length ) temp.append(fillers[i]);
 		}
 		return temp.toString(); 
 	}

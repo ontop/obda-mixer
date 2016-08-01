@@ -28,9 +28,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -42,7 +40,8 @@ import it.unibz.inf.mixer_main.connection.DBMSConnectionPostgres;
 import it.unibz.inf.mixer_main.statistics.SimpleStatistics;
 import it.unibz.inf.mixer_main.statistics.Statistics;
 import it.unibz.inf.mixer_main.time.Chrono;
-import it.unibz.inf.mixer_main.utils.*;
+import it.unibz.inf.mixer_main.utils.QualifiedName;
+import it.unibz.inf.mixer_main.utils.Template;
 import it.unibz.inf.mixer_ontop.core.LogToFile;
 
 public class MixerThread extends Thread {
@@ -179,7 +178,6 @@ public class MixerThread extends Thread {
 class TemplateQuerySelector{
 	
 	private String templatesDir;
-	private String templatesConfDir;
 	
 	// Fields to use this class as an iterator
 	private int index;
@@ -197,7 +195,6 @@ class TemplateQuerySelector{
 	public TemplateQuerySelector(Conf configuration, DBMSConnection db){
 		index = 0;
 		templatesDir = configuration.getTemplatesDir();
-		templatesConfDir = configuration.getTemplatesConfDir();
 		
 		this.db = db;
 		
@@ -228,7 +225,6 @@ class TemplateQuerySelector{
 		}; 
 		
 		String inFile = templatesDir + "/" + listOfFiles[index].getName(); 
-		String confFile = templatesConfDir + "/" + listOfFiles[index].getName();
 		
 		String result = null;
 		
@@ -244,18 +240,9 @@ class TemplateQuerySelector{
 			}
 			in.close();
 			
-			Template sparqlQueryTemplate = new Template(queryBuilder.toString(), "$");
+			Template sparqlQueryTemplate = new Template(queryBuilder.toString());
 			
-			in = new BufferedReader(new FileReader(confFile));
-			
-			List<QualifiedName> qNames = new ArrayList<QualifiedName>();
-			while( (curLine = in.readLine()) != null ){
-				qNames.add(new QualifiedName(curLine));
-			}
-			
-			in.close();
-			
-			fillPlaceholders(sparqlQueryTemplate, qNames);
+			fillPlaceholders(sparqlQueryTemplate);
 			result = sparqlQueryTemplate.getFilled();
 			
 		} catch (IOException e) {
@@ -265,99 +252,101 @@ class TemplateQuerySelector{
 		return result;
 	}
 	
-	private void fillPlaceholders(Template sparqlQueryTemplate,
-			 List<QualifiedName> qNames) {
+	private void fillPlaceholders(Template sparqlQueryTemplate) {
+
+	    Map<Template.PlaceholderInfo, String> mapTIToValue = new HashMap<Template.PlaceholderInfo, String>();
 
 	    this.resultSetPointer.clear();
-	    
 	    ++this.nExecutedTemplate;
+
+	    if(sparqlQueryTemplate.getNumPlaceholders() == 0) return;
+
+	    for( int i = 1; i <= sparqlQueryTemplate.getNumPlaceholders(); ++i ){
+
+		Template.PlaceholderInfo info = sparqlQueryTemplate.getNthPlaceholderInfo(i);
+
+		String toInsert = null;
+		if( mapTIToValue.containsKey(info) ){
+		    toInsert = mapTIToValue.get(info);
+		}
+		else{
+		    toInsert = findValueToInsert( info.getQN() );
+		    mapTIToValue.put(info, toInsert);
+		}
+		sparqlQueryTemplate.setNthPlaceholder(i, toInsert);
+	    }
+	}
+
+	private String findValueToInsert( QualifiedName qN ) {
 	    
-		 if(sparqlQueryTemplate.getNumPlaceholders() == 0) return;
+	    String result = null;
+	    int pointer = 0;
+	    
+	    if( resultSetPointer.containsKey(qN.toString()) ){
+		pointer = resultSetPointer.get(qN.toString());
+		resultSetPointer.put(qN.toString(), pointer + 1);
+	    }
+	    else{
+		resultSetPointer.put(qN.toString(), 1);
+	    }
 
-		 List<String> fillers = new ArrayList<String>();
-
-		 for(QualifiedName qN : qNames ){
-
-			 int pointer = 0;
-			 if( resultSetPointer.containsKey(qN.toString()) ){
-				 pointer = resultSetPointer.get(qN.toString());
-				 resultSetPointer.put(qN.toString(), pointer + 1);
-			 }
-			 else{
-				 resultSetPointer.put(qN.toString(), 1);
-			 }
-			 
-			 pointer += this.nExecutedTemplate;
-			 
-			 String query = "SELECT  " + "*" + " FROM " 
-					 + qN.getFirst() + " LIMIT " + pointer+ ", 1";
-			 
-			 if( db.getJdbcConnector().equals("jdbc:postgresql") ){
-				 query = "SELECT  \""+
-					 "*" +
-					 // qN.getSecond()+ 
-									"\" FROM \""+qN.getFirst()+"\" WHERE \""
-									+qN.getSecond()+"\" IS NOT NULL LIMIT 1" +
-									" OFFSET " + pointer;
-			 }
-			 
-			 Connection conn = db.getConnection();
-			 
-			 PreparedStatement stmt = null;
-			 
-			 try {
-				 stmt = conn.prepareStatement(query);
-			 } catch (SQLException e1) {
-				 e1.printStackTrace();
-			 }
-
-			 try {
-				 ResultSet rs = stmt.executeQuery();
-
-				 if ( !rs.next() ){
-					 stmt.close();
-					 query = "SELECT  " + "*" + " FROM " 
-							 + qN.getFirst() + " LIMIT " + 0 + ", 1";
-					 resultSetPointer.put(qN.toString(), 1);
-					 
-					 if( db.getJdbcConnector().equals("jdbc:postgresql") ){
-						 query = "SELECT  \""+
-											qN.getSecond()+ 
-											"\" FROM \""+qN.getFirst()+"\" WHERE \""
-											+qN.getSecond()+"\" IS NOT NULL LIMIT 1" +
-											" OFFSET " + 0;
-					 }
-
-					 stmt = conn.prepareStatement(query);
-
-					 rs = stmt.executeQuery();
-					 if( !rs.next() ){
-						 System.err.println("Problem");
-						 System.exit(1);
-					 }
-				 }
-				 if( qN.getSecond().equals("propertyText1") ){
-				     System.out.println("DEBUG");
-				 }
-				 fillers.add( rs.getString(qN.getSecond()) );
-
-			 } catch (SQLException e) {
-				 e.printStackTrace();
-				 try {
-					conn.close();
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				}
-				 System.exit(1);
-			 }
-		 }
-		 if( qNames.isEmpty() ){ // LIMIT clause
-			 Random rand = new Random();
-			 Integer next = rand.nextInt(100000);
-			 fillers.add(next.toString());
-		 }
-		 for( int i = 1; i <= fillers.size(); ++i ){
-			 sparqlQueryTemplate.setNthPlaceholder(i, fillers.get(i-1));
-		 }
-	 }
+	    pointer += this.nExecutedTemplate;
+	    
+	    String query = "SELECT  " + "*" + " FROM " 
+		    + qN.getFirst() + " LIMIT " + pointer+ ", 1";
+	    
+	    if( db.getJdbcConnector().equals("jdbc:postgresql") ){
+		query = "SELECT  \""+
+			"*" +
+			// qN.getSecond()+ 
+			"\" FROM \""+qN.getFirst()+"\" WHERE \""
+			+qN.getSecond()+"\" IS NOT NULL LIMIT 1" +
+			" OFFSET " + pointer;
+	    }
+	    
+	    Connection conn = db.getConnection();
+	    
+	    PreparedStatement stmt = null;
+	    
+	    try {
+		stmt = conn.prepareStatement(query);
+	    } catch (SQLException e1) {
+		e1.printStackTrace();
+	    }
+	    try{
+		ResultSet rs = stmt.executeQuery();
+		if ( !rs.next() ){
+		    stmt.close();
+		    query = "SELECT  " + "*" + " FROM " 
+			    + qN.getFirst() + " LIMIT " + 0 + ", 1";
+		    resultSetPointer.put(qN.toString(), 1);
+		    
+		    if( db.getJdbcConnector().equals("jdbc:postgresql") ){
+			query = "SELECT  \""+
+				qN.getSecond()+ 
+				"\" FROM \""+qN.getFirst()+"\" WHERE \""
+				+qN.getSecond()+"\" IS NOT NULL LIMIT 1" +
+				" OFFSET " + 0;
+		    }
+		    
+		    stmt = conn.prepareStatement(query);
+		    
+		    rs = stmt.executeQuery();
+		    if( !rs.next() ){
+			System.err.println("[QueryMixer.MainThread] Problem: No result to fill placeholder.");
+			System.exit(1);
+		    }
+		}
+		result = rs.getString(qN.getSecond());
+	    } catch (SQLException e) {
+		e.printStackTrace();
+		try {
+		    conn.close();
+		} catch (SQLException e1) {
+		    e1.printStackTrace();
+		}
+		System.exit(1);
+	    }
+	    return result;
+	}
 };
