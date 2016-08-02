@@ -1,1 +1,0 @@
-bsns_arr_area_operator baaOperatorDateUpdated
