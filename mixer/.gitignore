@@ -1,9 +1,0 @@
-/target
-*~
-mixer-ontop/.codepro/
-*#
-src/main/resources/*
-mixer-main/src/main/resources/*.obda
-mixer-main/src/main/resources/*.owl
-mixer-main/src/main/resources/*.q
-
