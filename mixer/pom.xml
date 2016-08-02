@@ -3,9 +3,9 @@
   <groupId>it.unibz.inf.mixer</groupId>
   <artifactId>mixer</artifactId>
   <packaging>pom</packaging>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.1.0</version>
   <name>mixer</name>
-	<url></url>
+	<url />
 
 	<licenses>
 		<license>
