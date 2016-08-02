@@ -1,0 +1,7 @@
+/target
+*~
+mixer-ontop/.codepro/
+*#
+src/main/resources/OFFLINE-ONLY
+mixer-main/src/main/resources/OFFLINE-ONLY
+
