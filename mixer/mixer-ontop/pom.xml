@@ -12,19 +12,18 @@
   	<dependency>
   		<artifactId>mixer-interface</artifactId>
   		<groupId>it.unibz.inf.mixer</groupId>
-  		<version>0.0.1-SNAPSHOT</version>
+  		<version>1.1.0</version>
   	</dependency>
   	
   	<!-- ONTOP -->
 	<dependency>
 		<groupId>it.unibz.inf.ontop</groupId>
-		<artifactId>ontop-quest-owlapi3</artifactId>
-		<version>1.14.1-SNAPSHOT</version>
+		<artifactId>ontop-quest-owlapi</artifactId>
+		<version>1.18.1-SNAPSHOT</version>
 	</dependency>
 	<dependency>
 		<groupId>mysql</groupId>
 		<artifactId>mysql-connector-java</artifactId>
-		<version>5.1.29</version>
-  </dependency>
+		</dependency>
   </dependencies>
 </project>

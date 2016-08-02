@@ -28,251 +28,247 @@ import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.reasoner.SimpleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
-import it.unibz.krdb.obda.exception.InvalidMappingException;
-import it.unibz.krdb.obda.exception.InvalidPredicateDeclarationException;
-import it.unibz.krdb.obda.io.ModelIOManager;
-import it.unibz.krdb.obda.model.OBDADataFactory;
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.model.OBDAModel;
-import it.unibz.krdb.obda.model.impl.OBDADataFactoryImpl;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestConstants;
-import it.unibz.krdb.obda.owlrefplatform.core.QuestPreferences;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWL;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLConnection;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLFactory;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLResultSet;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLStatement;
+import it.unibz.inf.ontop.exception.InvalidMappingException;
+import it.unibz.inf.ontop.exception.InvalidPredicateDeclarationException;
+import it.unibz.inf.ontop.io.ModelIOManager;
+import it.unibz.inf.ontop.model.OBDADataFactory;
+import it.unibz.inf.ontop.model.OBDAModel;
+import it.unibz.inf.ontop.model.impl.OBDADataFactoryImpl;
+import it.unibz.inf.ontop.owlrefplatform.core.QuestConstants;
+import it.unibz.inf.ontop.owlrefplatform.core.QuestPreferences;
+import it.unibz.inf.ontop.owlrefplatform.core.benchmark.OntopBenchmark;
+import it.unibz.inf.ontop.owlrefplatform.owlapi.QuestOWL;
+import it.unibz.inf.ontop.owlrefplatform.owlapi.QuestOWLConfiguration;
+import it.unibz.inf.ontop.owlrefplatform.owlapi.QuestOWLConnection;
+import it.unibz.inf.ontop.owlrefplatform.owlapi.QuestOWLFactory;
+import it.unibz.inf.ontop.owlrefplatform.owlapi.QuestOWLResultSet;
+import it.unibz.inf.ontop.owlrefplatform.owlapi.QuestOWLStatement;
 
 public class MixerOntop extends Mixer {
-	
-	private static Logger log = LoggerFactory.getLogger(MixerOntop.class);
 
-	
-	private OBDAModel obdaModel;
-	private OWLOntology ontology;
-	private QuestOWL reasoner;
-	private long rewritingTime;
-	private long unfoldingTime;
-	private int rewritingSize;
-	private int unfoldingSize;
-	private int sqlCharsNumber;
-	private QuestOWLConnection conn;
-	int subQuery;
-
-	public MixerOntop(Conf configuration) {
-		super(configuration);
-		
-		obdaModel = null;
-		ontology = null;
-		reasoner = null;
-		rewritingTime = 0;
-		unfoldingTime = 0;
-		rewritingSize = 0;
-		unfoldingSize = 0;
-		this.sqlCharsNumber = 0;
-		conn = null;
-		subQuery = 0;
-	}
-	
-	public MixerOntop(Conf configuration, boolean rewriting){
-		super(configuration, rewriting);
-		
-		obdaModel = null;
-		ontology = null;
-		reasoner = null;
-		rewritingTime = 0;
-		unfoldingTime = 0;
-		rewritingSize = 0;
-		unfoldingSize = 0;
-		this.sqlCharsNumber = 0;
-		conn = null;
-		subQuery = 0;
-	}
-	
-
-	@Override
-	public void load() {
-			loadOntology();	
-			loadMappings();		
-			createReasoner();
-	}
+    private static Logger log = LoggerFactory.getLogger(MixerOntop.class);
 
 
-	
-	@Override
-	public Object executeQuery(String query) {
-		QuestOWLResultSet rs = null;
-		try {
-			
-			if(conn == null) conn = reasoner.getConnection(); // Warn: this methods will return always 
-			                                                  //       the same connection
-			QuestOWLStatement st = conn.createStatement();
-			rs = st.executeTuple(query);
-			this.rewritingTime = st.getRewritingTime();
-			this.unfoldingTime = st.getUnfoldingTime();
-			
-			this.rewritingSize = 0 ;// st.getUCQSizeAfterRewriting(); FIXME
-			this.unfoldingSize = 0; //st.getUCQSizeAfterUnfolding(); FIXME
-//			this.sqlCharsNumber = st.getSQLCharsNumber();
-						
-		} catch (OBDAException | OWLException e) {
-			e.printStackTrace();
-		} 
-		return rs;
-	}
+    private OBDAModel obdaModel;
+    private OWLOntology ontology;
+    private QuestOWL reasoner;
+    private long rewritingTime;
+    private long unfoldingTime;
+    private int rewritingSize;
+    private int unfoldingSize;
+    private int sqlCharsNumber;
+    private QuestOWLConnection conn;
+    int subQuery;
 
-	@Override
-	public Object executeQuery(String query, int timeout) {
-		System.err.println("MixerOntop.executeQuery(String, int) is not implemented yet");
-		// TODO 
-		return null;
-	}
-	
-	@Override
-	public int traverseResultSet(Object resultSet) {
-		if(resultSet == null) return 0;
-		QuestOWLResultSet rs = (QuestOWLResultSet) resultSet;
-		int resultsCount = 0;
-		try {
-			int columnSize = rs.getColumnCount();
-			// Traverse the result set
-			while (rs.nextRow()) {
-				for (int idx = 1; idx <= columnSize; idx++) {
-					OWLObject binding = rs.getOWLObject(idx);
-					if( !(binding == null) ){
-						++resultsCount;
-//						System.out.print(binding.toString() + ", ");
-					}
-					else{
-//					System.out.println(", ");
-					}
-				}
-//			System.out.print("\n");
-			}
-		} catch (OWLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+    public MixerOntop(Conf configuration) {
+	super(configuration);
+
+	obdaModel = null;
+	ontology = null;
+	reasoner = null;
+	rewritingTime = 0;
+	unfoldingTime = 0;
+	rewritingSize = 0;
+	unfoldingSize = 0;
+	this.sqlCharsNumber = 0;
+	conn = null;
+	subQuery = 0;
+    }
+
+    public MixerOntop(Conf configuration, boolean rewriting){
+	super(configuration, rewriting);
+
+	obdaModel = null;
+	ontology = null;
+	reasoner = null;
+	rewritingTime = 0;
+	unfoldingTime = 0;
+	rewritingSize = 0;
+	unfoldingSize = 0;
+	this.sqlCharsNumber = 0;
+	conn = null;
+	subQuery = 0;
+    }
+
+
+    @Override
+    public void load() {
+	loadOntology();	
+	loadMappings();		
+	createReasoner();
+    }
+
+
+
+    @Override
+    public Object executeQuery(String query) {
+	QuestOWLResultSet rs = null;
+	try {
+	    if(conn == null) conn = reasoner.getConnection(); // Warn: this methods will return always 
+	    //       the same connection
+	    QuestOWLStatement st = conn.createStatement();
+	    rs = st.executeTuple(query);
+	    
+	    if( OntopBenchmark.getInstance() != null ){
+		this.rewritingTime = OntopBenchmark.getInstance().getRewritingTime();
+		this.unfoldingTime = OntopBenchmark.getInstance().getUnfoldingTime();
+		this.rewritingSize = OntopBenchmark.getInstance().getUCQSizeAfterRewriting(); 
+		this.unfoldingSize = OntopBenchmark.getInstance().getUCQSizeAfterUnfolding();
+	    }
+	} catch ( OWLException e ) {
+	    e.printStackTrace();
+	} 
+	return rs;
+    }
+
+    @Override
+    public Object executeQuery(String query, int timeout) {
+	System.err.println("MixerOntop.executeQuery(String, int) is not implemented yet");
+	// TODO 
+	return null;
+    }
+
+    @Override
+    public int traverseResultSet(Object resultSet) {
+	if(resultSet == null) return 0;
+	QuestOWLResultSet rs = (QuestOWLResultSet) resultSet;
+	int resultsCount = 0;
+	try {
+	    int columnSize = rs.getColumnCount();
+	    // Traverse the result set
+	    while (rs.nextRow()) {
+		for (int idx = 1; idx <= columnSize; idx++) {
+		    OWLObject binding = rs.getOWLObject(idx);
+		    if( !(binding == null) ){
+			++resultsCount;
+			//						System.out.print(binding.toString() + ", ");
+		    }
+		    else{
+			//					System.out.println(", ");
+		    }
 		}
-		return resultsCount;
+		//			System.out.print("\n");
+	    }
+	} catch (OWLException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
 	}
-	@Override
-	public long getRewritingTime() {
-		return rewritingTime;
+	return resultsCount;
+    }
+    @Override
+    public long getRewritingTime() {
+	return rewritingTime;
+    }
+
+    @Override
+    public long getUnfoldingTime() {
+	return unfoldingTime;
+    }
+
+    @Override
+    public String getUnfolding() {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public String getRewriting() {
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public int getUnfoldingSize() {
+	return this.unfoldingSize;
+    }
+
+    @Override
+    public int getRewritingSize() {
+	return this.rewritingSize;
+    }
+
+    @Override
+    public void rewritingOFF() {
+	// TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void rewritingON() {
+	// TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public int getSQLCharsNumber() {
+	return this.sqlCharsNumber;
+    }
+
+
+    // PRIVATE INTERFACE
+
+    private void createReasoner() {
+
+	/*
+	 * Prepare the configuration for the Quest instance. The example below shows the setup for
+	 * "Virtual ABox" mode
+	 */
+	QuestPreferences preference = new QuestPreferences();
+	preference.setCurrentValueOf(QuestPreferences.ABOX_MODE, QuestConstants.VIRTUAL);
+
+	if(this.rewriting){
+	    preference.setCurrentValueOf(QuestPreferences.REFORMULATION_TECHNIQUE, QuestConstants.TW);
+	    preference.setCurrentValueOf(QuestPreferences.REWRITE, QuestConstants.TRUE);
 	}
 
-	@Override
-	public long getUnfoldingTime() {
-		return unfoldingTime;
+	/*
+	 * Create the instance of Quest OWL reasoner.
+	 */
+	QuestOWLFactory factory = new QuestOWLFactory();
+	QuestOWLConfiguration config = QuestOWLConfiguration.builder().obdaModel(obdaModel).preferences(preference).build();
+        this.reasoner = factory.createReasoner(ontology, config);
+    }
+
+    private void loadOntology() {
+	try{
+	    log.debug("Loading the ontology");
+	    OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+	    this.ontology = manager.loadOntologyFromOntologyDocument(new File(this.configuration.getOwlFile()));
+	}catch(Exception e){
+	    e.printStackTrace();
+	}
+    }
+
+    private void loadMappings() {
+	// Load OBDA File
+
+	if( configuration.getMappingsFile().endsWith(".obda") ){
+	    loadOBDAMappings();
+	}
+	else if( configuration.getMappingsFile().endsWith(".ttl") ){
+	    loadR2RMLMappings();
 	}
 
-	@Override
-	public String getUnfolding() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    }
 
-	@Override
-	public String getRewriting() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public int getUnfoldingSize() {
-		return this.unfoldingSize;
-	}
+    private void loadR2RMLMappings() {
+	// TODO
+    }
 
-	@Override
-	public int getRewritingSize() {
-		return this.rewritingSize;
-	}
+    private void loadOBDAMappings() {
+	OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
+	this.obdaModel = fac.getOBDAModel();
+	ModelIOManager ioManager = new ModelIOManager(obdaModel);
 
-	@Override
-	public void rewritingOFF() {
-		// TODO Auto-generated method stub
-		
+	try {
+	    ioManager.load(configuration.getMappingsFile());
+	} catch (IOException | InvalidPredicateDeclarationException | InvalidMappingException e) {
+	    e.printStackTrace();
 	}
-
-	@Override
-	public void rewritingON() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public int getSQLCharsNumber() {
-		return this.sqlCharsNumber;
-	}
-
-	
-	// PRIVATE INTERFACE
-	
-	private void createReasoner() {
-
-		/*
-		 * Prepare the configuration for the Quest instance. The example below shows the setup for
-		 * "Virtual ABox" mode
-		 */
-		QuestPreferences preference = new QuestPreferences();
-		preference.setCurrentValueOf(QuestPreferences.ABOX_MODE, QuestConstants.VIRTUAL);
-		
-		if(this.rewriting){
-			preference.setCurrentValueOf(QuestPreferences.REFORMULATION_TECHNIQUE, QuestConstants.TW);
-			preference.setCurrentValueOf(QuestPreferences.REWRITE, QuestConstants.TRUE);
-		}
-		
-		/*
-		 * Create the instance of Quest OWL reasoner.
-		 */
-		QuestOWLFactory factory = new QuestOWLFactory();
-		factory.setOBDAController(obdaModel);
-		factory.setPreferenceHolder(preference);
-		this.reasoner = (QuestOWL) factory.createReasoner(ontology, new SimpleConfiguration());
-	}
-
-	private void loadOntology() {
-		try{
-			log.debug("Loading the ontology");
-			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-			this.ontology = manager.loadOntologyFromOntologyDocument(new File(this.configuration.getOwlFile()));
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-	}
-
-	private void loadMappings() {
-		// Load OBDA File
-		
-		if( configuration.getMappingsFile().endsWith(".obda") ){
-			loadOBDAMappings();
-		}
-		else if( configuration.getMappingsFile().endsWith(".ttl") ){
-			loadR2RMLMappings();
-		}
-		
-	}
-
-	private void loadR2RMLMappings() {
-		// TODO
-	}
-
-	private void loadOBDAMappings() {
-		OBDADataFactory fac = OBDADataFactoryImpl.getInstance();
-		this.obdaModel = fac.getOBDAModel();
-		ModelIOManager ioManager = new ModelIOManager(obdaModel);
-
-		
-		try {
-			ioManager.load(configuration.getMappingsFile());
-		} catch (IOException | InvalidPredicateDeclarationException
-				| InvalidMappingException e) {
-			e.printStackTrace();
-		}
-	}
-}
+    }
+};

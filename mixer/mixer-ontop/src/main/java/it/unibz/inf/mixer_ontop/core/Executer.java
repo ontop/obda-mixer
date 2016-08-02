@@ -2,11 +2,11 @@ package it.unibz.inf.mixer_ontop.core;
 
 import org.semanticweb.owlapi.model.OWLException;
 
-import it.unibz.krdb.obda.model.OBDAException;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWL;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLConnection;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLResultSet;
-import it.unibz.krdb.obda.owlrefplatform.owlapi3.QuestOWLStatement;
+import it.unibz.inf.ontop.owlrefplatform.core.benchmark.OntopBenchmark;
+import it.unibz.inf.ontop.owlrefplatform.owlapi.QuestOWL;
+import it.unibz.inf.ontop.owlrefplatform.owlapi.QuestOWLConnection;
+import it.unibz.inf.ontop.owlrefplatform.owlapi.QuestOWLResultSet;
+import it.unibz.inf.ontop.owlrefplatform.owlapi.QuestOWLStatement;
 
 public class Executer extends Thread {
 	
@@ -54,19 +54,25 @@ public class Executer extends Thread {
 	public void run() {
 		 
 		QuestOWLResultSet rs = null;
+		if(conn == null) conn = reasoner.getConnection();
+		
+		QuestOWLStatement st;
 		try {
-			if(conn == null) conn = reasoner.getConnection();
-			QuestOWLStatement st = conn.createStatement();
-			rs = st.executeTuple(query);
-			this.rewritingTime = st.getRewritingTime();
-			this.unfoldingTime = st.getUnfoldingTime();
-			
-			this.rewritingSize = st.getUCQSizeAfterRewriting();
-			this.unfoldingSize = st.getUCQSizeAfterUnfolding();
-			
-		} catch (OBDAException | OWLException e) {
-			e.printStackTrace();
-		} 
-		this.result = rs;
+		    st = conn.createStatement();
+		    rs = st.executeTuple(query);
+		} catch (OWLException e) {
+		    e.printStackTrace();
+		}
+
+		if( OntopBenchmark.getInstance() != null ){
+		
+		    this.rewritingTime = OntopBenchmark.getInstance().getRewritingTime();
+		    this.unfoldingTime = OntopBenchmark.getInstance().getUnfoldingTime();
+		
+		    this.rewritingSize = OntopBenchmark.getInstance().getUCQSizeAfterRewriting();
+		    this.unfoldingSize = OntopBenchmark.getInstance().getUCQSizeAfterUnfolding();
+		    
+		    this.result = rs;
+		}
     }
 }

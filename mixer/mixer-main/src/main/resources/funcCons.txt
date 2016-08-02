@@ -1,4 +1,0 @@
-apaAreaNet:blkName,apaAreaNet_id,prvName,qdrName
-seis_acquisition:seaName
-tuf_owner_hst:tufNpdidTuf
-wellbore_shallow_all:wlbNpdidWellbore,wlbCompletionYear:wellbore_development_all:wlbNpdidWellbore,wlbCompletionYear

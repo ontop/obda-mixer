@@ -32,8 +32,6 @@ import it.unibz.inf.mixer_main.configuration.ConfParser;
 import it.unibz.inf.mixer_main.statistics.Statistics;
 import it.unibz.inf.mixer_main.time.Chrono;
 import it.unibz.inf.mixer_ontop.core.MixerOntop;
-//import it.unibz.inf.mixer_ontop.core.MixerOntop; //TODO
-//import it.unibz.inf.mixer_ontop_v2.core.MixerOntopV2;
 import it.unibz.inf.utils_options.core.BooleanOption;
 import it.unibz.inf.utils_options.core.IntOption;
 import it.unibz.inf.utils_options.core.Option;
