@@ -1,0 +1,11 @@
+it/unibz/inf/utils_options/core/Option.class
+it/unibz/inf/utils_options/ranges/exceptions/NotRangeStringException.class
+it/unibz/inf/utils_options/core/StringOptionWithRange.class
+it/unibz/inf/utils_options/ranges/IntRange.class
+it/unibz/inf/utils_options/ranges/StringRange.class
+it/unibz/inf/utils_options/core/StringOption.class
+it/unibz/inf/utils_options/core/DoubleOption.class
+it/unibz/inf/utils_options/core/IntOption.class
+it/unibz/inf/utils_options/core/BooleanOption.class
+it/unibz/inf/utils_options/core/Option$1.class
+it/unibz/inf/utils_options/ranges/DoubleRange.class
