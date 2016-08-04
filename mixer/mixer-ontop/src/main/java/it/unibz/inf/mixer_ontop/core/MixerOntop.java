@@ -61,7 +61,6 @@ public class MixerOntop extends Mixer {
     private long unfoldingTime;
     private int rewritingSize;
     private int unfoldingSize;
-    private int sqlCharsNumber;
     private QuestOWLConnection conn;
     int subQuery;
 
@@ -75,7 +74,6 @@ public class MixerOntop extends Mixer {
 	unfoldingTime = 0;
 	rewritingSize = 0;
 	unfoldingSize = 0;
-	this.sqlCharsNumber = 0;
 	conn = null;
 	subQuery = 0;
     }
@@ -90,7 +88,6 @@ public class MixerOntop extends Mixer {
 	unfoldingTime = 0;
 	rewritingSize = 0;
 	unfoldingSize = 0;
-	this.sqlCharsNumber = 0;
 	conn = null;
 	subQuery = 0;
     }
@@ -128,9 +125,27 @@ public class MixerOntop extends Mixer {
 
     @Override
     public Object executeQuery(String query, int timeout) {
-	System.err.println("MixerOntop.executeQuery(String, int) is not implemented yet");
-	// TODO 
-	return null;
+	QuestOWLResultSet rs = null;
+	try {
+	    if(conn == null) conn = reasoner.getConnection(); // Warn: this methods will return always 
+	    //       the same connection
+	    QuestOWLStatement st = conn.createStatement();
+	    
+	    // Timeout
+	    st.setQueryTimeout(timeout);
+	    
+	    rs = st.executeTuple(query);
+	    
+	    if( OntopBenchmark.getInstance() != null ){
+		this.rewritingTime = OntopBenchmark.getInstance().getRewritingTime();
+		this.unfoldingTime = OntopBenchmark.getInstance().getUnfoldingTime();
+		this.rewritingSize = OntopBenchmark.getInstance().getUCQSizeAfterRewriting(); 
+		this.unfoldingSize = OntopBenchmark.getInstance().getUCQSizeAfterUnfolding();
+	    }
+	} catch ( Exception e ) {
+	    e.printStackTrace();
+	} 
+	return rs;
     }
 
     @Override
@@ -203,12 +218,6 @@ public class MixerOntop extends Mixer {
 	// TODO Auto-generated method stub
 
     }
-
-    @Override
-    public int getSQLCharsNumber() {
-	return this.sqlCharsNumber;
-    }
-
 
     // PRIVATE INTERFACE
 

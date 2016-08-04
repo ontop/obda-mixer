@@ -98,12 +98,5 @@ public class MixerMastro extends Mixer {
 	public int getRewritingSize() {
 		// TODO Auto-generated method stub
 		return 0;
-	}
-
-	@Override
-	public int getSQLCharsNumber() {
-	    // TODO Auto-generated method stub
-	    return 0;
-	}
-	
-}
+	}	
+};

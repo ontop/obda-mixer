@@ -86,8 +86,7 @@ public class MixerMain {
 				cP.dbUsername(),
 				cP.dbPassword(), 
 				cP.getLogPath(), 
-				cP.getQueriesDir() + "/Templates",
-				cP.getQueriesDir() + "/TemplatesConf");
+				cP.getQueriesDir() + "/Templates");
 
 		
 		instantiateMixer(configuration);

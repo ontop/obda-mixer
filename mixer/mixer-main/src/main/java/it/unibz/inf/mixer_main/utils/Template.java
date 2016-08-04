@@ -110,10 +110,12 @@ public class Template{
 	public String getFilled(){
 		StringBuilder temp = new StringBuilder();
 		temp.append( splits[0] ); // Part before first occurrence of '$'
-		temp.append(fillers[0]);
-		for( int i = 1; i < splits.length; i++ ){
-		    temp.append( splits[i].substring(splits[i].indexOf("}") +1, splits[i].length()) );
-		    if( i < fillers.length ) temp.append(fillers[i]);
+		if( fillers.length > 0 ){
+		    temp.append(fillers[0]);
+		    for( int i = 1; i < splits.length; i++ ){
+			temp.append( splits[i].substring(splits[i].indexOf("}") +1, splits[i].length()) );
+			if( i < fillers.length ) temp.append(fillers[i]);
+		    }
 		}
 		return temp.toString(); 
 	}

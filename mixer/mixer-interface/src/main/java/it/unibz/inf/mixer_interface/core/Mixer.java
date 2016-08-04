@@ -63,7 +63,7 @@ public abstract class Mixer {
 	/**
 	 * Issues a query with an execution timeout
 	 * @param query
-	 * @param timeout
+	 * @param timeout (seconds)
 	 * @return a result set
 	 */
 	public abstract Object executeQuery(String query, int timeout);
@@ -125,16 +125,7 @@ public abstract class Mixer {
 	public abstract int getRewritingSize();
 	// ------------------------------------------- //
 	
-	// ------------- Configuration --------------- //
-	
-	/**
-	 * 
-	 * @return The size of the rewritten query, in terms of 
-	 *         number of datalog rules
-	 */
-	public abstract int getSQLCharsNumber();
-	// ------------------------------------------- //
-	
+		
 	// ------------- Configuration --------------- //
 	
 	/**

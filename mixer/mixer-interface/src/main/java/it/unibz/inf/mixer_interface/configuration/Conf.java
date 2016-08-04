@@ -34,7 +34,6 @@ public class Conf {
 	// Mixer-specific parameters
 	protected final String logFile;
 	protected final String templatesDir;
-	protected final String templatesConfDir;
 	
 	public Conf(
 			String owlFile, 
@@ -44,9 +43,8 @@ public class Conf {
 			String databaseUser,
 			String databasePwd,
 			String logFile,
-			String templatesDir,
-			String templatesConfDir
-			){
+			String templatesDir
+		){
 		this.owlFile = owlFile;
 		this.mappingsFile = mappingsFile;
 		this.driverClass = driverClass;
@@ -55,7 +53,6 @@ public class Conf {
 		this.databasePwd = databasePwd;
 		this.logFile = logFile;
 		this.templatesDir = templatesDir;
-		this.templatesConfDir = templatesConfDir;
 	}
 
 	public String getOwlFile() {
@@ -84,10 +81,6 @@ public class Conf {
 
 	public String getTemplatesDir() {
 		return templatesDir;
-	}
-
-	public String getTemplatesConfDir() {
-		return templatesConfDir;
 	}
 
 	public String getDriverClass() {
