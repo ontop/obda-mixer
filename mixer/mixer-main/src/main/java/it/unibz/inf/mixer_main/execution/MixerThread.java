@@ -131,6 +131,7 @@ public class MixerThread extends Thread {
 					 
 					 Object resultSet = null;
 					 chrono.start();
+					 
 					 if( timeout == 0 ) resultSet = mixer.executeQuery(query); else resultSet = mixer.executeQuery(query, timeout);
 					 localStat.addTime("execution_time#"+tqs.getCurQueryName(), chrono.stop());
 					 chrono.start();
