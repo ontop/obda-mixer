@@ -143,8 +143,11 @@ public class MixerThread extends Thread {
 						 localStat.addTime("rewriting_time#"+tqs.getCurQueryName(), mixer.getRewritingTime());
 						 localStat.addTime("unfolding_time#"+tqs.getCurQueryName(), mixer.getUnfoldingTime());
 						 
-						 localStat.setInt("rewritingUCQ_size#"+tqs.getCurQueryName(),mixer.getRewritingSize());
-						 localStat.setInt("unfoldingUCQ_size#"+tqs.getCurQueryName(),mixer.getUnfoldingSize());
+						 // Get query statistics
+						 if( this.nRuns == 1 && this.nWUps == 0 ){
+						     localStat.setInt("rewritingUCQ_size#"+tqs.getCurQueryName(),mixer.getRewritingSize());
+						     localStat.setInt("unfoldingUCQ_size#"+tqs.getCurQueryName(),mixer.getUnfoldingSize());
+						 }
 					 }
 					 timeWasted += chrono.stop();
 				 }

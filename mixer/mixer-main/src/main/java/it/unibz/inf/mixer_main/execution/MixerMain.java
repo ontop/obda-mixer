@@ -47,8 +47,8 @@ public class MixerMain {
 	private Mixer mixer;
 	
 	// Command-line options
-	private IntOption optNumRuns = new IntOption("--runs", "Number of query mix runs.", "Mixer", 1, new IntRange(1, Integer.MAX_VALUE, true, true));
-	private IntOption optNumWarmUps = new IntOption("--warm-ups", "Number of warm up runs.", "Mixer", 0, new IntRange(0, Integer.MAX_VALUE, true, true));
+	private IntOption optNumRuns = new IntOption("--runs", "Number of query mix runs.", "Mixer", 2, new IntRange(1, Integer.MAX_VALUE, true, true));
+	private IntOption optNumWarmUps = new IntOption("--warm-ups", "Number of warm up runs.", "Mixer", 2, new IntRange(0, Integer.MAX_VALUE, true, true));
 	private IntOption optTimeout = new IntOption("--timeout", "Maximum execution time allowed to a query, in seconds. A value of zero means no timeout.", "Mixer", 0, new IntRange(0, Integer.MAX_VALUE, true, true));
 	private IntOption optNumClients = new IntOption("--clients", "Number of clients querying the system in parallel. Rewriting and unfolding times are unavailable in multi-client mode", "Mixer", 1, new IntRange(1, 64, true, true));
 	private BooleanOption optRewriting = new BooleanOption("--rewriting", "On or Off?", "Mixer", false);
