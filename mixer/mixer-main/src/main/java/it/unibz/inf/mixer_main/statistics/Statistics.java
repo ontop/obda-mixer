@@ -67,8 +67,9 @@ public class Statistics {
 		
 		StringBuilder result = new StringBuilder();
 		
+		result.append("[" + this.getLabel() + "]" + "\n"); // Thread-number
 		for( String label : mStats.keySet() ){
-			result.append(mStats.get(label).printStats());
+		    result.append(mStats.get(label).printStats());
 		}
 		
 		return result.toString();

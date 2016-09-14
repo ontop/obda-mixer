@@ -41,7 +41,6 @@ import it.unibz.inf.ontop.model.OBDAModel;
 import it.unibz.inf.ontop.model.impl.OBDADataFactoryImpl;
 import it.unibz.inf.ontop.owlrefplatform.core.QuestConstants;
 import it.unibz.inf.ontop.owlrefplatform.core.QuestPreferences;
-import it.unibz.inf.ontop.owlrefplatform.core.benchmark.OntopBenchmark;
 import it.unibz.inf.ontop.owlrefplatform.owlapi.QuestOWL;
 import it.unibz.inf.ontop.owlrefplatform.owlapi.QuestOWLConfiguration;
 import it.unibz.inf.ontop.owlrefplatform.owlapi.QuestOWLConnection;
@@ -111,11 +110,12 @@ public class MixerOntop extends Mixer {
 	    QuestOWLStatement st = conn.createStatement();
 	    rs = st.executeTuple(query);
 	    
-	    if( OntopBenchmark.getInstance() != null ){
-		this.rewritingTime = OntopBenchmark.getInstance().getRewritingTime();
-		this.unfoldingTime = OntopBenchmark.getInstance().getUnfoldingTime();
-		this.rewritingSize = OntopBenchmark.getInstance().getUCQSizeAfterRewriting(); 
-		this.unfoldingSize = OntopBenchmark.getInstance().getUCQSizeAfterUnfolding();
+	    
+	    if( st.getBenchmarkObject() != null ){
+		this.rewritingTime = st.getBenchmarkObject().getRewritingTime();
+		this.unfoldingTime = st.getBenchmarkObject().getUnfoldingTime();
+		this.rewritingSize = st.getBenchmarkObject().getUCQSizeAfterRewriting(); 
+		this.unfoldingSize = st.getBenchmarkObject().getUCQSizeAfterUnfolding();
 	    }
 	} catch ( OWLException e ) {
 	    e.printStackTrace();
@@ -136,11 +136,11 @@ public class MixerOntop extends Mixer {
 	    
 	    rs = st.executeTuple(query);
 	    
-	    if( OntopBenchmark.getInstance() != null ){
-		this.rewritingTime = OntopBenchmark.getInstance().getRewritingTime();
-		this.unfoldingTime = OntopBenchmark.getInstance().getUnfoldingTime();
-		this.rewritingSize = OntopBenchmark.getInstance().getUCQSizeAfterRewriting(); 
-		this.unfoldingSize = OntopBenchmark.getInstance().getUCQSizeAfterUnfolding();
+	    if( st.getBenchmarkObject() != null ){
+		this.rewritingTime = st.getBenchmarkObject().getRewritingTime();
+		this.unfoldingTime = st.getBenchmarkObject().getUnfoldingTime();
+		this.rewritingSize = st.getBenchmarkObject().getUCQSizeAfterRewriting(); 
+		this.unfoldingSize = st.getBenchmarkObject().getUCQSizeAfterUnfolding();
 	    }
 	} catch ( Exception e ) {
 	    e.printStackTrace();

@@ -55,13 +55,13 @@ public class MixerThread extends Thread {
 	private int timeout; // timeout time
 	
 	// Do I (me, thread) have to collect rewriting and unfolding time?
-	boolean rwAndUnf = false;
+	boolean rwAndUnf = true; // TODO Remove
 	
 	// Time statistics
 	private Chrono chrono;
 	private Chrono chronoMix;
 		
-	public MixerThread(Mixer m, int nRuns, int nWUps, int timeout, Statistics stat, File[] listOfFiles, boolean rwAndUnf){
+	public MixerThread(Mixer m, int nRuns, int nWUps, int timeout, Statistics stat, File[] listOfFiles){
 		this.stat = stat;
 		this.mixer = m;
 		this.nRuns = nRuns;
@@ -71,7 +71,7 @@ public class MixerThread extends Thread {
 		chrono = new Chrono();
 		chronoMix = new Chrono();
 		
-		this.rwAndUnf = rwAndUnf;
+//		this.rwAndUnf = rwAndUnf;
 	}
 	
 	public void setUp(){

@@ -50,7 +50,7 @@ public class MixerMain {
 	private IntOption optNumRuns = new IntOption("--runs", "Number of query mix runs.", "Mixer", 2, new IntRange(1, Integer.MAX_VALUE, true, true));
 	private IntOption optNumWarmUps = new IntOption("--warm-ups", "Number of warm up runs.", "Mixer", 2, new IntRange(0, Integer.MAX_VALUE, true, true));
 	private IntOption optTimeout = new IntOption("--timeout", "Maximum execution time allowed to a query, in seconds. A value of zero means no timeout.", "Mixer", 0, new IntRange(0, Integer.MAX_VALUE, true, true));
-	private IntOption optNumClients = new IntOption("--clients", "Number of clients querying the system in parallel. Rewriting and unfolding times are unavailable in multi-client mode", "Mixer", 1, new IntRange(1, 64, true, true));
+	private IntOption optNumClients = new IntOption("--clients", "Number of clients querying the system in parallel. Rewriting and unfolding times are unavailable in multi-client mode", "Mixer", 3, new IntRange(1, 64, true, true));
 	private BooleanOption optRewriting = new BooleanOption("--rewriting", "On or Off?", "Mixer", false);
 	
 	// Command-line option deciding which Mixer implementation should be used
@@ -122,16 +122,21 @@ public class MixerMain {
 
 	private void logStatistics() {
 		
-		// Join statistics
-		for( Statistics s : threadStatistics ){
-			mainStat.merge(s);
-		}
+//		// Join statistics
+//		for( Statistics s : threadStatistics ){
+//			mainStat.merge(s);
+//		}
 		
 		FileWriter statsWriter = getLogWriter();
 		try {
-			statsWriter.write(mainStat.printStats());
-			statsWriter.flush();
-			statsWriter.close();
+		    statsWriter.write(mainStat.printStats());
+		    statsWriter.flush();
+		    
+		    for( Statistics s : threadStatistics ){
+			statsWriter.write(s.printStats());
+		    }
+		    
+		    statsWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -166,19 +171,19 @@ public class MixerMain {
 	private List<MixerThread> setUpMixerThreads(){
 
 		List<MixerThread> threads = new ArrayList<MixerThread>();
-		boolean rwAndUnf = false;
-		if( numClients == 1 ){
-			rwAndUnf = true;
-		}
+//		boolean rwAndUnf = false;
+//		if( numClients == 1 ){
+//			rwAndUnf = true;
+//		}
 		
 		File folder = new File(mixer.getConfiguration().getTemplatesDir());
 		File[] listOfFiles = folder.listFiles();
 		
-		for( int i = 0; i < optNumClients.getValue(); ++i ){
+		for( int i = 0; i < this.numClients; ++i ){
 			// Configure each mixerThread
 			Statistics stat = new Statistics("thread#"+i);
 			this.threadStatistics.add(stat);
-			MixerThread mT = new MixerThread(mixer, numRuns, numWarmUps, timeout, stat, listOfFiles, rwAndUnf);
+			MixerThread mT = new MixerThread(mixer, numRuns, numWarmUps, timeout, stat, listOfFiles);
 			threads.add(mT);
 		}
 		
