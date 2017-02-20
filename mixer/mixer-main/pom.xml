@@ -63,18 +63,23 @@
     	<scope>compile</scope>
   	</dependency>
   	-->
-  		<dependency>
-			 	<groupId>it.unibz.inf.mixer</groupId>
-    			<artifactId>mixer-utils</artifactId>	
-    			<version>1.1.0</version>
-		</dependency> 
-    	<dependency>
+  	<dependency>
+	 	<groupId>it.unibz.inf.mixer</groupId>
+    	<artifactId>mixer-utils</artifactId>	
+    	<version>1.1.0</version>
+	</dependency> 
+    <dependency>
   		<artifactId>mixer-ontop</artifactId>
   		<groupId>it.unibz.inf.mixer</groupId>	
   		<version>1.1.0</version>
   		<scope>compile</scope>
   	</dependency>
-  	
+  	<dependency>
+  		<artifactId>mixer-web</artifactId>
+  		<groupId>it.unibz.inf.mixer</groupId>	
+  		<version>1.1.0</version>
+  		<scope>compile</scope>
+  	</dependency>
   	<dependency>
   		<groupId>it.unibz.inf.mixer</groupId>
     	<artifactId>mixer-ontop-v2</artifactId>	

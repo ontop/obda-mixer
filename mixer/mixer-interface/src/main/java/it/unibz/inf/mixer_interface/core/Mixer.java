@@ -139,10 +139,15 @@ public abstract class Mixer {
 	public abstract void rewritingON();
 	// ------------------------------------------- //
 	
+	public abstract void executeWarmUpQuery(String query);
+	
+	
+	public abstract void executeWarmUpQuery(String query, int timeout);	
+	
 	// **************** END OF Abstract Methods Section ****************** //
 	
 	public Conf getConfiguration(){
 		return configuration;
 	}
-	
+
 };

@@ -98,5 +98,17 @@ public class MixerMastro extends Mixer {
 	public int getRewritingSize() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public void executeWarmUpQuery(String query) {
+	    // TODO Auto-generated method stub
+	    
+	}
+
+	@Override
+	public void executeWarmUpQuery(String query, int timeout) {
+	    // TODO Auto-generated method stub
+	    
 	}	
 };

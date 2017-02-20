@@ -280,4 +280,14 @@ public class MixerOntop extends Mixer {
 	    e.printStackTrace();
 	}
     }
+
+    @Override
+    public void executeWarmUpQuery(String query) {
+	executeQuery(query);
+    }
+
+    @Override
+    public void executeWarmUpQuery(String query, int timeout) {
+	executeQuery(query, timeout);
+    }
 };

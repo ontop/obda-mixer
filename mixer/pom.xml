@@ -230,5 +230,6 @@
 		<module>mixer-main</module>
 		<module>mixer-ontop-v2</module>
 		<module>mixer-utils</module>
+		<module>mixer-web</module>
 	</modules>
 </project>

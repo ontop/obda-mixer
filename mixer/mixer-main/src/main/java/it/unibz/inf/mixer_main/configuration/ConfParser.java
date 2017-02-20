@@ -20,11 +20,7 @@ package it.unibz.inf.mixer_main.configuration;
  * #L%
  */
 
-
-import it.unibz.inf.utils_options.core.StringOption;
-
 import java.io.*;
-
 
 /**
  * Reads the configuration info from a configuration file.
@@ -36,17 +32,20 @@ public class ConfParser {
 	protected String confFile;
 	private static ConfParser instance = null;
 	
-	private static StringOption optResources = new StringOption("--res", "Location of the resources directory", "CONFIGURATION", "src/main/resources");
-	
 	protected ConfParser(String resourcesDir){
 		this.confFile = resourcesDir + "/configuration.conf";
 	};
 	
 	public static ConfParser getInstance(){
-		if( instance == null ){
-			instance = new ConfParser(optResources.getValue());
-		}
-		return instance;
+	    
+	    assert instance != null : "Call method initInstance() first.";
+	    
+	    return instance;
+	}
+	
+	public static ConfParser initInstance(String resourcesDir){
+	    instance = new ConfParser(resourcesDir);
+	    return instance;
 	}
 	
 	public String dbDriver() {

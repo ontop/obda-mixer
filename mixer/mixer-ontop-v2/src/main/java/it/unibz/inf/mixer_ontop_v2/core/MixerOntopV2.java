@@ -95,8 +95,16 @@ public class MixerOntopV2 extends Mixer {
 //			loadMappings();		
 //			createReasoner();
 	}
-
-
+	
+	@Override
+	public void executeWarmUpQuery(String query) {
+	    executeQuery(query);
+	}
+	
+	@Override
+	public void executeWarmUpQuery(String query, int timeout) {
+	    executeQuery(query, timeout);
+	}
 	
 	@Override
 	public Object executeQuery(String query) {
