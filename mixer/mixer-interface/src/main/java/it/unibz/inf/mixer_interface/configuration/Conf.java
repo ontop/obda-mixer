@@ -1,5 +1,8 @@
 package it.unibz.inf.mixer_interface.configuration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /*
  * #%L
  * mixer-interface
@@ -34,6 +37,8 @@ public class Conf {
 	// Mixer-specific parameters
 	protected final String logFile;
 	protected final String templatesDir;
+	protected String shellCmd;
+	protected String forcedTimeouts;
 	
 	public Conf(
 			String owlFile, 
@@ -43,7 +48,9 @@ public class Conf {
 			String databaseUser,
 			String databasePwd,
 			String logFile,
-			String templatesDir
+			String templatesDir, 
+			String shellCmd,
+			String forcedTimeouts
 		){
 		this.owlFile = owlFile;
 		this.mappingsFile = mappingsFile;
@@ -53,6 +60,8 @@ public class Conf {
 		this.databasePwd = databasePwd;
 		this.logFile = logFile;
 		this.templatesDir = templatesDir;
+		this.shellCmd = shellCmd;
+		this.forcedTimeouts = forcedTimeouts;
 	}
 
 	public String getOwlFile() {
@@ -85,5 +94,21 @@ public class Conf {
 
 	public String getDriverClass() {
 	    return this.driverClass;
+	}
+
+	public String getShellCmd() {
+	    return this.shellCmd;
+	}
+
+	public List<String> getForcedTimeouts() {
+	    
+	    if( this.forcedTimeouts.equals("none") ) return new ArrayList<>();
+	    
+	    List<String> result = new ArrayList<>();
+	    String[] splits = this.forcedTimeouts.split("-");
+	    for( String split : splits ){
+		result.add(split);
+	    }
+	    return result;
 	}
 }

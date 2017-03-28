@@ -97,4 +97,14 @@ public class ConfParser {
 		}
 		return "error";
 	}
+	
+	/** @return Path for OBDA System Executable (only in Shell mode) */
+	public String getShellCmd() {
+	    return searchTag("shell-cmd");
+	}
+
+	/** @return Templates for which we force a timeout */
+	public String getForcedTimeouts() {
+	    return searchTag("forced-timeouts");
+	}
 }

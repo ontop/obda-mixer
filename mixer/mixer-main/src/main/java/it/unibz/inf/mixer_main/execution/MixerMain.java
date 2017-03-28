@@ -29,9 +29,11 @@ import java.util.List;
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
 import it.unibz.inf.mixer_main.configuration.ConfParser;
+import it.unibz.inf.mixer_main.exception.UnsupportedSystemException;
 import it.unibz.inf.mixer_main.statistics.Statistics;
 import it.unibz.inf.mixer_main.time.Chrono;
 import it.unibz.inf.mixer_ontop.core.MixerOntop;
+import it.unibz.inf.mixer_shell.core.MixerShell;
 import it.unibz.inf.mixer_web.core.MixerWeb;
 import it.unibz.inf.utils_options.core.BooleanOption;
 import it.unibz.inf.utils_options.core.IntOption;
@@ -49,14 +51,15 @@ public class MixerMain {
     private Mixer mixer;
 
     // Command-line options
-    private IntOption optNumRuns = new IntOption("--runs", "Number of query mix runs.", "Mixer", 2, new IntRange(1, Integer.MAX_VALUE, true, true));
-    private IntOption optNumWarmUps = new IntOption("--warm-ups", "Number of warm up runs.", "Mixer", 2, new IntRange(0, Integer.MAX_VALUE, true, true));
+    private IntOption optNumRuns = new IntOption("--runs", "Number of query mix runs.", "Mixer", 1, new IntRange(1, Integer.MAX_VALUE, true, true));
+    private IntOption optNumWarmUps = new IntOption("--warm-ups", "Number of warm up runs.", "Mixer", 1, new IntRange(0, Integer.MAX_VALUE, true, true));
     private IntOption optTimeout = new IntOption("--timeout", "Maximum execution time allowed to a query, in seconds. A value of zero means no timeout.", "Mixer", 0, new IntRange(0, Integer.MAX_VALUE, true, true));
     private IntOption optNumClients = new IntOption("--clients", "Number of clients querying the system in parallel. Rewriting and unfolding times are unavailable in multi-client mode", "Mixer", 1, new IntRange(1, 64, true, true));
     private BooleanOption optRewriting = new BooleanOption("--rewriting", "On or Off?", "Mixer", false);
 
     // Command-line option deciding which Mixer implementation should be used
-    private StringOptionWithRange optOBDASystem = new StringOptionWithRange("--obda", "The OBDA system under test", "Mixer", "ontop", new StringRange("[ontop,web]"));
+    private StringOptionWithRange optOBDASystem = new StringOptionWithRange("--obda", "The OBDA system under test, "
+	    + "namely ontop through owlapi (ontop-owlapi), or a sparql endpoint (web), or a shell script (shell), ", "Mixer", "ontop-owlapi", new StringRange("[ontop-owlapi,web,shell]"));
     private StringOption optServiceUrl = new StringOption("--url", "URL for the SPARQL Endpoint (To be used with --obda=web)", "Mixer", "http://10.7.20.65:2021/sparql/");
 
     private static StringOption optResources = new StringOption("--res", "Location of the resources directory", "CONFIGURATION", "src/main/resources");
@@ -95,22 +98,54 @@ public class MixerMain {
 		cP.dbUsername(),
 		cP.dbPassword(), 
 		cP.getLogPath(), 
-		cP.getQueriesDir() + "/Templates");
-
+		cP.getQueriesDir() + "/Templates",
+		cP.getShellCmd(),
+		cP.getForcedTimeouts()
+		);
 
 	instantiateMixer(configuration);
     }
 
     /** Modify this method to add other systems **/
     private void instantiateMixer(Conf configuration) {
-	String system = optOBDASystem.getValue();
+	
+	String obdaSystem = optOBDASystem.getValue();
+	
+	try {
+	    switch(obdaSystem){
+	    case "owlapi-ontop" : 
+		this.mixer = instantiateOwlapiMixer(configuration, obdaSystem);
+		break;
+	    case "web" : 
+		this.mixer = instantiateWebMixer(configuration);
+		break;
+	    case "shell" :
+		this.mixer = instantiateShellMixer(configuration);
+		break;
+	    }
+	} catch (UnsupportedSystemException e) {
+	    e.printStackTrace();
+	}
+    }
 
+    private Mixer instantiateShellMixer(Conf configuration) {
+	Mixer result = new MixerShell(configuration);
+	return result;
+    }
+
+    private Mixer instantiateWebMixer(Conf configuration) {
+	Mixer result = new MixerWeb(configuration, serviceUrl);
+	return result;
+    }
+
+    private Mixer instantiateOwlapiMixer(Conf configuration, String system) throws UnsupportedSystemException {
+	system = optOBDASystem.getValue();
+	Mixer result = null;
 	if( system.equals("ontop") ){
-	    mixer = new MixerOntop(configuration, rewriting); 
+	    result = new MixerOntop(configuration, rewriting); 
 	}
-	else if( system.equals("web") ){
-	    mixer = new MixerWeb(configuration, this.serviceUrl);
-	}
+	else throw new UnsupportedSystemException("System "+ system +" unsupported in owlapi mode.");
+	return result;
     }
 
     private void do_tests(){

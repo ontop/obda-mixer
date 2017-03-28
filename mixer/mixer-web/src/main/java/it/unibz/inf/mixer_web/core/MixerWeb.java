@@ -36,8 +36,8 @@ public class MixerWeb extends Mixer {
     @Override
     public void executeWarmUpQuery(String query, int timeout) {
 	NetQuery q = new NetQuery(this.serviceUrl, query, timeout * 1000);
-	q.exec();
-	q.close();
+	    q.exec();
+	    q.close();
     }
     
     @Override
@@ -49,8 +49,8 @@ public class MixerWeb extends Mixer {
     public Object executeQuery(String query, int timeout) {
 	
 	NetQuery q = new NetQuery(this.serviceUrl, query, timeout*1000);
-	InputStream resultStream = q.exec();
-	
+	InputStream resultStream = null;
+	resultStream = q.exec();
 	return new ResultSet(q, resultStream);
     }
 
@@ -113,12 +113,10 @@ public class MixerWeb extends Mixer {
 	// Unsupported
     }
     
-//    private static String convertStreamToString(java.io.InputStream is) {
-//	java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-//	return s.hasNext() ? s.next() : "";
-//    }
-    
+   
     private int countResults(InputStream s) throws SocketTimeoutException {
+	
+	if( s == null ) return 0;
 	
 	class ResultHandler extends DefaultHandler {
 	    private int count;
@@ -141,7 +139,6 @@ public class MixerWeb extends Mixer {
 	int count=0;
 	try {
 	    SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
-//	    ByteArrayInputStream bis = new ByteArrayInputStream(s.getBytes("UTF-8"));
 	    saxParser.parse( s, handler );
 	    count = handler.getCount();
 	} catch(SocketTimeoutException e) { throw new SocketTimeoutException(); }

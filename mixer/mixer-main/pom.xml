@@ -3,7 +3,7 @@
   <parent>
     <groupId>it.unibz.inf.mixer</groupId>
     <artifactId>mixer</artifactId>
-    <version>1.1.0</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
   <artifactId>mixer-main</artifactId>
   
@@ -13,8 +13,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.3.2</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>1.7</source>
+          <target>1.7</target>
         </configuration>
       </plugin>
       <plugin>
@@ -25,7 +25,7 @@
           <manifest>
           <addClasspath>true</addClasspath>
       	   <classpathPrefix>lib/</classpathPrefix>
-            <mainClass />
+            <mainClass>it.unibz.inf.mixer_main.execution.MixerMain</mainClass>
           </manifest>
         </archive>
         <descriptorRefs>
@@ -66,35 +66,36 @@
   	<dependency>
 	 	<groupId>it.unibz.inf.mixer</groupId>
     	<artifactId>mixer-utils</artifactId>	
-    	<version>1.1.0</version>
+    	<version>1.2-SNAPSHOT</version>
 	</dependency> 
     <dependency>
   		<artifactId>mixer-ontop</artifactId>
   		<groupId>it.unibz.inf.mixer</groupId>	
-  		<version>1.1.0</version>
+  		<version>1.2-SNAPSHOT</version>
   		<scope>compile</scope>
   	</dependency>
   	<dependency>
   		<artifactId>mixer-web</artifactId>
   		<groupId>it.unibz.inf.mixer</groupId>	
-  		<version>1.1.0</version>
+  		<version>1.2-SNAPSHOT</version>
   		<scope>compile</scope>
   	</dependency>
   	<dependency>
-  		<groupId>it.unibz.inf.mixer</groupId>
-    	<artifactId>mixer-ontop-v2</artifactId>	
-    	<version>1.1.0</version>
-    	<scope>compile</scope>
+  		<artifactId>mixer-shell</artifactId>
+  		<groupId>it.unibz.inf.mixer</groupId>	
+  		<version>1.2-SNAPSHOT</version>
+  		<scope>compile</scope>
   	</dependency>
   	<dependency>
 		<groupId>mysql</groupId>
 		<artifactId>mysql-connector-java</artifactId>
-		<version>5.1.29</version>
+		<scope>compile</scope>
   </dependency>
   <dependency>
 		<groupId>postgresql</groupId>
 		<artifactId>postgresql</artifactId>
 		<!-- <version>9.1-901.jdbc4</version> -->
+		<scope>compile</scope>
 	</dependency>
   	<dependency>
 			<groupId>ch.qos.logback</groupId>

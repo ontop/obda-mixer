@@ -10,6 +10,12 @@ public class DBMSConnectionMysql extends DBMSConnection {
 	public DBMSConnectionMysql(Conf conf) {
 		super(conf);
 		jdbcConnector = "jdbc:mysql";
+		try {
+		    Class.forName("com.mysql.jdbc.Driver");
+		    System.exit(1);
+		} catch (ClassNotFoundException e) {
+		    e.printStackTrace();
+		}
 		connect();
 	}
 	

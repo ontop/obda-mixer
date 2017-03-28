@@ -1,10 +1,6 @@
 package it.unibz.inf.mixer_web.net;
 
-import java.io.UnsupportedEncodingException;
 import java.net.*;
-
-import org.junit.Test;
-
 import java.io.*;
 
 public class NetQuery {
@@ -58,8 +54,7 @@ public class NetQuery {
 	
 	public InputStream exec() {
 		try {
-			conn.connect();
-
+		    conn.connect();
 		} catch(IOException e) {
 			System.err.println("Could not connect to SPARQL Service.");
 			e.printStackTrace();
@@ -72,20 +67,20 @@ public class NetQuery {
 				System.err.println("Query execution: Received error code " + rc + " from server");
 				System.err.println("Error message: " + conn.getResponseMessage() + "\n\nFor query: \n");
 				System.err.println(queryString + "\n");
+				
 			}
 			return conn.getInputStream();
 		} catch(SocketTimeoutException e) {
 			return null;
 		} catch(IOException e) {
-			System.err.println("Query execution error:");
-			e.printStackTrace();
-			System.exit(-1);
-			return null;
+		    System.err.println("Query execution error:");
+		    e.printStackTrace();
+		    System.exit(-1);
+		    return null;
 		}
-
 	}
 	
-	protected double getExecutionTimeInSeconds() {
+	public double getExecutionTimeInSeconds() {
 		end = System.nanoTime();
 		Long interval = end-start;
 		Thread.yield();
@@ -93,46 +88,8 @@ public class NetQuery {
 	}
 	
 	public void close() {
+	    if (conn != null) 
 		conn.disconnect();
-		conn = null;
-	}
-		
-	/**
-	 * 
-	 * @author Davide Lanti
-	 *
-	 * Test class
-	 */
-	public static class TestNetQuery{
-	    
-	    private final static String QUERY = "PREFIX swrc: <http://swrc.ontoware.org/ontology#> "
-	    	+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-	    	+ "PREFIX owl: <http://www.w3.org/2002/07/owl#>"
-	    	+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
-	    	+ "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"
-	    	+ "PREFIX dc: <http://purl.org/dc/elements/1.1/>"
-	    	+ "       SELECT * WHERE {"
-	    	+ "       ?D swrc:journal <http://dblp.l3s.de/d2r/resource/journals/tplp> ."
-	    	+ "       ?D dc:creator ?A."
-	    	+ "       ?A foaf:name ?name."
-	    	+ "       }"
-	    	+ "LIMIT 10";
-	    
-	    private final static String SERVICE_URL = "http://10.7.20.65:2021/sparql";
-	    
-	    @Test
-	    public void testNetQuery(){
-		NetQuery q = new NetQuery(SERVICE_URL, QUERY, 1200000);
-		String result = convertStreamToString(q.exec());
-		System.out.println(result);
-		System.out.println(q.getExecutionTimeInSeconds());
-		q.close();
-	    }
-	    
-	    private static String convertStreamToString(java.io.InputStream is) {
-		@SuppressWarnings("resource")
-		java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-		return s.hasNext() ? s.next() : "";
-	    }
+	    conn = null;
 	}
 };
