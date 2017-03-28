@@ -1,0 +1,14 @@
+Template: npd:wellbore/{wlbNpdidWellbore}
+
+AppraisalWellbore
+ShallowWellbore
+DevelopmentWellbore 9 mappings, 8 of them redundant!
+ExplorationWellbore
+PAWellbore
+JunkedWellbore
+SuspReenteredLaterWellbore
+
+
+mappingId	Mapping:00858:Table:npdv:Wellbore
+target		npd:wellbore/{wlbNpdidWellbore} a npdv:Wellbore . 
+source		SELECT wlbNpdidWellbore FROM wellbore_npdid_overview

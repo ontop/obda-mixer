@@ -1,7 +1,7 @@
 package it.unibz.inf.mixer_main.utils;
 
 public enum Quoting {
-    NULL("null"), 
+    NONE("none"), 
     UNDERSCORE("underscore"), 
     PERCENT("percent");
     

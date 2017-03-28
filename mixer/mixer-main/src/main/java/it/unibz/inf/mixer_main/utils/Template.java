@@ -86,7 +86,7 @@ public class Template{
 	    public String applyQuote(String toInsert, Quoting quotingType) {
 		String result = toInsert;
 		switch(quotingType){
-		case NULL:
+		case NONE:
 		    break;
 		case PERCENT:
 		    result = toInsert.replaceAll(" ", "%20");
