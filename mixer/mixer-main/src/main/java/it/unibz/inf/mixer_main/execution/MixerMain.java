@@ -98,7 +98,7 @@ public class MixerMain {
 		cP.dbUsername(),
 		cP.dbPassword(), 
 		cP.getLogPath(), 
-		cP.getQueriesDir() + "/Templates",
+		cP.getQueriesDir(),
 		cP.getShellCmd(),
 		cP.getForcedTimeouts()
 		);
