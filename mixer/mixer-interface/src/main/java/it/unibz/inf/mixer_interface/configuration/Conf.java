@@ -111,4 +111,9 @@ public class Conf {
 	    }
 	    return result;
 	}
+
+	public String getJavaAPIClass() {
+	    // TODO Auto-generated method stub
+	    return null;
+	}
 }

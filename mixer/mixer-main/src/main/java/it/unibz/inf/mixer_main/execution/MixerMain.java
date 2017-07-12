@@ -29,6 +29,7 @@ import java.util.List;
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
 import it.unibz.inf.mixer_main.configuration.ConfParser;
+import it.unibz.inf.mixer_main.exception.IllegalJavaApiClassProvided;
 import it.unibz.inf.mixer_main.exception.UnsupportedSystemException;
 import it.unibz.inf.mixer_main.statistics.Statistics;
 import it.unibz.inf.mixer_main.time.Chrono;
@@ -58,8 +59,8 @@ public class MixerMain {
     private BooleanOption optRewriting = new BooleanOption("--rewriting", "On or Off?", "Mixer", false);
 
     // Command-line option deciding which Mixer implementation should be used
-    private StringOptionWithRange optOBDASystem = new StringOptionWithRange("--obda", "The OBDA system under test, "
-	    + "namely ontop through owlapi (ontop-owlapi), or a sparql endpoint (web), or a shell script (shell), ", "Mixer", "ontop-owlapi", new StringRange("[ontop-owlapi,web,shell]"));
+    private StringOptionWithRange optMode = new StringOptionWithRange("--mode", "The operating mode, "
+	    + "one of: java api mode (java-api), sparql endpoint mode (web), or shell script mode (shell), ", "Mixer", "java-api", new StringRange("[java-api,web,shell]"));
     private StringOption optServiceUrl = new StringOption("--url", "URL for the SPARQL Endpoint (To be used with --obda=web)", "Mixer", "http://10.7.20.65:2021/sparql/");
 
     private static StringOption optResources = new StringOption("--res", "Location of the resources directory", "CONFIGURATION", "src/main/resources");
@@ -109,12 +110,12 @@ public class MixerMain {
     /** Modify this method to add other systems **/
     private void instantiateMixer(Conf configuration) {
 	
-	String obdaSystem = optOBDASystem.getValue();
+	String mode = optMode.getValue();
 	
 	try {
-	    switch(obdaSystem){
-	    case "owlapi-ontop" : 
-		this.mixer = instantiateOwlapiMixer(configuration, obdaSystem);
+	    switch(mode){
+	    case "java-api" : 
+		this.mixer = instantiateOwlapiMixer(configuration);
 		break;
 	    case "web" : 
 		this.mixer = instantiateWebMixer(configuration);
@@ -138,9 +139,16 @@ public class MixerMain {
 	return result;
     }
 
-    private Mixer instantiateOwlapiMixer(Conf configuration, String system) throws UnsupportedSystemException {
-	system = optOBDASystem.getValue();
+    private Mixer instantiateOwlapiMixer(Conf configuration) throws UnsupportedSystemException {
+	
+	Object instantiation = Class.forName( configuration.getJavaAPIClass() );
 	Mixer result = null;
+	
+	if( instantiation instanceof Mixer ){
+	    result = (Mixer) instantiation;
+	}
+	else throw new IllegalJavaApiClassProvided("The provided java class " + configuration.getJavaAPIClass() + " is not an instance of the abstract class \"Mixer\".");
+	
 	if( system.equals("ontop") ){
 	    result = new MixerOntop(configuration, rewriting); 
 	}
