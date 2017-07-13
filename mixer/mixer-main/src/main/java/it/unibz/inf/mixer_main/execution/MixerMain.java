@@ -23,6 +23,8 @@ package it.unibz.inf.mixer_main.execution;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,21 +114,31 @@ public class MixerMain {
 	
 	String mode = optMode.getValue();
 	
-	try {
-	    switch(mode){
-	    case "java-api" : 
+	switch(mode){
+	case "java-api" : 
+	    try {
 		this.mixer = instantiateOwlapiMixer(configuration);
-		break;
-	    case "web" : 
-		this.mixer = instantiateWebMixer(configuration);
-		break;
-	    case "shell" :
-		this.mixer = instantiateShellMixer(configuration);
-		break;
+	    } catch (Exception e) {
+		e.printStackTrace();
+		System.exit(1);
 	    }
-	} catch (UnsupportedSystemException e) {
-	    e.printStackTrace();
+	    break;
+	case "web" : 
+	    this.mixer = instantiateWebMixer(configuration);
+	    break;
+	case "shell" :
+	    this.mixer = instantiateShellMixer(configuration);
+	    break;
 	}
+	if( this.mixer == null ){
+	    try {
+		throw new UnsupportedSystemException("The string "+mode+" is not a valid parameter");
+	    } catch (UnsupportedSystemException e) {
+		e.printStackTrace();
+		System.exit(1);
+	    }
+	}
+	
     }
 
     private Mixer instantiateShellMixer(Conf configuration) {
@@ -139,20 +151,14 @@ public class MixerMain {
 	return result;
     }
 
-    private Mixer instantiateOwlapiMixer(Conf configuration) throws UnsupportedSystemException {
+    private Mixer instantiateOwlapiMixer(Conf configuration) 
+	    throws UnsupportedSystemException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException 
+    {
+	Class<?> clazz= Class.forName( configuration.getJavaAPIClass() );
+	Constructor<?> ctor = clazz.getConstructor(Conf.class);
 	
-	Object instantiation = Class.forName( configuration.getJavaAPIClass() );
-	Mixer result = null;
+	Mixer result = (Mixer)ctor.newInstance(new Object[] { configuration });
 	
-	if( instantiation instanceof Mixer ){
-	    result = (Mixer) instantiation;
-	}
-	else throw new IllegalJavaApiClassProvided("The provided java class " + configuration.getJavaAPIClass() + " is not an instance of the abstract class \"Mixer\".");
-	
-	if( system.equals("ontop") ){
-	    result = new MixerOntop(configuration, rewriting); 
-	}
-	else throw new UnsupportedSystemException("System "+ system +" unsupported in owlapi mode.");
 	return result;
     }
 

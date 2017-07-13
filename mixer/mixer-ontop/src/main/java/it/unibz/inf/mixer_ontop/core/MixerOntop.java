@@ -77,21 +77,6 @@ public class MixerOntop extends Mixer {
 	subQuery = 0;
     }
 
-    public MixerOntop(Conf configuration, boolean rewriting){
-	super(configuration, rewriting);
-
-	obdaModel = null;
-	ontology = null;
-	reasoner = null;
-	rewritingTime = 0;
-	unfoldingTime = 0;
-	rewritingSize = 0;
-	unfoldingSize = 0;
-	conn = null;
-	subQuery = 0;
-    }
-
-
     @Override
     public void load() {
 	loadOntology();	
@@ -209,17 +194,15 @@ public class MixerOntop extends Mixer {
 
     @Override
     public void rewritingOFF() {
-	// TODO Auto-generated method stub
-
+	this.rewriting = false;
     }
 
     @Override
     public void rewritingON() {
-	// TODO Auto-generated method stub
-
+	this.rewriting = true;
     }
 
-    // PRIVATE INTERFACE
+    // ---- PRIVATE INTERFACE ---- //
 
     private void createReasoner() {
 
