@@ -81,6 +81,10 @@ public class ConfParser {
 		return searchTag("log-path");
 	}
 	
+	public String getJavaAPIClass(){
+	    return searchTag("java-api-class");
+	}
+	
 	protected  String searchTag(String tag){
 		try{
 			BufferedReader in = new BufferedReader(

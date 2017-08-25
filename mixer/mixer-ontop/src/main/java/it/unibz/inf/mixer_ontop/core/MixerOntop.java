@@ -93,6 +93,7 @@ public class MixerOntop extends Mixer {
 	    if(conn == null) conn = reasoner.getConnection(); // Warn: this methods will return always 
 	    //       the same connection
 	    QuestOWLStatement st = conn.createStatement();
+	    log.debug("Davide> Executing Query:" + query);
 	    rs = st.executeTuple(query);
 	    
 	    

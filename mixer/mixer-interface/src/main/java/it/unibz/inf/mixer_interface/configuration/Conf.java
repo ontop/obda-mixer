@@ -40,6 +40,9 @@ public class Conf {
 	protected String shellCmd;
 	protected String forcedTimeouts;
 	
+	// java-api-mode 
+	protected final String javaApiClass;
+	
 	public Conf(
 			String owlFile, 
 			String mappingsFile, 
@@ -50,7 +53,8 @@ public class Conf {
 			String logFile,
 			String templatesDir, 
 			String shellCmd,
-			String forcedTimeouts
+			String forcedTimeouts,
+			String javaApiClass
 		){
 		this.owlFile = owlFile;
 		this.mappingsFile = mappingsFile;
@@ -62,6 +66,7 @@ public class Conf {
 		this.templatesDir = templatesDir;
 		this.shellCmd = shellCmd;
 		this.forcedTimeouts = forcedTimeouts;
+		this.javaApiClass = javaApiClass;
 	}
 
 	public String getOwlFile() {
@@ -113,7 +118,6 @@ public class Conf {
 	}
 
 	public String getJavaAPIClass() {
-	    // TODO Auto-generated method stub
-	    return null;
+	    return this.javaApiClass;
 	}
 }

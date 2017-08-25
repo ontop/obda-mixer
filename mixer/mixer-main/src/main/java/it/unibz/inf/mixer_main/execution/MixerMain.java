@@ -28,14 +28,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
 import it.unibz.inf.mixer_main.configuration.ConfParser;
-import it.unibz.inf.mixer_main.exception.IllegalJavaApiClassProvided;
 import it.unibz.inf.mixer_main.exception.UnsupportedSystemException;
 import it.unibz.inf.mixer_main.statistics.Statistics;
 import it.unibz.inf.mixer_main.time.Chrono;
-import it.unibz.inf.mixer_ontop.core.MixerOntop;
 import it.unibz.inf.mixer_shell.core.MixerShell;
 import it.unibz.inf.mixer_web.core.MixerWeb;
 import it.unibz.inf.utils_options.core.BooleanOption;
@@ -48,6 +49,8 @@ import it.unibz.inf.utils_options.ranges.StringRange;
 
 public class MixerMain {
 
+    private static Logger log = LoggerFactory.getLogger(MixerMain.class);
+    
     private Chrono chrono;
     private Statistics mainStat;
     private ConfParser cP;
@@ -103,14 +106,15 @@ public class MixerMain {
 		cP.getLogPath(), 
 		cP.getQueriesDir(),
 		cP.getShellCmd(),
-		cP.getForcedTimeouts()
+		cP.getForcedTimeouts(),
+		cP.getJavaAPIClass()
 		);
 
-	instantiateMixer(configuration);
+	instantiateMixer(configuration, rewriting);
     }
 
     /** Modify this method to add other systems **/
-    private void instantiateMixer(Conf configuration) {
+    private void instantiateMixer(Conf configuration, boolean rewriting) {
 	
 	String mode = optMode.getValue();
 	
@@ -118,7 +122,9 @@ public class MixerMain {
 	case "java-api" : 
 	    try {
 		this.mixer = instantiateOwlapiMixer(configuration);
+		if( rewriting ) this.mixer.rewritingON();
 	    } catch (Exception e) {
+		log.error("Error: The class " + configuration.getJavaAPIClass() + " provided as java-api handler does not exist");
 		e.printStackTrace();
 		System.exit(1);
 	    }
@@ -154,6 +160,7 @@ public class MixerMain {
     private Mixer instantiateOwlapiMixer(Conf configuration) 
 	    throws UnsupportedSystemException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException 
     {
+	log.error( "The provided java api class " + configuration.getJavaAPIClass() +" is not a valid java-api handler.");
 	Class<?> clazz= Class.forName( configuration.getJavaAPIClass() );
 	Constructor<?> ctor = clazz.getConstructor(Conf.class);
 	
