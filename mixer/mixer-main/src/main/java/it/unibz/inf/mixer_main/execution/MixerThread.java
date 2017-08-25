@@ -322,7 +322,8 @@ class TemplateQuerySelector{
 	pointer += this.nExecutedTemplate;
 
 	String query = "SELECT " + "*" + " FROM " 
-		+ qN.getFirst() + " LIMIT " + pointer+ ", 1";
+		+ qN.getFirst() + " WHERE " + qN.getSecond() + " IS NOT NULL " 
+		+ " LIMIT " + pointer+ ", 1";
 
 	if( db.getJdbcConnector().equals("jdbc:postgresql") ){
 	    query = "SELECT \""+
