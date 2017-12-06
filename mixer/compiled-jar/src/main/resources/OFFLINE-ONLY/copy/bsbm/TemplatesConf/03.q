@@ -1,0 +1,5 @@
+producttypeproduct productType
+productfeature nr
+product propertyNum1
+product propertyNum3
+producttypeproduct productType

@@ -1,0 +1,3 @@
+[GLOBAL]
+[main] [load-time] = 1
+[thread#0]

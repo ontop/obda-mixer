@@ -1,0 +1,598 @@
+mappingId	Mapping:NPD:Manual1
+target		npd:wellbore/{wellbore_exploration_all.wlbNpdidWellbore} npdv:wellboreFormationTD npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" = "npd_no_spatial"."wellbore_formation_top"."lsuName" 
+
+
+mappingId	Mapping:NPD:Manual2
+target		npd:wellbore/{wellbore_exploration_all.wlbNpdidWellbore} npdv:wellboreFormationHcLevel1 npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_exploration_all"."wlbFormationWithHc1" = "npd_no_spatial"."wellbore_formation_top"."lsuName" 
+
+
+mappingId	Mapping:NPD:Manual3
+target		npd:wellbore/{wellbore_exploration_all.wlbNpdidWellbore} npdv:wellboreFormationHcLevel2 npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_exploration_all"."wlbFormationWithHc2" = "npd_no_spatial"."wellbore_formation_top"."lsuName" 
+
+
+mappingId	Mapping:NPD:Manual4
+target		npd:wellbore/{wellbore_exploration_all.wlbNpdidWellbore} npdv:wellboreFormationHcLevel3 npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_exploration_all"."wlbFormationWithHc3" = "npd_no_spatial"."wellbore_formation_top"."lsuName" 
+
+
+mappingId	Mapping:NPD:Manual5:1
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Campanian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'CAMPANIAN'
+
+
+mappingId	Mapping:NPD:Manual5:2
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Campanian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'CAMPANIAN'
+
+
+mappingId	Mapping:NPD:Manual5:3
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Campanian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'CAMPANIAN'
+
+
+mappingId	Mapping:NPD:Manual5:4
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Campanian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'CAMPANIAN'
+
+
+mappingId	Mapping:NPD:Manual5:5
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Carboniferous . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'CARBONIFEROUS'
+
+
+mappingId	Mapping:NPD:Manual5:6
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Carboniferous . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'CARBONIFEROUS'
+
+
+mappingId	Mapping:NPD:Manual5:7
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Carboniferous . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'CARBONIFEROUS'
+
+
+mappingId	Mapping:NPD:Manual5:8
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Carboniferous . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'CARBONIFEROUS'
+
+
+mappingId	Mapping:NPD:Manual5:9
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Cretaceous . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'CRETACEOUS'
+
+
+mappingId	Mapping:NPD:Manual5:10
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Cretaceous . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'CRETACEOUS'
+
+
+mappingId	Mapping:NPD:Manual5:11
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Cretaceous . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'CRETACEOUS'
+
+
+mappingId	Mapping:NPD:Manual5:12
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Cretaceous . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'CRETACEOUS'
+
+
+mappingId	Mapping:NPD:Manual5:13
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Danian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'DANIAN'
+
+
+mappingId	Mapping:NPD:Manual5:14
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Danian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'DANIAN'
+
+
+mappingId	Mapping:NPD:Manual5:15
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Danian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'DANIAN'
+
+
+mappingId	Mapping:NPD:Manual5:16
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Danian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'DANIAN'
+
+
+mappingId	Mapping:NPD:Manual5:17
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Devonian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'DEVONIAN'
+
+
+mappingId	Mapping:NPD:Manual5:18
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Devonian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'DEVONIAN'
+
+
+mappingId	Mapping:NPD:Manual5:19
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Devonian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'DEVONIAN'
+
+
+mappingId	Mapping:NPD:Manual5:20
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Devonian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'DEVONIAN'
+
+
+mappingId	Mapping:NPD:Manual5:21
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Mississippian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'EARLY CARBONIFEROUS'
+
+
+mappingId	Mapping:NPD:Manual5:22
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Mississippian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'EARLY CARBONIFEROUS'
+
+
+mappingId	Mapping:NPD:Manual5:23
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Mississippian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'EARLY CARBONIFEROUS'
+
+
+mappingId	Mapping:NPD:Manual5:24
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Mississippian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'EARLY CARBONIFEROUS'
+
+
+mappingId	Mapping:NPD:Manual5:25
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:LowerCretaceous . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'EARLY CRETACEOUS'
+
+
+mappingId	Mapping:NPD:Manual5:26
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:LowerCretaceous . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'EARLY CRETACEOUS'
+
+
+mappingId	Mapping:NPD:Manual5:27
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:LowerCretaceous . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'EARLY CRETACEOUS'
+
+
+mappingId	Mapping:NPD:Manual5:28
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:LowerCretaceous . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'EARLY CRETACEOUS'
+
+
+mappingId	Mapping:NPD:Manual5:29
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:LowerJurassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'EARLY JURASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:30
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:LowerJurassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'EARLY JURASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:31
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:LowerJurassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'EARLY JURASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:32
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:LowerJurassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'EARLY JURASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:33
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Cisuralian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'EARLY PERMIAN'
+
+
+mappingId	Mapping:NPD:Manual5:34
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Cisuralian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'EARLY PERMIAN'
+
+
+mappingId	Mapping:NPD:Manual5:35
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Cisuralian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'EARLY PERMIAN'
+
+
+mappingId	Mapping:NPD:Manual5:36
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Cisuralian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'EARLY PERMIAN'
+
+
+mappingId	Mapping:NPD:Manual5:37
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:LowerTriassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'EARLY TRIASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:38
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:LowerTriassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'EARLY TRIASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:39
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:LowerTriassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'EARLY TRIASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:40
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:LowerTriassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'EARLY TRIASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:41
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Eocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'EOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:42
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Eocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'EOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:43
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Eocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'EOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:44
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Eocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'EOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:45
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Jurassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'JURASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:46
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Jurassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'JURASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:47
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Jurassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'JURASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:48
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Jurassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'JURASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:49
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Pennsylvanian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'LATE CARBONIFEROUS'
+
+
+mappingId	Mapping:NPD:Manual5:50
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Pennsylvanian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'LATE CARBONIFEROUS'
+
+
+mappingId	Mapping:NPD:Manual5:51
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Pennsylvanian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'LATE CARBONIFEROUS'
+
+
+mappingId	Mapping:NPD:Manual5:52
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Pennsylvanian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'LATE CARBONIFEROUS'
+
+
+mappingId	Mapping:NPD:Manual5:53
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:UpperCretaceous . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'LATE CRETACEOUS'
+
+
+mappingId	Mapping:NPD:Manual5:54
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:UpperCretaceous . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'LATE CRETACEOUS'
+
+
+mappingId	Mapping:NPD:Manual5:55
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:UpperCretaceous . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'LATE CRETACEOUS'
+
+
+mappingId	Mapping:NPD:Manual5:56
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:UpperCretaceous . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'LATE CRETACEOUS'
+
+
+mappingId	Mapping:NPD:Manual5:57
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:UpperJurassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'LATE JURASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:58
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:UpperJurassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'LATE JURASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:59
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:UpperJurassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'LATE JURASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:60
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:UpperJurassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'LATE JURASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:61
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Thanetian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'LATE PALEOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:62
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Thanetian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'LATE PALEOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:63
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Thanetian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'LATE PALEOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:64
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Thanetian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'LATE PALEOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:65
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Lopingian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'LATE PERMIAN'
+
+
+mappingId	Mapping:NPD:Manual5:66
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Lopingian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'LATE PERMIAN'
+
+
+mappingId	Mapping:NPD:Manual5:67
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Lopingian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'LATE PERMIAN'
+
+
+mappingId	Mapping:NPD:Manual5:68
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Lopingian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'LATE PERMIAN'
+
+
+mappingId	Mapping:NPD:Manual5:69
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Piacenzian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'LATE PLIOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:70
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Piacenzian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'LATE PLIOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:71
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Piacenzian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'LATE PLIOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:72
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Piacenzian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'LATE PLIOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:73
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:UpperTriassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'LATE TRIASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:74
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:UpperTriassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'LATE TRIASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:75
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:UpperTriassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'LATE TRIASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:76
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:UpperTriassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'LATE TRIASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:77
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:MiddleJurassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'MIDDLE JURASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:78
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:MiddleJurassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'MIDDLE JURASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:79
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:MiddleJurassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'MIDDLE JURASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:80
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:MiddleJurassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'MIDDLE JURASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:81
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:MiddleTriassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'MIDDLE TRIASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:82
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:MiddleTriassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'MIDDLE TRIASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:83
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:MiddleTriassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'MIDDLE TRIASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:84
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:MiddleTriassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'MIDDLE TRIASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:85
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Miocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'MIOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:86
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Miocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'MIOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:87
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Miocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'MIOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:88
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Miocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'MIOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:89
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Oligocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'OLIGOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:90
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Oligocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'OLIGOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:91
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Oligocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'OLIGOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:92
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Oligocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'OLIGOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:93
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Paleocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'PALEOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:94
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Paleocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'PALEOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:95
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Paleocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'PALEOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:96
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Paleocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'PALEOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:97
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Permian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'PERMIAN'
+
+
+mappingId	Mapping:NPD:Manual5:98
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Permian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'PERMIAN'
+
+
+mappingId	Mapping:NPD:Manual5:99
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Permian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'PERMIAN'
+
+
+mappingId	Mapping:NPD:Manual5:100
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Permian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'PERMIAN'
+
+
+mappingId	Mapping:NPD:Manual5:101
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Pleistocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'PLEISTOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:102
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Pleistocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'PLEISTOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:103
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Pleistocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'PLEISTOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:104
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Pleistocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'PLEISTOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:105
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Pliocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'PLIOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:106
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Pliocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'PLIOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:107
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Pliocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'PLIOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:108
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Pliocene . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'PLIOCENE'
+
+
+mappingId	Mapping:NPD:Manual5:109
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Silurian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'SILURIAN'
+
+
+mappingId	Mapping:NPD:Manual5:110
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Silurian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'SILURIAN'
+
+
+mappingId	Mapping:NPD:Manual5:111
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Silurian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'SILURIAN'
+
+
+mappingId	Mapping:NPD:Manual5:112
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Silurian . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'SILURIAN'
+
+
+mappingId	Mapping:NPD:Manual5:113
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Triassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeAtTd" = 'TRIASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:114
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Triassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc1" = 'TRIASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:115
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Triassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc2" = 'TRIASSIC'
+
+
+mappingId	Mapping:NPD:Manual5:116
+target		npd:stratum/{wellbore_formation_top.lsuNpdidLithoStrat} npdv:geochronologicEra isc:Triassic . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" FROM "npd_no_spatial"."wellbore_formation_top", "npd_no_spatial"."wellbore_exploration_all" WHERE "npd_no_spatial"."wellbore_formation_top"."lsuName" = "npd_no_spatial"."wellbore_exploration_all"."wlbFormationAtTd" AND "npd_no_spatial"."wellbore_exploration_all"."wlbAgeWithHc3" = 'TRIASSIC'

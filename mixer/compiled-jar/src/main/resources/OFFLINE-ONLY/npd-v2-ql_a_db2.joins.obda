@@ -1,0 +1,446 @@
+mappingId	Mapping:00884:ForeignKey
+target		npd:wellbore/{wellbore_development_all.wlbNpdidWellbore} npdv:developmentWellboreForLicence npd:licence/{licence.prlNpdidLicence} . 
+source		SELECT "npd_no_spatial"."wellbore_development_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."licence"."prlNpdidLicence"  FROM "npd_no_spatial"."wellbore_development_all" INNER JOIN "npd_no_spatial"."licence" ON "npd_no_spatial"."wellbore_development_all"."prlNpdidProductionLicence"  =  "npd_no_spatial"."licence"."prlNpdidLicence" 
+
+
+mappingId	Mapping:00885:ForeignKey
+target		npd:licence/{prlAreaSplitByBlock.prlNpdidLicence}/block/{prlAreaSplitByBlock.blcName}/polyno/{prlAreaSplitByBlock.prlAreaPolyPolyNo}/history/{prlAreaSplitByBlock.prlAreaPolyDateValidFrom}/{prlAreaSplitByBlock.prlAreaPolyDateValidTo} npdv:lastOperatorCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."prlAreaSplitByBlock"."prlNpdidLicence" ,  "npd_no_spatial"."prlAreaSplitByBlock"."blcName" ,  "npd_no_spatial"."prlAreaSplitByBlock"."prlAreaPolyPolyNo" ,  "npd_no_spatial"."prlAreaSplitByBlock"."prlAreaPolyDateValidFrom" ,  "npd_no_spatial"."prlAreaSplitByBlock"."prlAreaPolyDateValidTo" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."prlAreaSplitByBlock" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."prlAreaSplitByBlock"."prlLastOperatorNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00886:ForeignKey
+target		npd:licence/{licence_transfer_hst.prlNpdidLicence}/transfer/{licence_transfer_hst.prlTransferDirection}/{licence_transfer_hst.cmpNpdidCompany}/history/{licence_transfer_hst.prlTransferDateValidFrom} npdv:transferredLicence npd:licence/{licence.prlNpdidLicence} . 
+source		SELECT "npd_no_spatial"."licence_transfer_hst"."prlNpdidLicence" ,  "npd_no_spatial"."licence_transfer_hst"."prlTransferDirection" ,  "npd_no_spatial"."licence_transfer_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."licence_transfer_hst"."prlTransferDateValidFrom" ,  "npd_no_spatial"."licence"."prlNpdidLicence" FROM "npd_no_spatial"."licence_transfer_hst" INNER JOIN "npd_no_spatial"."licence" ON "npd_no_spatial"."licence_transfer_hst"."prlNpdidLicence"  =  "npd_no_spatial"."licence"."prlNpdidLicence" 
+
+
+mappingId	Mapping:00887:ForeignKey
+target		npd:wellbore/{wellbore_development_all.wlbNpdidWellbore} npdv:drillingOperatorCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."wellbore_development_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."wellbore_development_all" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."wellbore_development_all"."wlbDrillingOperator"  =  "npd_no_spatial"."company"."cmpLongName" 
+
+
+mappingId	Mapping:00888:ForeignKey
+target		npd:petreg/facility/{tuf_petreg_licence_oper.tufNpdidTuf} ptl:TUFOperatorCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."tuf_petreg_licence_oper"."tufNpdidTuf" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."tuf_petreg_licence_oper" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."tuf_petreg_licence_oper"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00889:ForeignKey
+target		npd:pipeline/{pipLine.pipNpdidPipe} npdv:pipelineOperator npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."pipLine"."pipNpdidPipe" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."pipLine" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."pipLine"."pipNpdidOperator"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00890:ForeignKey
+target		npd:wellbore/{wellbore_exploration_all.wlbNpdidWellbore} npdv:explorationWellboreForField npd:field/{field.fldNpdidField} . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."field"."fldNpdidField" FROM "npd_no_spatial"."wellbore_exploration_all" INNER JOIN "npd_no_spatial"."field" ON "npd_no_spatial"."wellbore_exploration_all"."fldNpdidField"  =  "npd_no_spatial"."field"."fldNpdidField" 
+
+
+mappingId	Mapping:00891:ForeignKey
+target		npd:wellbore/{wellbore_dst.wlbNpdidWellbore}/test/drillstem/{wellbore_dst.wlbDstTestNumber} npdv:DSTForWellbore npd:wellbore/{wellbore_npdid_overview.wlbNpdidWellbore} . 
+source		SELECT "npd_no_spatial"."wellbore_dst"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_dst"."wlbDstTestNumber" ,  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" FROM "npd_no_spatial"."wellbore_dst" INNER JOIN "npd_no_spatial"."wellbore_npdid_overview" ON "npd_no_spatial"."wellbore_dst"."wlbNpdidWellbore"  =  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" 
+
+
+mappingId	Mapping:00892:ForeignKey
+target		npd:wellbore/{wellbore_development_all.wlbNpdidWellbore} npdv:wellboreForDiscovery npd:discovery/{discovery.dscNpdidDiscovery} . 
+source		SELECT "npd_no_spatial"."wellbore_development_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."discovery"."dscNpdidDiscovery" FROM "npd_no_spatial"."wellbore_development_all" INNER JOIN "npd_no_spatial"."discovery" ON "npd_no_spatial"."wellbore_development_all"."dscNpdidDiscovery"  =  "npd_no_spatial"."discovery"."dscNpdidDiscovery" 
+
+
+mappingId	Mapping:00893:ForeignKey
+target		npd:discovery/{dscArea.dscNpdidDiscovery}/area/hctype/{dscArea.dscHcType} npdv:resourcesIncludedInDiscovery npd:discovery/{discovery.dscNpdidDiscovery} . 
+source		SELECT "npd_no_spatial"."dscArea"."dscNpdidDiscovery" ,  "npd_no_spatial"."dscArea"."dscHcType" ,  "npd_no_spatial"."discovery"."dscNpdidDiscovery" FROM "npd_no_spatial"."dscArea" INNER JOIN "npd_no_spatial"."discovery" ON "npd_no_spatial"."dscArea"."dscNpdidResInclInDiscovery"  =  "npd_no_spatial"."discovery"."dscNpdidDiscovery" 
+
+
+mappingId	Mapping:00894:ForeignKey
+target		npd:baa/{bsns_arr_area_transfer_hst.baaNpdidBsnsArrArea}/transfer/{bsns_arr_area_transfer_hst.baaTransferDirection}/{bsns_arr_area_transfer_hst.cmpNpdidCompany}/history/{bsns_arr_area_transfer_hst.baaTransferDateValidFrom} npdv:baaTransferCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."bsns_arr_area_transfer_hst"."baaNpdidBsnsArrArea" ,  "npd_no_spatial"."bsns_arr_area_transfer_hst"."baaTransferDirection" ,  "npd_no_spatial"."bsns_arr_area_transfer_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."bsns_arr_area_transfer_hst"."baaTransferDateValidFrom" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."bsns_arr_area_transfer_hst" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."bsns_arr_area_transfer_hst"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00895:ForeignKey
+target		npd:discovery/{fldArea.dscNpdidDiscovery}/area/hctype/{fldArea.dscHcType} npdv:isGeometryOfFeature npd:discovery/{discovery.dscNpdidDiscovery} . 
+source		SELECT "npd_no_spatial"."fldArea"."dscNpdidDiscovery" ,  "npd_no_spatial"."fldArea"."dscHcType" ,  "npd_no_spatial"."discovery"."dscNpdidDiscovery" FROM "npd_no_spatial"."fldArea" INNER JOIN "npd_no_spatial"."discovery" ON "npd_no_spatial"."fldArea"."dscNpdidDiscovery"  =  "npd_no_spatial"."discovery"."dscNpdidDiscovery" 
+
+
+mappingId	Mapping:00896:ForeignKey
+target		npd:company/{company_reserves.cmpNpdidCompany}/reserve/{company_reserves.fldNpdidField} npdv:reservesForCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."company_reserves"."cmpNpdidCompany" ,  "npd_no_spatial"."company_reserves"."fldNpdidField" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."company_reserves" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."company_reserves"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00897:ForeignKey
+target		npd:field/{field.fldNpdidField} npdv:currentFieldOwner npd:licence/{licence.prlNpdidLicence} . 
+source		SELECT "npd_no_spatial"."field"."fldNpdidField" ,  "npd_no_spatial"."licence"."prlNpdidLicence" FROM "npd_no_spatial"."field" INNER JOIN "npd_no_spatial"."licence" ON "npd_no_spatial"."field"."fldNpdidOwner"  =  "npd_no_spatial"."licence"."prlNpdidLicence" 
+
+
+mappingId	Mapping:00898:ForeignKey
+target		npd:wellbore/{wellbore_development_all.wlbNpdidWellbore} npdv:developmentWellboreForLicence npd:licence/{licence.prlNpdidLicence} . 
+source		SELECT "npd_no_spatial"."wellbore_development_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."licence"."prlNpdidLicence" FROM "npd_no_spatial"."wellbore_development_all" INNER JOIN "npd_no_spatial"."licence" ON "npd_no_spatial"."wellbore_development_all"."wlbProductionLicence"  =  "npd_no_spatial"."licence"."prlName" 
+
+
+mappingId	Mapping:00899:ForeignKey
+target		npd:wellbore/{wellbore_casing_and_lot.wlbNpdidWellbore}/test/casingleakoff/{wellbore_casing_and_lot.wellbore_casing_and_lot_id} npdv:LOTForWellbore npd:wellbore/{wellbore_npdid_overview.wlbNpdidWellbore} . 
+source		SELECT "npd_no_spatial"."wellbore_casing_and_lot"."wellbore_casing_and_lot_id" ,  "npd_no_spatial"."wellbore_casing_and_lot"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" FROM "npd_no_spatial"."wellbore_casing_and_lot" INNER JOIN "npd_no_spatial"."wellbore_npdid_overview" ON "npd_no_spatial"."wellbore_casing_and_lot"."wlbNpdidWellbore"  =  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" 
+
+mappingId	Mapping:00900:ForeignKey
+target		npd:field/{field_investment_yearly.prfNpdidInformationCarrier}/investment/{field_investment_yearly.prfYear} npdv:investmentForField npd:field/{field.fldNpdidField} . 
+source		SELECT "npd_no_spatial"."field_investment_yearly"."prfNpdidInformationCarrier" ,  "npd_no_spatial"."field_investment_yearly"."prfYear" ,  "npd_no_spatial"."field"."fldNpdidField" FROM "npd_no_spatial"."field_investment_yearly" INNER JOIN "npd_no_spatial"."field" ON "npd_no_spatial"."field_investment_yearly"."prfNpdidInformationCarrier"  =  "npd_no_spatial"."field"."fldNpdidField" 
+
+
+mappingId	Mapping:00901:ForeignKey
+target		npd:field/{field_operator_hst.fldNpdidField}/operator/{field_operator_hst.cmpNpdidCompany}/history/{field_operator_hst.fldOperatorFrom}/{field_operator_hst.fldOperatorTo} npdv:fieldOperator npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."field_operator_hst"."fldNpdidField" ,  "npd_no_spatial"."field_operator_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."field_operator_hst"."fldOperatorFrom" ,  "npd_no_spatial"."field_operator_hst"."fldOperatorTo" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."field_operator_hst" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."field_operator_hst"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00902:ForeignKey
+target		npd:licence/{prlArea.prlNpdidLicence}/area/{prlArea.prlArea_id}/history/{prlArea.prlAreaPolyDateValidFrom}/{prlArea.prlAreaPolyDateValidTo} npdv:lastOperatorCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."prlArea"."prlArea_id" ,  "npd_no_spatial"."prlArea"."prlNpdidLicence" ,  "npd_no_spatial"."prlArea"."prlAreaPolyDateValidFrom" ,  "npd_no_spatial"."prlArea"."prlAreaPolyDateValidTo" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."prlArea" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."prlArea"."prlLastOperatorNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00903:ForeignKey
+target		npd:wellbore/{wellbore_development_all.wlbNpdidWellbore} npdv:developmentWellboreForField npd:field/{field.fldNpdidField} . 
+source		SELECT "npd_no_spatial"."wellbore_development_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."field"."fldNpdidField" FROM "npd_no_spatial"."wellbore_development_all" INNER JOIN "npd_no_spatial"."field" ON "npd_no_spatial"."wellbore_development_all"."fldNpdidField"  =  "npd_no_spatial"."field"."fldNpdidField" 
+
+
+mappingId	Mapping:00904:ForeignKey
+target		npd:licence/{licence_phase_hst.prlNpdidLicence}/phase/{licence_phase_hst.prlPhase}/history/{licence_phase_hst.prlDatePhaseValidFrom}/{licence_phase_hst.prlDatePhaseValidTo} npdv:statusForLicence npd:licence/{licence.prlNpdidLicence} . 
+source		SELECT "npd_no_spatial"."licence_phase_hst"."prlNpdidLicence" ,  "npd_no_spatial"."licence_phase_hst"."prlPhase" ,  "npd_no_spatial"."licence_phase_hst"."prlDatePhaseValidFrom" ,  "npd_no_spatial"."licence_phase_hst"."prlDatePhaseValidTo" ,  "npd_no_spatial"."licence"."prlNpdidLicence" FROM "npd_no_spatial"."licence_phase_hst" INNER JOIN "npd_no_spatial"."licence" ON "npd_no_spatial"."licence_phase_hst"."prlNpdidLicence"  =  "npd_no_spatial"."licence"."prlNpdidLicence" 
+
+
+mappingId	Mapping:00905:ForeignKey
+target		npd:survey/{seis_acquisition_progress.seaProgressText2}/status/{seis_acquisition_progress.seis_acquisition_progress_id} npdv:statusForSurvey npd:survey/{seis_acquisition.seaName} . 
+source		SELECT "npd_no_spatial"."seis_acquisition_progress"."seis_acquisition_progress_id" ,  "npd_no_spatial"."seis_acquisition_progress"."seaProgressText2" ,  "npd_no_spatial"."seis_acquisition"."seaName" FROM "npd_no_spatial"."seis_acquisition_progress" INNER JOIN "npd_no_spatial"."seis_acquisition" ON "npd_no_spatial"."seis_acquisition_progress"."seaNpdidSurvey"  =  "npd_no_spatial"."seis_acquisition"."seaNpdidSurvey" 
+
+
+mappingId	Mapping:00906:ForeignKey
+target		npd:survey/{seaMultiline.seaSurveyName}/multiline npdv:isGeometryOfFeature npd:survey/{seis_acquisition.seaName} . 
+source		SELECT "npd_no_spatial"."seaMultiline"."seaSurveyName" ,  "npd_no_spatial"."seis_acquisition"."seaName" FROM "npd_no_spatial"."seaMultiline" INNER JOIN "npd_no_spatial"."seis_acquisition" ON "npd_no_spatial"."seaMultiline"."seaSurveyName"  =  "npd_no_spatial"."seis_acquisition"."seaName" 
+
+
+mappingId	Mapping:00907:ForeignKey
+target		npd:facility/{tuf_owner_hst.tufNpdidTuf}/owner/{tuf_owner_hst.cmpNpdidCompany}/history/{tuf_owner_hst.tufOwnerDateValidFrom}/{tuf_owner_hst.tufOwnerDateValidTo} ptl:TUFOwnerCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."tuf_owner_hst"."tufNpdidTuf" ,  "npd_no_spatial"."tuf_owner_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."tuf_owner_hst"."tufOwnerDateValidFrom" ,  "npd_no_spatial"."tuf_owner_hst"."tufOwnerDateValidTo" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."tuf_owner_hst" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."tuf_owner_hst"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00908:ForeignKey
+target		npd:field/{field_owner_hst.fldNpdidField}/owner/{field_owner_hst.fldNpdidOwner}/history/{field_owner_hst.fldOwnershipFromDate}/{field_owner_hst.fldOwnershipToDate} npdv:ownerForField npd:field/{field.fldNpdidField} . 
+source		SELECT "npd_no_spatial"."field_owner_hst"."fldNpdidField" ,  "npd_no_spatial"."field_owner_hst"."fldNpdidOwner" ,  "npd_no_spatial"."field_owner_hst"."fldOwnershipFromDate" ,  "npd_no_spatial"."field_owner_hst"."fldOwnershipToDate" ,  "npd_no_spatial"."field"."fldNpdidField" FROM "npd_no_spatial"."field_owner_hst" INNER JOIN "npd_no_spatial"."field" ON "npd_no_spatial"."field_owner_hst"."fldNpdidField"  =  "npd_no_spatial"."field"."fldNpdidField" 
+
+
+mappingId	Mapping:00909:ForeignKey
+target		npd:field/{field.fldNpdidField} npdv:currentFieldOperator npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."field"."fldNpdidField" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."field" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."field"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00910:ForeignKey
+target		npd:survey/{seaArea.seaSurveyName}/area npdv:isGeometryOfFeature npd:survey/{seis_acquisition.seaName} . 
+source		SELECT "npd_no_spatial"."seaArea"."seaArea_id" ,  "npd_no_spatial"."seaArea"."seaSurveyName" ,  "npd_no_spatial"."seis_acquisition"."seaName" FROM "npd_no_spatial"."seaArea" INNER JOIN "npd_no_spatial"."seis_acquisition" ON "npd_no_spatial"."seaArea"."seaNpdidSurvey"  =  "npd_no_spatial"."seis_acquisition"."seaNpdidSurvey" 
+
+
+mappingId	Mapping:00911:ForeignKey
+target		npd:wellbore/{wellbore_exploration_all.wlbNpdidWellbore} npdv:wellOperator npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."wellbore_exploration_all" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."wellbore_exploration_all"."wlbDiskosWellOperator"  =  "npd_no_spatial"."company"."cmpShortName" 
+
+
+mappingId	Mapping:00912:ForeignKey
+target		npd:wellbore/{wellbore_mud.wlbNpdidWellbore}/test/mud/{wellbore_mud.wellbore_mud_id} npdv:mudTestForWellbore npd:wellbore/{wellbore_npdid_overview.wlbNpdidWellbore} . 
+source		SELECT "npd_no_spatial"."wellbore_mud"."wellbore_mud_id" ,  "npd_no_spatial"."wellbore_mud"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" FROM "npd_no_spatial"."wellbore_mud" INNER JOIN "npd_no_spatial"."wellbore_npdid_overview" ON "npd_no_spatial"."wellbore_mud"."wlbNpdidWellbore"  =  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" 
+
+
+mappingId	Mapping:00913:ForeignKey
+target		npd:discovery/{fldArea.dscNpdidDiscovery}/area/hctype/{fldArea.dscHcType} npdv:resourcesIncludedInDiscovery npd:discovery/{discovery.dscNpdidDiscovery} . 
+source		SELECT "npd_no_spatial"."fldArea"."dscNpdidDiscovery" ,  "npd_no_spatial"."fldArea"."dscHcType" ,  "npd_no_spatial"."discovery"."dscNpdidDiscovery" FROM "npd_no_spatial"."fldArea" INNER JOIN "npd_no_spatial"."discovery" ON "npd_no_spatial"."fldArea"."dscNpdidResInclInDiscovery"  =  "npd_no_spatial"."discovery"."dscNpdidDiscovery" 
+
+
+mappingId	Mapping:00914:ForeignKey
+target		npd:field/{field_operator_hst.fldNpdidField}/operator/{field_operator_hst.cmpNpdidCompany}/history/{field_operator_hst.fldOperatorFrom}/{field_operator_hst.fldOperatorTo} npdv:operatorForField npd:field/{field.fldNpdidField} . 
+source		SELECT "npd_no_spatial"."field_operator_hst"."fldNpdidField" ,  "npd_no_spatial"."field_operator_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."field_operator_hst"."fldOperatorFrom" ,  "npd_no_spatial"."field_operator_hst"."fldOperatorTo" ,  "npd_no_spatial"."field"."fldNpdidField" FROM "npd_no_spatial"."field_operator_hst" INNER JOIN "npd_no_spatial"."field" ON "npd_no_spatial"."field_operator_hst"."fldNpdidField"  =  "npd_no_spatial"."field"."fldNpdidField" 
+
+
+mappingId	Mapping:00915:ForeignKey
+target		npd:facility/{tuf_operator_hst.tufNpdidTuf}/operator/{tuf_operator_hst.cmpNpdidCompany}/history/{tuf_operator_hst.tufOperDateValidFrom}/{tuf_operator_hst.tufOperDateValidTo} ptl:TUFOperatorForLicence npd:petreg/facility/{tuf_petreg_licence.tufNpdidTuf} . 
+source		SELECT "npd_no_spatial"."tuf_operator_hst"."tufNpdidTuf" ,  "npd_no_spatial"."tuf_operator_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."tuf_operator_hst"."tufOperDateValidFrom" ,  "npd_no_spatial"."tuf_operator_hst"."tufOperDateValidTo" ,  "npd_no_spatial"."tuf_petreg_licence"."tufNpdidTuf" FROM "npd_no_spatial"."tuf_operator_hst" INNER JOIN "npd_no_spatial"."tuf_petreg_licence" ON "npd_no_spatial"."tuf_operator_hst"."tufNpdidTuf"  =  "npd_no_spatial"."tuf_petreg_licence"."tufNpdidTuf" 
+
+
+mappingId	Mapping:00916:ForeignKey
+target		npd:wellbore/{wellbore_core.wlbNpdidWellbore}/core/{wellbore_core.wlbCoreNumber} npdv:coreForWellbore npd:wellbore/{wellbore_npdid_overview.wlbNpdidWellbore} . 
+source		SELECT "npd_no_spatial"."wellbore_core"."wellbore_core_id" ,  "npd_no_spatial"."wellbore_core"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_core"."wlbCoreNumber" ,  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" FROM "npd_no_spatial"."wellbore_core" INNER JOIN "npd_no_spatial"."wellbore_npdid_overview" ON "npd_no_spatial"."wellbore_core"."wlbNpdidWellbore"  =  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" 
+
+
+mappingId	Mapping:00917:ForeignKey
+target		npd:wellbore/{wellbore_development_all.wlbNpdidWellbore} npdv:wellOperator npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."wellbore_development_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."wellbore_development_all" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."wellbore_development_all"."wlbDiskosWellOperator"  =  "npd_no_spatial"."company"."cmpShortName" 
+
+
+mappingId	Mapping:00918:ForeignKey
+target		npd:licence/{licence_task.prlNpdidLicence}/task/{licence_task.prlTaskID} npdv:taskForCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."licence_task"."prlNpdidLicence" ,  "npd_no_spatial"."licence_task"."prlTaskID" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."licence_task" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."licence_task"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00919:ForeignKey
+target		npd:field/{field.fldNpdidField} npdv:discoveryWellbore npd:wellbore/{wellbore_npdid_overview.wlbNpdidWellbore} . 
+source		SELECT "npd_no_spatial"."field"."fldNpdidField" ,  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" FROM "npd_no_spatial"."field" INNER JOIN "npd_no_spatial"."wellbore_npdid_overview" ON "npd_no_spatial"."field"."wlbNpdidWellbore"  =  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" 
+
+
+mappingId	Mapping:00920:ForeignKey
+target		npd:field/{field_activity_status_hst.fldNpdidField}/activity/{field_activity_status_hst.fldStatus}/history/{field_activity_status_hst.fldStatusFromDate}/{field_activity_status_hst.fldStatusToDate} npdv:statusForField npd:field/{field.fldNpdidField} . 
+source		SELECT "npd_no_spatial"."field_activity_status_hst"."fldNpdidField" ,  "npd_no_spatial"."field_activity_status_hst"."fldStatus" ,  "npd_no_spatial"."field_activity_status_hst"."fldStatusFromDate" ,  "npd_no_spatial"."field_activity_status_hst"."fldStatusToDate" ,  "npd_no_spatial"."field"."fldNpdidField" FROM "npd_no_spatial"."field_activity_status_hst" INNER JOIN "npd_no_spatial"."field" ON "npd_no_spatial"."field_activity_status_hst"."fldNpdidField"  =  "npd_no_spatial"."field"."fldNpdidField" 
+
+
+mappingId	Mapping:00921:ForeignKey
+target		npd:petreg/licence/{licence_petreg_licence_licencee.prlNpdidLicence}/licencee/{licence_petreg_licence_licencee.cmpNpdidCompany} ptl:licenceLicenceeCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."licence_petreg_licence_licencee"."prlNpdidLicence" ,  "npd_no_spatial"."licence_petreg_licence_licencee"."cmpNpdidCompany" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."licence_petreg_licence_licencee" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."licence_petreg_licence_licencee"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00922:ForeignKey
+target		npd:discovery/{fldArea.dscNpdidDiscovery}/area/hctype/{fldArea.dscHcType} npdv:isGeometryOfFeature npd:field/{field.fldNpdidField} . 
+source		SELECT "npd_no_spatial"."fldArea"."dscNpdidDiscovery" ,  "npd_no_spatial"."fldArea"."dscHcType" ,  "npd_no_spatial"."field"."fldNpdidField" FROM "npd_no_spatial"."fldArea" INNER JOIN "npd_no_spatial"."field" ON "npd_no_spatial"."fldArea"."fldNpdidField"  =  "npd_no_spatial"."field"."fldNpdidField" 
+
+
+mappingId	Mapping:00923:ForeignKey
+target		npd:wellbore/{wellbore_exploration_all.wlbNpdidWellbore} npdv:reclassedFromWellbore npd:wellbore/{wellbore_npdid_overview.wlbNpdidWellbore} . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" FROM "npd_no_spatial"."wellbore_exploration_all" INNER JOIN "npd_no_spatial"."wellbore_npdid_overview" ON "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellboreReclass"  =  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" 
+
+
+mappingId	Mapping:00924:ForeignKey
+target		npd:discovery/{discovery.dscNpdidDiscovery} npdv:includedInField npd:field/{field.fldNpdidField} . 
+source		SELECT "npd_no_spatial"."discovery"."dscNpdidDiscovery" ,  "npd_no_spatial"."field"."fldNpdidField" FROM "npd_no_spatial"."discovery" INNER JOIN "npd_no_spatial"."field" ON "npd_no_spatial"."discovery"."fldNpdidField"  =  "npd_no_spatial"."field"."fldNpdidField" 
+
+
+mappingId	Mapping:00925:ForeignKey
+target		npd:baa/{bsns_arr_area_licensee_hst.baaNpdidBsnsArrArea}/licensee/{bsns_arr_area_licensee_hst.cmpNpdidCompany}/history/{bsns_arr_area_licensee_hst.baaLicenseeDateValidFrom}/{bsns_arr_area_licensee_hst.baaLicenseeDateValidTo} npdv:licenseeForBAA npd:baa/{bsns_arr_area.baaNpdidBsnsArrArea} . 
+source		SELECT "npd_no_spatial"."bsns_arr_area_licensee_hst"."baaNpdidBsnsArrArea" ,  "npd_no_spatial"."bsns_arr_area_licensee_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."bsns_arr_area_licensee_hst"."baaLicenseeDateValidFrom" ,  "npd_no_spatial"."bsns_arr_area_licensee_hst"."baaLicenseeDateValidTo" ,  "npd_no_spatial"."bsns_arr_area"."baaNpdidBsnsArrArea" FROM "npd_no_spatial"."bsns_arr_area_licensee_hst" INNER JOIN "npd_no_spatial"."bsns_arr_area" ON "npd_no_spatial"."bsns_arr_area_licensee_hst"."baaNpdidBsnsArrArea"  =  "npd_no_spatial"."bsns_arr_area"."baaNpdidBsnsArrArea" 
+
+
+mappingId	Mapping:00926:ForeignKey
+target		npd:wellbore/{wellbore_shallow_all.wlbNpdidWellbore} npdv:shallowWellboreForLicence npd:licence/{licence.prlNpdidLicence} . 
+source		SELECT "npd_no_spatial"."wellbore_shallow_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."licence"."prlNpdidLicence" FROM "npd_no_spatial"."wellbore_shallow_all" INNER JOIN "npd_no_spatial"."licence" ON "npd_no_spatial"."wellbore_shallow_all"."wlbProductionLicence"  =  "npd_no_spatial"."licence"."prlName" 
+
+
+mappingId	Mapping:00927:ForeignKey
+target		npd:petreg/facility/{tuf_petreg_message.tufNpdidTuf}/message/{tuf_petreg_message.ptlMessageDocumentNo} ptl:messageForTUF npd:petreg/facility/{tuf_petreg_licence.tufNpdidTuf} . 
+source		SELECT "npd_no_spatial"."tuf_petreg_message"."tufNpdidTuf" ,  "npd_no_spatial"."tuf_petreg_message"."ptlMessageDocumentNo" ,  "npd_no_spatial"."tuf_petreg_licence"."tufNpdidTuf" FROM "npd_no_spatial"."tuf_petreg_message" INNER JOIN "npd_no_spatial"."tuf_petreg_licence" ON "npd_no_spatial"."tuf_petreg_message"."tufNpdidTuf"  =  "npd_no_spatial"."tuf_petreg_licence"."tufNpdidTuf" 
+
+
+mappingId	Mapping:00928:ForeignKey
+target		npd:petreg/facility/{tuf_petreg_licence_licencee.tufNpdidTuf}/licencee/{tuf_petreg_licence_licencee.cmpNpdidCompany} ptl:TUFLicenceeForTUF npd:petreg/facility/{tuf_petreg_licence.tufNpdidTuf} . 
+source		SELECT "npd_no_spatial"."tuf_petreg_licence_licencee"."tufNpdidTuf" ,  "npd_no_spatial"."tuf_petreg_licence_licencee"."cmpNpdidCompany" ,  "npd_no_spatial"."tuf_petreg_licence"."tufNpdidTuf" FROM "npd_no_spatial"."tuf_petreg_licence_licencee" INNER JOIN "npd_no_spatial"."tuf_petreg_licence" ON "npd_no_spatial"."tuf_petreg_licence_licencee"."tufNpdidTuf"  =  "npd_no_spatial"."tuf_petreg_licence"."tufNpdidTuf" 
+
+
+mappingId	Mapping:00929:ForeignKey
+target		npd:facility/{tuf_owner_hst.tufNpdidTuf}/owner/{tuf_owner_hst.cmpNpdidCompany}/history/{tuf_owner_hst.tufOwnerDateValidFrom}/{tuf_owner_hst.tufOwnerDateValidTo} ptl:TUFOwnerForLicence npd:petreg/facility/{tuf_petreg_licence.tufNpdidTuf} . 
+source		SELECT "npd_no_spatial"."tuf_owner_hst"."tufNpdidTuf" ,  "npd_no_spatial"."tuf_owner_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."tuf_owner_hst"."tufOwnerDateValidFrom" ,  "npd_no_spatial"."tuf_owner_hst"."tufOwnerDateValidTo" ,  "npd_no_spatial"."tuf_petreg_licence"."tufNpdidTuf" FROM "npd_no_spatial"."tuf_owner_hst" INNER JOIN "npd_no_spatial"."tuf_petreg_licence" ON "npd_no_spatial"."tuf_owner_hst"."tufNpdidTuf"  =  "npd_no_spatial"."tuf_petreg_licence"."tufNpdidTuf" 
+
+
+mappingId	Mapping:00930:ForeignKey
+target		npd:wellbore/{wellbore_oil_sample.wlbNpdidWellbore}/test/oilsample/{wellbore_oil_sample.wellbore_oil_sample_id} npdv:oilSampleTestForWellbore npd:wellbore/{wellbore_npdid_overview.wlbNpdidWellbore} . 
+source		SELECT "npd_no_spatial"."wellbore_oil_sample"."wellbore_oil_sample_id" ,  "npd_no_spatial"."wellbore_oil_sample"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" FROM "npd_no_spatial"."wellbore_oil_sample" INNER JOIN "npd_no_spatial"."wellbore_npdid_overview" ON "npd_no_spatial"."wellbore_oil_sample"."wlbNpdidWellbore"  =  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" 
+
+
+mappingId	Mapping:00931:ForeignKey
+target		npd:licence/{licence_oper_hst.prlNpdidLicence}/operator/{licence_oper_hst.cmpNpdidCompany}/history/{licence_oper_hst.prlOperDateValidFrom}/{licence_oper_hst.prlOperDateValidTo} npdv:licenceOperatorCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."licence_oper_hst"."prlNpdidLicence" ,  "npd_no_spatial"."licence_oper_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."licence_oper_hst"."prlOperDateValidFrom" ,  "npd_no_spatial"."licence_oper_hst"."prlOperDateValidTo" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."licence_oper_hst" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."licence_oper_hst"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00932:ForeignKey
+target		npd:petreg/facility/{tuf_petreg_licence_licencee.tufNpdidTuf}/licencee/{tuf_petreg_licence_licencee.cmpNpdidCompany} ptl:TUFLicenceeCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."tuf_petreg_licence_licencee"."tufNpdidTuf" ,  "npd_no_spatial"."tuf_petreg_licence_licencee"."cmpNpdidCompany" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."tuf_petreg_licence_licencee" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."tuf_petreg_licence_licencee"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00933:ForeignKey
+target		npd:field/{field_licensee_hst.fldNpdidField}/licensee/{field_licensee_hst.cmpNpdidCompany}/history/{field_licensee_hst.fldLicenseeFrom}/{field_licensee_hst.fldLicenseeTo} npdv:fieldLicensee npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."field_licensee_hst"."fldNpdidField" ,  "npd_no_spatial"."field_licensee_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."field_licensee_hst"."fldLicenseeFrom" ,  "npd_no_spatial"."field_licensee_hst"."fldLicenseeTo" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."field_licensee_hst" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."field_licensee_hst"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00934:ForeignKey
+target		npd:baa/{baaArea.baaNpdidBsnsArrArea}/polygon/{baaArea.baaNpdidBsnsArrAreaPoly} npdv:isGeometryOfFeature npd:baa/{bsns_arr_area.baaNpdidBsnsArrArea} . 
+source		SELECT "npd_no_spatial"."baaArea"."baaNpdidBsnsArrArea" ,  "npd_no_spatial"."baaArea"."baaNpdidBsnsArrAreaPoly" ,  "npd_no_spatial"."bsns_arr_area"."baaNpdidBsnsArrArea" FROM "npd_no_spatial"."baaArea" INNER JOIN "npd_no_spatial"."bsns_arr_area" ON "npd_no_spatial"."baaArea"."baaNpdidBsnsArrArea"  =  "npd_no_spatial"."bsns_arr_area"."baaNpdidBsnsArrArea" 
+
+
+mappingId	Mapping:00935:ForeignKey
+target		npd:survey/{seis_acquisition_coordinates_inc_turnarea.seaSurveyName}/point/{seis_acquisition_coordinates_inc_turnarea.seaPolygonPointNumber} npdv:coordinateForSurvey npd:survey/{seis_acquisition.seaName} . 
+source		SELECT "npd_no_spatial"."seis_acquisition_coordinates_inc_turnarea"."seaSurveyName" ,  "npd_no_spatial"."seis_acquisition_coordinates_inc_turnarea"."seaPolygonPointNumber" ,  "npd_no_spatial"."seis_acquisition"."seaName" FROM "npd_no_spatial"."seis_acquisition_coordinates_inc_turnarea" INNER JOIN "npd_no_spatial"."seis_acquisition" ON "npd_no_spatial"."seis_acquisition_coordinates_inc_turnarea"."seaNpdidSurvey"  =  "npd_no_spatial"."seis_acquisition"."seaNpdidSurvey" 
+
+
+mappingId	Mapping:00936:ForeignKey
+target		npd:licence/{licence_task.prlNpdidLicence}/task/{licence_task.prlTaskID} npdv:taskForLicence npd:licence/{licence.prlNpdidLicence} . 
+source		SELECT "npd_no_spatial"."licence_task"."prlNpdidLicence" ,  "npd_no_spatial"."licence_task"."prlTaskID" ,  "npd_no_spatial"."licence"."prlNpdidLicence" FROM "npd_no_spatial"."licence_task" INNER JOIN "npd_no_spatial"."licence" ON "npd_no_spatial"."licence_task"."prlNpdidLicence"  =  "npd_no_spatial"."licence"."prlNpdidLicence" 
+
+
+mappingId	Mapping:00937:ForeignKey
+target		npd:licence/{licence_area_poly_hst.prlNpdidLicence}/block/{licence_area_poly_hst.prlAreaPolyBlockName}/polyno/{licence_area_poly_hst.prlAreaPolyPolyNo}/history/{licence_area_poly_hst.prlAreaPolyDateValidFrom}/{licence_area_poly_hst.prlAreaPolyDateValidTo} npdv:isGeometryOfFeature npd:licence/{licence.prlNpdidLicence} . 
+source		SELECT "npd_no_spatial"."licence_area_poly_hst"."prlNpdidLicence" ,  "npd_no_spatial"."licence_area_poly_hst"."prlAreaPolyBlockName" ,  "npd_no_spatial"."licence_area_poly_hst"."prlAreaPolyPolyNo" ,  "npd_no_spatial"."licence_area_poly_hst"."prlAreaPolyDateValidFrom" ,  "npd_no_spatial"."licence_area_poly_hst"."prlAreaPolyDateValidTo" ,  "npd_no_spatial"."licence"."prlNpdidLicence" FROM "npd_no_spatial"."licence_area_poly_hst" INNER JOIN "npd_no_spatial"."licence" ON "npd_no_spatial"."licence_area_poly_hst"."prlNpdidLicence"  =  "npd_no_spatial"."licence"."prlNpdidLicence" 
+
+
+mappingId	Mapping:00938:ForeignKey
+target		npd:petreg/licence/{licence_petreg_licence_oper.prlNpdidLicence} ptl:licenceOperatorCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."licence_petreg_licence_oper"."prlNpdidLicence" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."licence_petreg_licence_oper" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."licence_petreg_licence_oper"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00939:ForeignKey
+target		npd:wellbore/{wellbore_core_photo.wlbNpdidWellbore}/core/{wellbore_core_photo.wlbCoreNumber}/photo/{wellbore_core_photo.wellbore_core_photo_id}/{wellbore_core_photo.wlbCorePhotoTitle} npdv:corePhotoForWellbore npd:wellbore/{wellbore_npdid_overview.wlbNpdidWellbore} . 
+source		SELECT "npd_no_spatial"."wellbore_core_photo"."wellbore_core_photo_id" ,  "npd_no_spatial"."wellbore_core_photo"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_core_photo"."wlbCoreNumber" ,  "npd_no_spatial"."wellbore_core_photo"."wlbCorePhotoTitle" ,  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" FROM "npd_no_spatial"."wellbore_core_photo" INNER JOIN "npd_no_spatial"."wellbore_npdid_overview" ON "npd_no_spatial"."wellbore_core_photo"."wlbNpdidWellbore"  =  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" 
+
+
+mappingId	Mapping:00940:ForeignKey
+target		npd:licence/{licence_licensee_hst.prlNpdidLicence}/licensee/{licence_licensee_hst.cmpNpdidCompany}/history/{licence_licensee_hst.prlLicenseeDateValidFrom}/{licence_licensee_hst.prlLicenseeDateValidTo} npdv:licenseeForLicence npd:licence/{licence.prlNpdidLicence} . 
+source		SELECT "npd_no_spatial"."licence_licensee_hst"."prlNpdidLicence" ,  "npd_no_spatial"."licence_licensee_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."licence_licensee_hst"."prlLicenseeDateValidFrom" ,  "npd_no_spatial"."licence_licensee_hst"."prlLicenseeDateValidTo" ,  "npd_no_spatial"."licence"."prlNpdidLicence" FROM "npd_no_spatial"."licence_licensee_hst" INNER JOIN "npd_no_spatial"."licence" ON "npd_no_spatial"."licence_licensee_hst"."prlNpdidLicence"  =  "npd_no_spatial"."licence"."prlNpdidLicence" 
+
+
+mappingId	Mapping:00941:ForeignKey
+target		npd:wellbore/{wellbore_exploration_all.wlbNpdidWellbore} npdv:explorationWellboreForLicence npd:licence/{licence.prlNpdidLicence} . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."licence"."prlNpdidLicence" FROM "npd_no_spatial"."wellbore_exploration_all" INNER JOIN "npd_no_spatial"."licence" ON "npd_no_spatial"."wellbore_exploration_all"."prlNpdidProductionLicence"  =  "npd_no_spatial"."licence"."prlNpdidLicence" 
+
+
+mappingId	Mapping:00942:ForeignKey
+target		npd:survey/{seis_acquisition.seaName} npdv:reportingCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."seis_acquisition"."seaName" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."seis_acquisition" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."seis_acquisition"."seaCompanyReported"  =  "npd_no_spatial"."company"."cmpLongName" 
+
+
+mappingId	Mapping:00943:ForeignKey
+target		npd:wellbore/{wellbore_document.wlbNpdidWellbore}/document/{wellbore_document.wellbore_document_id}/{wellbore_document.wlbDocumentName} npdv:documentForWellbore npd:wellbore/{wellbore_npdid_overview.wlbNpdidWellbore} . 
+source		SELECT "npd_no_spatial"."wellbore_document"."wellbore_document_id" ,  "npd_no_spatial"."wellbore_document"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_document"."wlbDocumentName" ,  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" FROM "npd_no_spatial"."wellbore_document" INNER JOIN "npd_no_spatial"."wellbore_npdid_overview" ON "npd_no_spatial"."wellbore_document"."wlbNpdidWellbore"  =  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" 
+
+
+mappingId	Mapping:00944:ForeignKey
+target		npd:licence/{licence_transfer_hst.prlNpdidLicence}/transfer/{licence_transfer_hst.prlTransferDirection}/{licence_transfer_hst.cmpNpdidCompany}/history/{licence_transfer_hst.prlTransferDateValidFrom} npdv:licenceTransferCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."licence_transfer_hst"."prlNpdidLicence" ,  "npd_no_spatial"."licence_transfer_hst"."prlTransferDirection" ,  "npd_no_spatial"."licence_transfer_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."licence_transfer_hst"."prlTransferDateValidFrom" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."licence_transfer_hst" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."licence_transfer_hst"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00945:ForeignKey
+target		npd:baa/{bsns_arr_area_transfer_hst.baaNpdidBsnsArrArea}/transfer/{bsns_arr_area_transfer_hst.baaTransferDirection}/{bsns_arr_area_transfer_hst.cmpNpdidCompany}/history/{bsns_arr_area_transfer_hst.baaTransferDateValidFrom} npdv:transferredBAA npd:baa/{bsns_arr_area.baaNpdidBsnsArrArea} . 
+source		SELECT "npd_no_spatial"."bsns_arr_area_transfer_hst"."baaNpdidBsnsArrArea" ,  "npd_no_spatial"."bsns_arr_area_transfer_hst"."baaTransferDirection" ,  "npd_no_spatial"."bsns_arr_area_transfer_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."bsns_arr_area_transfer_hst"."baaTransferDateValidFrom" ,  "npd_no_spatial"."bsns_arr_area"."baaNpdidBsnsArrArea" FROM "npd_no_spatial"."bsns_arr_area_transfer_hst" INNER JOIN "npd_no_spatial"."bsns_arr_area" ON "npd_no_spatial"."bsns_arr_area_transfer_hst"."baaNpdidBsnsArrArea"  =  "npd_no_spatial"."bsns_arr_area"."baaNpdidBsnsArrArea" 
+
+
+mappingId	Mapping:00946:ForeignKey
+target		npd:licence/{prlAreaSplitByBlock.prlNpdidLicence}/block/{prlAreaSplitByBlock.blcName}/polyno/{prlAreaSplitByBlock.prlAreaPolyPolyNo}/history/{prlAreaSplitByBlock.prlAreaPolyDateValidFrom}/{prlAreaSplitByBlock.prlAreaPolyDateValidTo} npdv:isGeometryOfFeature npd:licence/{licence.prlNpdidLicence} . 
+source		SELECT "npd_no_spatial"."prlAreaSplitByBlock"."prlNpdidLicence" ,  "npd_no_spatial"."prlAreaSplitByBlock"."blcName" ,  "npd_no_spatial"."prlAreaSplitByBlock"."prlAreaPolyPolyNo" ,  "npd_no_spatial"."prlAreaSplitByBlock"."prlAreaPolyDateValidFrom" ,  "npd_no_spatial"."prlAreaSplitByBlock"."prlAreaPolyDateValidTo" ,  "npd_no_spatial"."licence"."prlNpdidLicence" FROM "npd_no_spatial"."prlAreaSplitByBlock" INNER JOIN "npd_no_spatial"."licence" ON "npd_no_spatial"."prlAreaSplitByBlock"."prlNpdidLicence"  =  "npd_no_spatial"."licence"."prlNpdidLicence" 
+
+
+mappingId	Mapping:00947:ForeignKey
+target		npd:wellbore/{wlbPoint.wlbNpdidWellbore}/point npdv:isGeometryOfFeature npd:wellbore/{wellbore_npdid_overview.wlbNpdidWellbore} . 
+source		SELECT "npd_no_spatial"."wlbPoint"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" FROM "npd_no_spatial"."wlbPoint" INNER JOIN "npd_no_spatial"."wellbore_npdid_overview" ON "npd_no_spatial"."wlbPoint"."wlbNpdidWellbore"  =  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" 
+
+
+mappingId	Mapping:00948:ForeignKey
+target		npd:wellbore/{wellbore_formation_top.wlbNpdidWellbore}/stratum/{wellbore_formation_top.lsuNpdidLithoStrat}/depth/{wellbore_formation_top.lsuTopDepth}/{wellbore_formation_top.lsuBottomDepth} npdv:stratumForWellbore npd:wellbore/{wellbore_npdid_overview.wlbNpdidWellbore} . 
+source		SELECT "npd_no_spatial"."wellbore_formation_top"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_formation_top"."lsuNpdidLithoStrat" ,  "npd_no_spatial"."wellbore_formation_top"."lsuTopDepth" ,  "npd_no_spatial"."wellbore_formation_top"."lsuBottomDepth" ,  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" FROM "npd_no_spatial"."wellbore_formation_top" INNER JOIN "npd_no_spatial"."wellbore_npdid_overview" ON "npd_no_spatial"."wellbore_formation_top"."wlbNpdidWellbore"  =  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" 
+
+
+mappingId	Mapping:00949:ForeignKey
+target		npd:petreg/licence/{licence_petreg_licence_licencee.prlNpdidLicence}/licencee/{licence_petreg_licence_licencee.cmpNpdidCompany} ptl:licenceeForLicence npd:licence/{licence.prlNpdidLicence} . 
+source		SELECT "npd_no_spatial"."licence_petreg_licence_licencee"."prlNpdidLicence" ,  "npd_no_spatial"."licence_petreg_licence_licencee"."cmpNpdidCompany" ,  "npd_no_spatial"."licence"."prlNpdidLicence" FROM "npd_no_spatial"."licence_petreg_licence_licencee" INNER JOIN "npd_no_spatial"."licence" ON "npd_no_spatial"."licence_petreg_licence_licencee"."prlNpdidLicence"  =  "npd_no_spatial"."licence"."prlNpdidLicence" 
+
+
+mappingId	Mapping:00950:ForeignKey
+target		npd:discovery/{discovery.dscNpdidDiscovery} npdv:discoveryWellbore npd:wellbore/{wellbore_npdid_overview.wlbNpdidWellbore} . 
+source		SELECT "npd_no_spatial"."discovery"."dscNpdidDiscovery" ,  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" FROM "npd_no_spatial"."discovery" INNER JOIN "npd_no_spatial"."wellbore_npdid_overview" ON "npd_no_spatial"."discovery"."wlbNpdidWellbore"  =  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" 
+
+mappingId	Mapping:00951:ForeignKey
+target		npd:baa/{bsns_arr_area_operator.baaNpdidBsnsArrArea} npdv:baaOperatorCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."bsns_arr_area_operator"."baaNpdidBsnsArrArea" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."bsns_arr_area_operator" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."bsns_arr_area_operator"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00952:ForeignKey
+target		npd:facility/{tuf_operator_hst.tufNpdidTuf}/operator/{tuf_operator_hst.cmpNpdidCompany}/history/{tuf_operator_hst.tufOperDateValidFrom}/{tuf_operator_hst.tufOperDateValidTo} ptl:TUFOperatorCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."tuf_operator_hst"."tufNpdidTuf" ,  "npd_no_spatial"."tuf_operator_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."tuf_operator_hst"."tufOperDateValidFrom" ,  "npd_no_spatial"."tuf_operator_hst"."tufOperDateValidTo" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."tuf_operator_hst" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."tuf_operator_hst"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00953:ForeignKey
+target		npd:wellbore/{wellbore_exploration_all.wlbNpdidWellbore} npdv:wellboreForDiscovery npd:discovery/{discovery.dscNpdidDiscovery} . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."discovery"."dscNpdidDiscovery" FROM "npd_no_spatial"."wellbore_exploration_all" INNER JOIN "npd_no_spatial"."discovery" ON "npd_no_spatial"."wellbore_exploration_all"."dscNpdidDiscovery"  =  "npd_no_spatial"."discovery"."dscNpdidDiscovery" 
+
+
+mappingId	Mapping:00954:ForeignKey
+target		npd:discovery/{discovery_reserves.dscNpdidDiscovery}/{discovery_reserves.dscReservesRC} npdv:reservesForDiscovery npd:discovery/{discovery.dscNpdidDiscovery} . 
+source		SELECT "npd_no_spatial"."discovery_reserves"."dscNpdidDiscovery" ,  "npd_no_spatial"."discovery_reserves"."dscReservesRC" ,  "npd_no_spatial"."discovery"."dscNpdidDiscovery" FROM "npd_no_spatial"."discovery_reserves" INNER JOIN "npd_no_spatial"."discovery" ON "npd_no_spatial"."discovery_reserves"."dscNpdidDiscovery"  =  "npd_no_spatial"."discovery"."dscNpdidDiscovery" 
+
+
+mappingId	Mapping:00955:ForeignKey
+target		npd:petreg/licence/{licence_petreg_message.prlNpdidLicence}/message/{licence_petreg_message.ptlMessageDocumentNo} npdv:messageForLicence npd:licence/{licence.prlNpdidLicence} . 
+source		SELECT "npd_no_spatial"."licence_petreg_message"."prlNpdidLicence" ,  "npd_no_spatial"."licence_petreg_message"."ptlMessageDocumentNo" ,  "npd_no_spatial"."licence"."prlNpdidLicence" FROM "npd_no_spatial"."licence_petreg_message" INNER JOIN "npd_no_spatial"."licence" ON "npd_no_spatial"."licence_petreg_message"."prlNpdidLicence"  =  "npd_no_spatial"."licence"."prlNpdidLicence" 
+
+
+mappingId	Mapping:00956:ForeignKey
+target		npd:licence/{licence_oper_hst.prlNpdidLicence}/operator/{licence_oper_hst.cmpNpdidCompany}/history/{licence_oper_hst.prlOperDateValidFrom}/{licence_oper_hst.prlOperDateValidTo} npdv:operatorForLicence npd:licence/{licence.prlNpdidLicence} . 
+source		SELECT "npd_no_spatial"."licence_oper_hst"."prlNpdidLicence" ,  "npd_no_spatial"."licence_oper_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."licence_oper_hst"."prlOperDateValidFrom" ,  "npd_no_spatial"."licence_oper_hst"."prlOperDateValidTo" ,  "npd_no_spatial"."licence"."prlNpdidLicence" FROM "npd_no_spatial"."licence_oper_hst" INNER JOIN "npd_no_spatial"."licence" ON "npd_no_spatial"."licence_oper_hst"."prlNpdidLicence"  =  "npd_no_spatial"."licence"."prlNpdidLicence" 
+
+
+mappingId	Mapping:00957:ForeignKey
+target		npd:licence/{licence_licensee_hst.prlNpdidLicence}/licensee/{licence_licensee_hst.cmpNpdidCompany}/history/{licence_licensee_hst.prlLicenseeDateValidFrom}/{licence_licensee_hst.prlLicenseeDateValidTo} npdv:licenceLicensee npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."licence_licensee_hst"."prlNpdidLicence" ,  "npd_no_spatial"."licence_licensee_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."licence_licensee_hst"."prlLicenseeDateValidFrom" ,  "npd_no_spatial"."licence_licensee_hst"."prlLicenseeDateValidTo" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."licence_licensee_hst" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."licence_licensee_hst"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00958:ForeignKey
+target		npd:baa/{bsns_arr_area_licensee_hst.baaNpdidBsnsArrArea}/licensee/{bsns_arr_area_licensee_hst.cmpNpdidCompany}/history/{bsns_arr_area_licensee_hst.baaLicenseeDateValidFrom}/{bsns_arr_area_licensee_hst.baaLicenseeDateValidTo} npdv:baaLicensee npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."bsns_arr_area_licensee_hst"."baaNpdidBsnsArrArea" ,  "npd_no_spatial"."bsns_arr_area_licensee_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."bsns_arr_area_licensee_hst"."baaLicenseeDateValidFrom" ,  "npd_no_spatial"."bsns_arr_area_licensee_hst"."baaLicenseeDateValidTo" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."bsns_arr_area_licensee_hst" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."bsns_arr_area_licensee_hst"."cmpNpdidCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00959:ForeignKey
+target		npd:wellbore/{wellbore_coordinates.wlbNpdidWellbore}/point npdv:coordinateForWellbore npd:wellbore/{wellbore_npdid_overview.wlbNpdidWellbore} . 
+source		SELECT "npd_no_spatial"."wellbore_coordinates"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" FROM "npd_no_spatial"."wellbore_coordinates" INNER JOIN "npd_no_spatial"."wellbore_npdid_overview" ON "npd_no_spatial"."wellbore_coordinates"."wlbNpdidWellbore"  =  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" 
+
+
+mappingId	Mapping:00960:ForeignKey
+target		npd:wellbore/{wellbore_development_all.wlbNpdidWellbore} npdv:reclassedFromWellbore npd:wellbore/{wellbore_npdid_overview.wlbNpdidWellbore} . 
+source		SELECT "npd_no_spatial"."wellbore_development_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" FROM "npd_no_spatial"."wellbore_development_all" INNER JOIN "npd_no_spatial"."wellbore_npdid_overview" ON "npd_no_spatial"."wellbore_development_all"."wlbNpdidWellboreReclass"  =  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" 
+
+
+mappingId	Mapping:00961:ForeignKey
+target		npd:discovery/{dscArea.dscNpdidDiscovery}/area/hctype/{dscArea.dscHcType} npdv:isGeometryOfFeature npd:discovery/{discovery.dscNpdidDiscovery} . 
+source		SELECT "npd_no_spatial"."dscArea"."dscNpdidDiscovery" ,  "npd_no_spatial"."dscArea"."dscHcType" ,  "npd_no_spatial"."discovery"."dscNpdidDiscovery" FROM "npd_no_spatial"."dscArea" INNER JOIN "npd_no_spatial"."discovery" ON "npd_no_spatial"."dscArea"."dscNpdidDiscovery"  =  "npd_no_spatial"."discovery"."dscNpdidDiscovery" 
+
+
+mappingId	Mapping:00962:ForeignKey
+target		npd:wellbore/{strat_litho_wellbore_core.wlbNpdidWellbore}/stratum/{strat_litho_wellbore_core.lsuNpdidLithoStrat}/cores npdv:coreForWellbore npd:wellbore/{wellbore_npdid_overview.wlbNpdidWellbore} . 
+source		SELECT "npd_no_spatial"."strat_litho_wellbore_core"."wlbNpdidWellbore" ,  "npd_no_spatial"."strat_litho_wellbore_core"."lsuNpdidLithoStrat" ,  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" FROM "npd_no_spatial"."strat_litho_wellbore_core" INNER JOIN "npd_no_spatial"."wellbore_npdid_overview" ON "npd_no_spatial"."strat_litho_wellbore_core"."wlbNpdidWellbore"  =  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" 
+
+
+mappingId	Mapping:00963:ForeignKey
+target		npd:field/{field_licensee_hst.fldNpdidField}/licensee/{field_licensee_hst.cmpNpdidCompany}/history/{field_licensee_hst.fldLicenseeFrom}/{field_licensee_hst.fldLicenseeTo} npdv:licenseeForField npd:field/{field.fldNpdidField} . 
+source		SELECT "npd_no_spatial"."field_licensee_hst"."fldNpdidField" ,  "npd_no_spatial"."field_licensee_hst"."cmpNpdidCompany" ,  "npd_no_spatial"."field_licensee_hst"."fldLicenseeFrom" ,  "npd_no_spatial"."field_licensee_hst"."fldLicenseeTo" ,  "npd_no_spatial"."field"."fldNpdidField" FROM "npd_no_spatial"."field_licensee_hst" INNER JOIN "npd_no_spatial"."field" ON "npd_no_spatial"."field_licensee_hst"."fldNpdidField"  =  "npd_no_spatial"."field"."fldNpdidField" 
+
+
+mappingId	Mapping:00964:ForeignKey
+target		npd:baa/{bsns_arr_area_area_poly_hst.baaNpdidBsnsArrArea}/block/{bsns_arr_area_area_poly_hst.baaAreaPolyBlockName}/polyno/{bsns_arr_area_area_poly_hst.baaAreaPolyNo}/history/{bsns_arr_area_area_poly_hst.baaAreaPolyDateValidFrom}/{bsns_arr_area_area_poly_hst.baaAreaPolyDateValidTo} npdv:isGeometryOfFeature npd:baa/{bsns_arr_area.baaNpdidBsnsArrArea} . 
+source		SELECT "npd_no_spatial"."bsns_arr_area_area_poly_hst"."baaNpdidBsnsArrArea" ,  "npd_no_spatial"."bsns_arr_area_area_poly_hst"."baaAreaPolyBlockName" ,  "npd_no_spatial"."bsns_arr_area_area_poly_hst"."baaAreaPolyNo" ,  "npd_no_spatial"."bsns_arr_area_area_poly_hst"."baaAreaPolyDateValidFrom" ,  "npd_no_spatial"."bsns_arr_area_area_poly_hst"."baaAreaPolyDateValidTo" ,  "npd_no_spatial"."bsns_arr_area"."baaNpdidBsnsArrArea" FROM "npd_no_spatial"."bsns_arr_area_area_poly_hst" INNER JOIN "npd_no_spatial"."bsns_arr_area" ON "npd_no_spatial"."bsns_arr_area_area_poly_hst"."baaNpdidBsnsArrArea"  =  "npd_no_spatial"."bsns_arr_area"."baaNpdidBsnsArrArea" 
+
+
+mappingId	Mapping:00965:ForeignKey
+target		npd:licence/{prlArea.prlNpdidLicence}/area/{prlArea.prlArea_id}/history/{prlArea.prlAreaPolyDateValidFrom}/{prlArea.prlAreaPolyDateValidTo} npdv:isGeometryOfFeature npd:licence/{licence.prlNpdidLicence} . 
+source		SELECT "npd_no_spatial"."prlArea"."prlArea_id" ,  "npd_no_spatial"."prlArea"."prlNpdidLicence" ,  "npd_no_spatial"."prlArea"."prlAreaPolyDateValidFrom" ,  "npd_no_spatial"."prlArea"."prlAreaPolyDateValidTo" ,  "npd_no_spatial"."licence"."prlNpdidLicence" FROM "npd_no_spatial"."prlArea" INNER JOIN "npd_no_spatial"."licence" ON "npd_no_spatial"."prlArea"."prlNpdidLicence"  =  "npd_no_spatial"."licence"."prlNpdidLicence" 
+
+
+mappingId	Mapping:00966:ForeignKey
+target		npd:facility/{fclPoint.fclNpdidFacility}/point npdv:belongsToFacility npd:petreg/facility/{tuf_petreg_licence.tufNpdidTuf} . 
+source		SELECT "npd_no_spatial"."fclPoint"."fclNpdidFacility" ,  "npd_no_spatial"."tuf_petreg_licence"."tufNpdidTuf" FROM "npd_no_spatial"."fclPoint" INNER JOIN "npd_no_spatial"."tuf_petreg_licence" ON "npd_no_spatial"."fclPoint"."fclBelongsToS"  =  "npd_no_spatial"."tuf_petreg_licence"."tufNpdidTuf" 
+
+
+mappingId	Mapping:00967:ForeignKey
+target		npd:wellbore/{wellbore_exploration_all.wlbNpdidWellbore} npdv:explorationWellboreForLicence npd:licence/{licence.prlNpdidLicence} . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."licence"."prlNpdidLicence" FROM "npd_no_spatial"."wellbore_exploration_all" INNER JOIN "npd_no_spatial"."licence" ON "npd_no_spatial"."wellbore_exploration_all"."wlbProductionLicence"  =  "npd_no_spatial"."licence"."prlName" 
+
+
+mappingId	Mapping:00968:ForeignKey
+target		npd:wellbore/{wellbore_exploration_all.wlbNpdidWellbore} npdv:drillingOperatorCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."wellbore_exploration_all"."wlbNpdidWellbore" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."wellbore_exploration_all" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."wellbore_exploration_all"."wlbDrillingOperator"  =  "npd_no_spatial"."company"."cmpLongName" 
+
+
+mappingId	Mapping:00969:ForeignKey
+target		npd:field/{field_reserves.fldNpdidField}/reserve npdv:reservesForField npd:field/{field.fldNpdidField} . 
+source		SELECT "npd_no_spatial"."field_reserves"."fldNpdidField" ,  "npd_no_spatial"."field"."fldNpdidField" FROM "npd_no_spatial"."field_reserves" INNER JOIN "npd_no_spatial"."field" ON "npd_no_spatial"."field_reserves"."fldNpdidField"  =  "npd_no_spatial"."field"."fldNpdidField" 
+
+
+mappingId	Mapping:00970:ForeignKey
+target		npd:company/{company_reserves.cmpNpdidCompany}/reserve/{company_reserves.fldNpdidField} npdv:reservesForField npd:field/{field.fldNpdidField} . 
+source		SELECT "npd_no_spatial"."company_reserves"."cmpNpdidCompany" ,  "npd_no_spatial"."company_reserves"."fldNpdidField" ,  "npd_no_spatial"."field"."fldNpdidField" FROM "npd_no_spatial"."company_reserves" INNER JOIN "npd_no_spatial"."field" ON "npd_no_spatial"."company_reserves"."fldNpdidField"  =  "npd_no_spatial"."field"."fldNpdidField" 
+
+
+mappingId	Mapping:00971:ForeignKey
+target		npd:facility/{facility_moveable.fclNpdidFacility} npdv:currentResponsibleCompany npd:company/{company.cmpNpdidCompany} . 
+source		SELECT "npd_no_spatial"."facility_moveable"."fclNpdidFacility" ,  "npd_no_spatial"."company"."cmpNpdidCompany" FROM "npd_no_spatial"."facility_moveable" INNER JOIN "npd_no_spatial"."company" ON "npd_no_spatial"."facility_moveable"."fclNpdidCurrentRespCompany"  =  "npd_no_spatial"."company"."cmpNpdidCompany" 
+
+
+mappingId	Mapping:00972:ForeignKey
+target		npd:facility/{fclPoint.fclNpdidFacility}/point npdv:isGeometryOfFeature npd:facility/{facility_fixed.fclNpdidFacility} . 
+source		SELECT "npd_no_spatial"."fclPoint"."fclNpdidFacility" ,  "npd_no_spatial"."facility_fixed"."fclNpdidFacility" FROM "npd_no_spatial"."fclPoint" INNER JOIN "npd_no_spatial"."facility_fixed" ON "npd_no_spatial"."fclPoint"."fclNpdidFacility"  =  "npd_no_spatial"."facility_fixed"."fclNpdidFacility" 
+
+
+mappingId	Mapping:00973:ForeignKey
+target		npd:wellbore/{strat_litho_wellbore.wlbNpdidWellbore}/stratum/{strat_litho_wellbore.lsuNpdidLithoStrat}/depth/{strat_litho_wellbore.lsuTopDepth}/{strat_litho_wellbore.lsuBottomDepth} npdv:stratumForWellbore npd:wellbore/{wellbore_npdid_overview.wlbNpdidWellbore} . 
+source		SELECT "npd_no_spatial"."strat_litho_wellbore"."wlbNpdidWellbore" ,  "npd_no_spatial"."strat_litho_wellbore"."lsuNpdidLithoStrat" ,  "npd_no_spatial"."strat_litho_wellbore"."lsuTopDepth" ,  "npd_no_spatial"."strat_litho_wellbore"."lsuBottomDepth" ,  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" FROM "npd_no_spatial"."strat_litho_wellbore" INNER JOIN "npd_no_spatial"."wellbore_npdid_overview" ON "npd_no_spatial"."strat_litho_wellbore"."wlbNpdidWellbore"  =  "npd_no_spatial"."wellbore_npdid_overview"."wlbNpdidWellbore" 

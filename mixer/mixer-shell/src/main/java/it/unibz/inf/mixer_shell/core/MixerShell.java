@@ -1,16 +1,21 @@
 package it.unibz.inf.mixer_shell.core;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
+import it.unibz.inf.utils.persistence.LogToFile;
 
 public class MixerShell extends Mixer {
  
     private String cmd;
+    private boolean shellOutput;
     
     public MixerShell(Conf configuration) {
 	super(configuration);
 	this.cmd = configuration.getShellCmd();
+	this.shellOutput = configuration.getShellOutput().equals("false") || configuration.getShellOutput().equals("null") ? false : true;
     }
     
     private class ExecuterThread extends Thread{
@@ -30,8 +35,38 @@ public class MixerShell extends Mixer {
 	    long startTime = System.currentTimeMillis();
 	    try {
 		p = Runtime.getRuntime().exec(cmd);
+
+		BufferedReader in =
+			new BufferedReader(new InputStreamReader(p.getInputStream()));
+		BufferedReader err =
+			new BufferedReader(new InputStreamReader(p.getErrorStream()));
+		String inputLine;
+		if( shellOutput ){
+		    // logging
+		    
+		    long curTime = System.currentTimeMillis();
+		    LogToFile logger = LogToFile.getInstance();
+		    logger.openFile("par_" + curTime);
+		    logger.appendLine(cmd);
+		    logger.closeFile();
+		    logger.openFile("out_" + curTime);
+		    
+		    while ((inputLine = in.readLine()) != null) {
+			logger.appendLine(inputLine);
+		    }
+		    in.close();
+		    while ( (inputLine = err.readLine()) != null ){
+			logger.appendLine(inputLine);
+		    }
+		    err.close();
+		    logger.closeFile();
+		}else{ // noShellOutput
+		    while ((inputLine = in.readLine()) != null) {}
+		    in.close();
+		    while ( (inputLine = err.readLine()) != null ){}
+		    err.close();
+		}
 		p.waitFor();
-//		p.getInputStream();
 	    } catch (IOException | InterruptedException e) {
 		e.printStackTrace();
 	    }

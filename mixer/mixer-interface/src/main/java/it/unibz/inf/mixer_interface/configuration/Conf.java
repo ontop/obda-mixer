@@ -38,7 +38,9 @@ public class Conf {
 	protected final String logFile;
 	protected final String templatesDir;
 	protected String shellCmd;
+	private String shellOutput;
 	protected String forcedTimeouts;
+	private int forcedTimeoutsTimeoutValue;
 	
 	// java-api-mode 
 	protected final String javaApiClass;
@@ -53,7 +55,9 @@ public class Conf {
 			String logFile,
 			String templatesDir, 
 			String shellCmd,
+			String shellOutput,
 			String forcedTimeouts,
+			String forcedTimeoutsValue,
 			String javaApiClass
 		){
 		this.owlFile = owlFile;
@@ -65,7 +69,9 @@ public class Conf {
 		this.logFile = logFile;
 		this.templatesDir = templatesDir;
 		this.shellCmd = shellCmd;
+		this.shellOutput = shellOutput;
 		this.forcedTimeouts = forcedTimeouts;
+		this.forcedTimeoutsTimeoutValue = Integer.parseInt(forcedTimeoutsValue);
 		this.javaApiClass = javaApiClass;
 	}
 
@@ -104,6 +110,10 @@ public class Conf {
 	public String getShellCmd() {
 	    return this.shellCmd;
 	}
+	
+	public String getShellOutput() {
+	    return this.shellOutput;
+	}
 
 	public List<String> getForcedTimeouts() {
 	    
@@ -115,6 +125,10 @@ public class Conf {
 		result.add(split);
 	    }
 	    return result;
+	}
+	
+	public int getForcedTimeoutsTimeoutValue(){
+	    return this.forcedTimeoutsTimeoutValue;
 	}
 
 	public String getJavaAPIClass() {

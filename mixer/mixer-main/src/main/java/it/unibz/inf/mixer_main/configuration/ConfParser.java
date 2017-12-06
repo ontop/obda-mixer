@@ -85,30 +85,41 @@ public class ConfParser {
 	    return searchTag("java-api-class");
 	}
 	
-	protected  String searchTag(String tag){
-		try{
-			BufferedReader in = new BufferedReader(
-					new FileReader(confFile));
-			String s;
-			String[] s2 = new String[2];
-			while ((s = in.readLine()) != null){
-				s2 = s.split("\\s+");
-				if (s2[0].equals(tag)){ in.close(); return s2[1]; }
-			}
-			in.close();
-		}catch(IOException e){
-			e.printStackTrace();
-		}
-		return "error";
-	}
-	
 	/** @return Path for OBDA System Executable (only in Shell mode) */
 	public String getShellCmd() {
 	    return searchTag("shell-cmd");
 	}
-
+	
+	/** @return Specify what to do with the output of the shell command */
+	public String getShellOutput() {
+	    return searchTag("shell-out");
+	}
+	
 	/** @return Templates for which we force a timeout */
 	public String getForcedTimeouts() {
 	    return searchTag("forced-timeouts");
 	}
+	
+	/** @return Templates for which we force a timeout */
+	public String getForcedTimeoutsTimeoutValue() {
+	    return searchTag("forced-timeouts-timeout-value");
+	}
+
+	protected  String searchTag(String tag){
+	    try{
+		BufferedReader in = new BufferedReader(
+			new FileReader(confFile));
+		String s;
+		String[] s2 = new String[2];
+		while ((s = in.readLine()) != null){
+		    s2 = s.split("\\s+");
+		    if (s2[0].equals(tag)){ in.close(); return s2[1]; }
+		}
+		in.close();
+	    }catch(IOException e){
+		e.printStackTrace();
+	    }
+	    return "error";
+	}
+	
 }

@@ -106,7 +106,9 @@ public class MixerMain {
 		cP.getLogPath(), 
 		cP.getQueriesDir(),
 		cP.getShellCmd(),
+		cP.getShellOutput(),
 		cP.getForcedTimeouts(),
+		cP.getForcedTimeoutsTimeoutValue(),
 		cP.getJavaAPIClass()
 		);
 
@@ -160,10 +162,8 @@ public class MixerMain {
     private Mixer instantiateOwlapiMixer(Conf configuration) 
 	    throws UnsupportedSystemException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException 
     {
-	log.error( "The provided java api class " + configuration.getJavaAPIClass() +" is not a valid java-api handler.");
 	Class<?> clazz= Class.forName( configuration.getJavaAPIClass() );
 	Constructor<?> ctor = clazz.getConstructor(Conf.class);
-	
 	Mixer result = (Mixer)ctor.newInstance(new Object[] { configuration });
 	
 	return result;

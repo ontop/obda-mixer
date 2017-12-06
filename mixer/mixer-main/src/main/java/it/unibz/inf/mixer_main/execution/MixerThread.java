@@ -120,13 +120,15 @@ public class MixerThread extends Thread {
 		chrono.start();
 		String query = tqs.getNextQuery();
 		System.out.println(query);
+		
 		timeWasted += chrono.stop();
 		if( query == null ){
 		    stop = true;
 		}
 		else if( query.equals("force-timeout") ){
-		    localStat.addTime("execution_time#"+tqs.getCurQueryName(), timeout*1000); // Convert to milliseconds
-		    forcedTimeoutsSum += timeout*1000; // Convert to milliseconds
+		    int forcedTimeout = mixer.getConfiguration().getForcedTimeoutsTimeoutValue();
+		    localStat.addTime("execution_time#"+tqs.getCurQueryName(), forcedTimeout*1000); // Convert to milliseconds
+		    forcedTimeoutsSum += forcedTimeout*1000; // Convert to milliseconds
 		}
 		else{
 		    Object resultSet = null;
