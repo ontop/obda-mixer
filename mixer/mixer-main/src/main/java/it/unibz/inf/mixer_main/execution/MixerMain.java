@@ -126,9 +126,8 @@ public class MixerMain {
 		this.mixer = instantiateOwlapiMixer(configuration);
 		if( rewriting ) this.mixer.rewritingON();
 	    } catch (Exception e) {
-		log.error("Error: The class " + configuration.getJavaAPIClass() + " provided as java-api handler does not exist");
-		e.printStackTrace();
-		System.exit(1);
+		String msg = "Error: The class " + configuration.getJavaAPIClass() + " provided as java-api handler does not exist";
+		MixerMain.closeEverything(msg, e);
 	    }
 	    break;
 	case "web" : 
@@ -263,5 +262,10 @@ public class MixerMain {
 	MixerMain main = new MixerMain(args);
 	main.do_tests();
 
+    }
+
+    public static void closeEverything(String msg, Exception e) {
+	log.error(msg);
+	throw new RuntimeException(e);
     }
 };

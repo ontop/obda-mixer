@@ -22,6 +22,10 @@ package it.unibz.inf.mixer_main.configuration;
 
 import java.io.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import it.unibz.inf.mixer_main.execution.MixerMain;
+
 /**
  * Reads the configuration info from a configuration file.
  * @author Davide Lanti
@@ -29,8 +33,11 @@ import java.io.*;
  */
 public class ConfParser {
 	
+    
+    private static ConfParser instance = null;
+    private static Logger log = LoggerFactory.getLogger(ConfParser.class);
+    
 	protected String confFile;
-	private static ConfParser instance = null;
 	
 	protected ConfParser(String resourcesDir){
 		this.confFile = resourcesDir + "/configuration.conf";
@@ -117,7 +124,10 @@ public class ConfParser {
 		}
 		in.close();
 	    }catch(IOException e){
-		e.printStackTrace();
+		String msg = "I could not find the "
+			+ "configuration file, currently set at \"" + confFile + "\". To specify "
+			+ "another path, use the --conf option.";
+		MixerMain.closeEverything(msg,e);
 	    }
 	    return "error";
 	}
