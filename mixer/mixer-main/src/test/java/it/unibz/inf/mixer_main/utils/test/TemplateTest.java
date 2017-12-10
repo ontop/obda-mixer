@@ -2,7 +2,6 @@ package it.unibz.inf.mixer_main.utils.test;
 
 import static org.junit.Assert.*;
 import it.unibz.inf.mixer_main.utils.Template;
-import it.unibz.inf.mixer_main.utils.Template.PlaceholderInfo;
 
 import org.junit.Test;
 

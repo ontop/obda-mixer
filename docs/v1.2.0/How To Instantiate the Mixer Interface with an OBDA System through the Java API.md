@@ -2,7 +2,7 @@
 
 **First Step: Create a new Maven Module**
 
-obda-mixer can test all OBDA systems that provide a Java API for query answering. To do so, it suffices to provide an implementation to the abstract method of the class `Mixer`. The first step is to create a Maven module, and then add a dependency to the _mixer-interface_ project in order to allow inheritance from the class _Mixer_. As an example, we report the pom file of the maven module _mixer-ontop_, containing the concrete class that implements the methods in class _Mixer_ through -ontop- API calls
+`obda-mixer` can test all OBDA systems that provide a Java API for query answering. To do so, it suffices to provide an implementation to the abstract method of the class `Mixer`. The first step is to create a Maven module, and then add a dependency to the `mixer-interface` project in order to allow inheritance from the class `Mixer`. As an example, we report the pom file of the maven module `mixer-ontop`, containing the concrete class that implements the methods in class `Mixer` through the `ontop` java API.
 
 ~~~~~~~~
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -10,26 +10,28 @@ obda-mixer can test all OBDA systems that provide a Java API for query answering
   <parent>
     <groupId>it.unibz.inf.mixer</groupId>
     <artifactId>mixer</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.2</version>
   </parent>
   <artifactId>mixer-ontop</artifactId>
-  <groupId>it.unibz.inf.mixer</groupId>	
-  <version>0.0.1-SNAPSHOT</version>
+   
   
   <dependencies>
-	<!-- Dependency to the mixer-interface -->
-	<dependency>
+  	<dependency>
   		<artifactId>mixer-interface</artifactId>
   		<groupId>it.unibz.inf.mixer</groupId>
-  		<version>0.0.1-SNAPSHOT</version>
+  		<version>1.2</version>
   	</dependency>
   	
   	<!-- ONTOP -->
 	<dependency>
 		<groupId>it.unibz.inf.ontop</groupId>
-		<artifactId>ontop-quest-owlapi3</artifactId>
-		<version>1.13.1-BENCHMARK</version>
+		<artifactId>ontop-quest-owlapi</artifactId>
+		<version>1.18.1</version>
 	</dependency>
+	<dependency>
+		<groupId>mysql</groupId>
+		<artifactId>mysql-connector-java</artifactId>
+		</dependency>
   </dependencies>
 </project>
 ~~~~~~~~
