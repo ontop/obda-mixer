@@ -1,4 +1,4 @@
-`obda-mixer` v1.2.0
+# obda-mixer v1.2.0
 
 `obda-mixer` is a [maven](http://maven.apache.org/) project born with the intent of testing OBDA systems. This version (`1.2.0`) can interact with the OBDA system through three different modalities:
 

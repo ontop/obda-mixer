@@ -1,4 +1,4 @@
-# OBDA-Mixer v1.1.0
+# obda-mixer v1.1.0
 
 The mixer is a [maven](http://maven.apache.org/) project born with the intent of testing OBDA systems. This version (`1.1.0`) interacts with the OBDA system through a Java API interface. Such interface is currently implemented for the latest stable version (`v1.18`) of the [Ontop ODA system](https://github.com/ontop/ontop). Mixer gives access to fine-grained and OBDA-specific metrics such as the_query unfolding time_ (i.e., the time spent in unfolding the mappings definitions and producing the SQL translation for the input query) or the _query rewriting time_ (i.e., the time spent in rewriting the input query so as to take into account for the axioms in the ontology).
 
