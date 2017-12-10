@@ -10,7 +10,7 @@ public class TemplateTest {
 
     @Test
     public void test() {
-	Template t = new Template("ciao a tut/// ${1:tableName.colName}/${1:t2.c2}/");
+	Template t = new Template("ciao a tut/// ${1:tableName.colName:none}/${1:t2.c2:percent}/");
 	
 	Template.PlaceholderInfo pI = t.getNthPlaceholderInfo(1);
 	
@@ -19,10 +19,10 @@ public class TemplateTest {
 	pI = t.getNthPlaceholderInfo(2);
 	assertEquals("id = 1, qN = t2.c2", pI.toString());
 	
-	t.setNthPlaceholder(1, "cazzoright");
+	t.setNthPlaceholder(1, "tappo");
 	t.setNthPlaceholder(2, "ciao");
 	
-	assertEquals("ciao a tut/// cazzoright/ciao/", t.getFilled());	
+	assertEquals("ciao a tut/// tappo/ciao/", t.getFilled());	
     }
 
 }

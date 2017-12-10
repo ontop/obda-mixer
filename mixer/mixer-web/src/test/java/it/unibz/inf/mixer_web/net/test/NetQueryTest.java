@@ -27,17 +27,17 @@ public class NetQueryTest{
 
     private final static String SERVICE_URL = "http://10.7.20.65:2021/sparql";
 
-    @Ignore
-    @Test
-    public void testNetQuery(){
-	NetQuery q = new NetQuery(SERVICE_URL, QUERY, 1200000);
-
-	String result;
-	result = convertStreamToString(q.exec());
-	System.out.println(result);
-	System.out.println(q.getExecutionTimeInSeconds());
-	q.close();
-    }
+//    @Ignore
+//    @Test
+//    public void testNetQuery(){
+//	NetQuery q = new NetQuery(SERVICE_URL, QUERY, 1200000);
+//
+//	String result;
+//	result = convertStreamToString(q.exec());
+//	System.out.println(result);
+//	System.out.println(q.getExecutionTimeInSeconds());
+//	q.close();
+//    }
 
     private static String convertStreamToString(java.io.InputStream is) {
 	@SuppressWarnings("resource")
