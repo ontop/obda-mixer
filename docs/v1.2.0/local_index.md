@@ -2,8 +2,7 @@
 
 `obda-mixer` is a [maven](http://maven.apache.org/) project born with the intent of testing OBDA systems. This version (`1.2.0`) can interact with the OBDA system through three different modalities:
 
-- `java-api`: To access fine-grained statistics such as _rewriting_ (i.e., the time spent in rewriting the input query before the unfolding phase) or _unfolding time_ (the time spent in unfolding the mappings definitions and producing the SQL translation for the input query). This is achieved by implementing the statistics gathering methods in the abstract class `Mixer`. 
--- Such implementation is currently provided for the latest stable version (`v1.18`) of the [Ontop ODA system](https://github.com/ontop/ontop)
+- `java-api`: To access fine-grained statistics such as _rewriting_ (i.e., the time spent in rewriting the input query before the unfolding phase) or _unfolding time_ (the time spent in unfolding the mappings definitions and producing the SQL translation for the input query). This is achieved by implementing the statistics gathering methods in the abstract class `Mixer`. A default implementation is currently provided for the latest stable version (`v1.18`) of the [Ontop ODA system](https://github.com/ontop/ontop)
 - `sparql-endpoint`: To query HTTP SPARQL endpoints; only response times and aggregate statistics based on response times are available in this mode.
 - `shell`: To query the OBDA system under test through a command-line interface; limitations for `sparql-endpoint` apply in this mode as well.
 
@@ -44,6 +43,9 @@ WHERE {
  FILTER(?m >= 1 && ?m <= 12 )
 } 
 ~~~
+
+In this way, it is possible to instantiate the same queries in many different ways, so as to
+reduce the impact of caching on the measured execution times (useful for cold-run analyses).
 
 ## First Steps
 
