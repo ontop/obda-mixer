@@ -36,9 +36,9 @@
 </project>
 ~~~~~~~~
 
-**Second Step: Provide Implementations to the Public Interface of _Mixer_**
+**Second Step: Provide Implementations to the Public Interface of `Mixer`**
 
-For example, the method _Mixer.executeQuery()_ is implemented through the -ontop- Java API as:
+For example, the method `Mixer.executeQuery()` is implemented through the `ontop` Java API as:
 
 ~~~~~~~
 	@Override
@@ -57,7 +57,7 @@ For example, the method _Mixer.executeQuery()_ is implemented through the -ontop
 
 **Third Step: Add your OBDA System to the Options**
 
-You need to enrich the set of values allowed for the --obda option. This is done by modifying a single line in the _MixerMain_ class, contained in the _mixer-main_ project. For example:
+You need to enrich the set of values allowed for the --obda option. This is done by modifying a single line in the `MixerOptionsInterface` class, contained in the `mixer-main` project. For example:
 
 ~~~~~~~~~~~~~~
 // Command-line option deciding which Mixer implementation should be used
@@ -84,7 +84,7 @@ The next step is to tell the Mixer what concrete class corresponds to the freshl
 	}
 ~~~~~~~~~~~~
 
-contained in class _MixerMain_ should be changed in
+contained in class `MixerMain` should be changed in
 
 ~~~~~~~~~~~~
 	/** Modify this method to add other systems **/
@@ -100,7 +100,7 @@ contained in class _MixerMain_ should be changed in
 	}
 ~~~~~~~~~~~~
 
-After [setting up the configuration file](Build and Run the Mixer), you can tell the obda-mixer to run tests over the newly added OBDA system by the command-line option
+After [setting up the configuration file](Build and Run the Mixer), you can tell `obda-mixer` to run tests over the newly added OBDA system by the command-line option
 
 ~~~~~~
 --obda=my_obda_system
