@@ -30,7 +30,7 @@ public class StringOption extends Option {
 	}
 
 	@Override
-	public boolean parse(String toParse) {
+	public boolean parseImpl(String toParse) {
 		String temp = toParse.trim(); // Eliminate whitespaces
 		
 		if( temp.startsWith(name+"=") ){

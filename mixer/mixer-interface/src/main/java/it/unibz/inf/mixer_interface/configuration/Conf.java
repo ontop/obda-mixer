@@ -24,114 +24,168 @@ import java.util.List;
  */
 
 public class Conf {
-	// OBDA connection parameters
-	protected final String owlFile;
-	protected final String mappingsFile;
-	
-	// Database credentials
-	protected final String driverClass;
-	protected final String databaseUrl;
-	protected final String databaseUser;
-	protected final String databasePwd;
 
-	// Mixer-specific parameters
-	protected final String logFile;
-	protected final String templatesDir;
-	protected String shellCmd;
-	private String shellOutput;
-	protected String forcedTimeouts;
-	private int forcedTimeoutsTimeoutValue;
-	
-	// java-api-mode 
-	protected final String javaApiClass;
-	
-	public Conf(
-			String owlFile, 
-			String mappingsFile, 
-			String driverClass,
-			String databaseUrl,
-			String databaseUser,
-			String databasePwd,
-			String logFile,
-			String templatesDir, 
-			String shellCmd,
-			String shellOutput,
-			String forcedTimeouts,
-			String forcedTimeoutsValue,
-			String javaApiClass
-		){
-		this.owlFile = owlFile;
-		this.mappingsFile = mappingsFile;
-		this.driverClass = driverClass;
-		this.databaseUrl = databaseUrl;
-		this.databaseUser = databaseUser;
-		this.databasePwd = databasePwd;
-		this.logFile = logFile;
-		this.templatesDir = templatesDir;
-		this.shellCmd = shellCmd;
-		this.shellOutput = shellOutput;
-		this.forcedTimeouts = forcedTimeouts;
-		this.forcedTimeoutsTimeoutValue = Integer.parseInt(forcedTimeoutsValue);
-		this.javaApiClass = javaApiClass;
-	}
+    // OBDA connection parameters
+    protected final String owlFile;
+    protected final String mappingsFile;
 
-	public String getOwlFile() {
-		return owlFile;
-	}
+    // Database credentials
+    protected final String driverClass;
+    protected final String databaseUrl;
+    protected final String databaseUser;
+    protected final String databasePwd;
 
-	public String getMappingsFile() {
-		return mappingsFile;
-	}
+    // Mixer-specific parameters
+    protected final String logFile;
+    protected final String templatesDir;
+    protected String shellCmd;
+    protected boolean shellOutput;
+    protected String forcedTimeouts;
+    protected int forcedTimeoutsTimeoutValue;
 
-	public String getDatabaseUrl() {
-		return databaseUrl;
-	}
+    // java-api-mode 
+    protected final String javaApiClass;
+    protected int numRuns;
+    protected int numWarmUps;
+    protected int timeout;
+    protected int numClients;
+    protected boolean rewriting;
+    protected String mode;
+    protected String serviceUrl;
 
-	public String getDatabaseUser() {
-		return databaseUser;
-	}
+    public Conf(
+	    int numRuns,
+	    int numWarmUps,
+	    int timeout,
+	    int numClients,
+	    boolean rewriting,
+	    String mode,
+	    String serviceUrl,
+	    String owlFile, 
+	    String mappingsFile, 
+	    String driverClass,
+	    String databaseUrl,
+	    String databaseUser,
+	    String databasePwd,
+	    String logFile,
+	    String templatesDir, 
+	    String shellCmd,
+	    boolean shellOutput,
+	    String forcedTimeouts,
+	    int forcedTimeoutsValue,
+	    String javaApiClass
+	    ){
+	this.numRuns = numRuns;
+	this.numWarmUps = numWarmUps;
+	this.timeout= timeout;
+	this.numClients = numClients;
+	this.rewriting = rewriting;
+	this.mode = mode;
+	this.serviceUrl = serviceUrl;
+	this.owlFile = owlFile;
+	this.mappingsFile = mappingsFile;
+	this.driverClass = driverClass;
+	this.databaseUrl = databaseUrl;
+	this.databaseUser = databaseUser;
+	this.databasePwd = databasePwd;
+	this.logFile = logFile;
+	this.templatesDir = templatesDir;
+	this.shellCmd = shellCmd;
+	this.shellOutput = shellOutput;
+	this.forcedTimeouts = forcedTimeouts;
+	this.forcedTimeoutsTimeoutValue = forcedTimeoutsValue;
+	this.javaApiClass = javaApiClass;
+    }
 
-	public String getDatabasePwd() {
-		return databasePwd;
-	}
+    public String getJavaApiClass() {
+	return javaApiClass;
+    }
 
-	public String getLogFile() {
-		return logFile;
-	}
+    public int getNumRuns() {
+	return numRuns;
+    }
 
-	public String getTemplatesDir() {
-		return templatesDir;
-	}
+    public int getNumWarmUps() {
+	return numWarmUps;
+    }
 
-	public String getDriverClass() {
-	    return this.driverClass;
-	}
+    public int getTimeout() {
+	return timeout;
+    }
 
-	public String getShellCmd() {
-	    return this.shellCmd;
-	}
-	
-	public String getShellOutput() {
-	    return this.shellOutput;
-	}
+    public int getNumClients() {
+	return numClients;
+    }
 
-	public List<String> getForcedTimeouts() {
-	    
-	    if( this.forcedTimeouts.equals("none") ) return new ArrayList<>();
-	    
-	    List<String> result = new ArrayList<>();
-	    String[] splits = this.forcedTimeouts.split("-");
-	    for( String split : splits ){
-		result.add(split);
-	    }
-	    return result;
-	}
-	
-	public int getForcedTimeoutsTimeoutValue(){
-	    return this.forcedTimeoutsTimeoutValue;
-	}
+    public boolean rewriting() {
+	return rewriting;
+    }
 
-	public String getJavaAPIClass() {
-	    return this.javaApiClass;
+    public String getMode() {
+	return mode;
+    }
+
+    public String getServiceUrl() {
+	return serviceUrl;
+    }
+
+    public String getOwlFile() {
+	return owlFile;
+    }
+
+    public String getMappingsFile() {
+	return mappingsFile;
+    }
+
+    public String getDatabaseUrl() {
+	return databaseUrl;
+    }
+
+    public String getDatabaseUser() {
+	return databaseUser;
+    }
+
+    public String getDatabasePwd() {
+	return databasePwd;
+    }
+
+    public String getLogFile() {
+	return logFile;
+    }
+
+    public String getTemplatesDir() {
+	return templatesDir;
+    }
+
+    public String getDriverClass() {
+	return this.driverClass;
+    }
+
+    public String getShellCmd() {
+	return this.shellCmd;
+    }
+
+    public boolean getShellOutput() {
+	return this.shellOutput;
+    }
+
+    public List<String> getForcedTimeouts() {
+
+	if( this.forcedTimeouts.equals("none") ) return new ArrayList<>();
+
+	List<String> result = new ArrayList<>();
+	String[] splits = this.forcedTimeouts.split("-");
+	for( String split : splits ){
+	    result.add(split);
 	}
+	return result;
+    }
+
+    public int getForcedTimeoutsTimeoutValue(){
+	return this.forcedTimeoutsTimeoutValue;
+    }
+
+    public String getJavaAPIClass() {
+	return this.javaApiClass;
+    }
 }

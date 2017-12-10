@@ -39,7 +39,7 @@ public class StringOptionWithRange extends StringOption {
 	 *  Does it match with --optName=valueInRange ?
 	 */
 	@Override
-	public boolean parse(String toParse) {
+	public boolean parseImpl(String toParse) {
 		
 		String temp = toParse.trim(); // Eliminate whitespaces
 		

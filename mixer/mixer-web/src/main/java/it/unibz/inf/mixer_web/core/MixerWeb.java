@@ -14,13 +14,10 @@ import it.unibz.inf.mixer_web.net.NetQuery;
 
 public class MixerWeb extends Mixer {
 
-    private final String serviceUrl;
-    
-    public MixerWeb(Conf configuration, String serviceUrl) {
+    public MixerWeb(Conf configuration) {
 	super(configuration);
-	this.serviceUrl = serviceUrl;
     }
-    
+
     @Override
     public void load() {
 	// Unsupported
@@ -28,14 +25,14 @@ public class MixerWeb extends Mixer {
 
     @Override
     public void executeWarmUpQuery(String query) {
-	NetQuery q = new NetQuery(this.serviceUrl, query, 0);
+	NetQuery q = new NetQuery(configuration.getServiceUrl(), query, 0);
 	q.exec();
 	q.close();
     }
 
     @Override
     public void executeWarmUpQuery(String query, int timeout) {
-	NetQuery q = new NetQuery(this.serviceUrl, query, timeout * 1000);
+	NetQuery q = new NetQuery(configuration.getServiceUrl(), query, timeout * 1000);
 	    q.exec();
 	    q.close();
     }
@@ -48,7 +45,7 @@ public class MixerWeb extends Mixer {
     @Override
     public Object executeQuery(String query, int timeout) {
 	
-	NetQuery q = new NetQuery(this.serviceUrl, query, timeout*1000);
+	NetQuery q = new NetQuery(configuration.getServiceUrl(), query, timeout*1000);
 	InputStream resultStream = null;
 	resultStream = q.exec();
 	return new ResultSet(q, resultStream);

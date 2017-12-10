@@ -64,12 +64,12 @@ public class MixerThread extends Thread {
     private Chrono chrono;
     private Chrono chronoMix;
 
-    public MixerThread(Mixer m, int nRuns, int nWUps, int timeout, Statistics stat, File[] listOfFiles){
+    public MixerThread(Mixer m, Statistics stat, File[] listOfFiles){
 	this.stat = stat;
 	this.mixer = m;
-	this.nRuns = nRuns;
-	this.nWUps = nWUps;
-	this.timeout = timeout;
+	this.nRuns = m.getConfiguration().getNumRuns();
+	this.nWUps = m.getConfiguration().getNumWarmUps();
+	this.timeout = m.getConfiguration().getTimeout();
 
 	chrono = new Chrono();
 	chronoMix = new Chrono();

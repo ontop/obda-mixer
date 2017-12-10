@@ -15,7 +15,7 @@ public class MixerShell extends Mixer {
     public MixerShell(Conf configuration) {
 	super(configuration);
 	this.cmd = configuration.getShellCmd();
-	this.shellOutput = configuration.getShellOutput().equals("false") || configuration.getShellOutput().equals("null") ? false : true;
+	this.shellOutput = configuration.getShellOutput();
     }
     
     private class ExecuterThread extends Thread{
