@@ -3,7 +3,7 @@
   <parent>
     <groupId>it.unibz.inf.mixer</groupId>
     <artifactId>mixer</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2</version>
   </parent>
   <artifactId>mixer-distribution</artifactId>
   
@@ -11,7 +11,7 @@
 		<dependency>
 			<groupId>it.unibz.inf.mixer</groupId>
 			<artifactId>mixer-main</artifactId>
-			<version>1.2-SNAPSHOT</version>
+			<version>1.2</version>
 		</dependency>
 	</dependencies>
 

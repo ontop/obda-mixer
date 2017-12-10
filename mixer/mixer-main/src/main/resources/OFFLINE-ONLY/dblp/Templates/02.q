@@ -9,12 +9,12 @@ PREFIX map: <file:///home/diederich/d2r-server-0.3.2/dblp-mapping.n3#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX dc: <http://purl.org/dc/elements/1.1/>
        SELECT DISTINCT ?name WHERE {{
-       ?D swrc:journal <journals/${1:dblp_pub_new.source_id:percent}> .
+       ?D swrc:journal <www.google.it/journals/${1:dblp_pub_new.source_id:percent}> .
        ?D dc:creator ?A.
        ?A foaf:name ?name.
        }
        UNION{
-       <publications/${2:dblp_pub_new.dblp_key:percent}>
+       <www.google.it/publications/${2:dblp_pub_new.dblp_key:percent}>
        dc:creator ?A.
        ?D dc:creator ?A.
        ?D dc:creator ?CA.

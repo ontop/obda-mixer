@@ -3,7 +3,7 @@
   <groupId>it.unibz.inf.mixer</groupId>
   <artifactId>mixer</artifactId>
   <packaging>pom</packaging>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.2</version>
   <name>mixer</name>
 	<url />
 
@@ -234,4 +234,10 @@
 		<module>mixer-web</module>
 		<module>mixer-shell</module>
 	</modules>
+
+  <scm>
+    <connection>scm:svn:http://svn.sonatype.org/spice/tags/mixer-1.2</connection>
+    <developerConnection>scm:svn:https://svn.sonatype.org/spice/tags/mixer-1.2</developerConnection>
+    <url>http://svn.sonatype.org/spice/tags/mixer-1.2</url>
+  </scm>
 </project>

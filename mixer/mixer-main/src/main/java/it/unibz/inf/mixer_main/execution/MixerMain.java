@@ -114,8 +114,7 @@ public class MixerMain extends MixerOptionsInterface{
 	    try {
 		throw new UnsupportedSystemException("The string "+mode+" is not a valid parameter");
 	    } catch (UnsupportedSystemException e) {
-		e.printStackTrace();
-		System.exit(1);
+		MixerMain.closeEverything("Could not instantiate the OBDA system.", e);
 	    }
 	}
 
@@ -201,7 +200,7 @@ public class MixerMain extends MixerOptionsInterface{
 	try {
 	    statsWriter = new FileWriter(statsFile);
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    MixerMain.closeEverything("Cannot find log file " + statsFileName, e);
 	}
 	return statsWriter;
     }
