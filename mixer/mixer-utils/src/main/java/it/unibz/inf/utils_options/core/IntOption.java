@@ -12,35 +12,33 @@ public class IntOption extends Option {
 		
 		this.range = range;
 		this.value = value;
-		
 	}
 
 	/**
 	 *  Does it match with --optName=valueInRange ?
 	 */
 	@Override
-	public boolean parse(String toParse) {
-		
-		String temp = toParse.trim(); // Eliminate whitespaces
-		
-		if( temp.startsWith(name+"=") ){
-			int tmpValue = Integer.parseInt(temp.substring(name.length() + 1));
-			
-			if( tmpValue > range.begin && tmpValue < range.end ){
-				this.value = tmpValue;
-			}
-			else if( (tmpValue == range.begin && range.beginInclusive) || (tmpValue == range.end && range.endInclusive) ){
-				this.value = tmpValue;
-			}
-			else{
-				System.err.println("ERROR! Value out of range for the option "+ this.name);
-				System.exit(1);
-			}
-			
-			return true;
+	public boolean parseImpl(String toParse) {
+
+	    String temp = toParse.trim(); // Eliminate whitespaces
+
+	    if( temp.startsWith(name+"=") ){
+		int tmpValue = Integer.parseInt(temp.substring(name.length() + 1));
+
+		if( tmpValue > range.begin && tmpValue < range.end ){
+		    this.value = tmpValue;
 		}
-		
-		return false;
+		else if( (tmpValue == range.begin && range.beginInclusive) || (tmpValue == range.end && range.endInclusive) ){
+		    this.value = tmpValue;
+		}
+		else{
+		    System.err.println("ERROR! Value out of range for the option "+ this.name);
+		    System.exit(1);
+		}
+		return true;
+	    }
+
+	    return false;
 	}
 
 	@Override

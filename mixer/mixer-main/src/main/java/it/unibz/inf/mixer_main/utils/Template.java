@@ -38,11 +38,21 @@ public class Template{
 	public class PlaceholderInfo{    
 	    private QualifiedName qN;
 	    private int id;
+	    private Quoting quote; 
 	    
 	    private PlaceholderInfo(String s){
-		// {1:blabla}
-		this.qN = new QualifiedName( s.substring( s.indexOf(":") +1, s.indexOf(".") ), s.substring(s.indexOf(".") + 1, s.length() - 1) );
-		this.id = Integer.parseInt(s.substring( 1, s.indexOf(":") ));
+		// {1:blabla:PERCENT} (or NONE or UNDERSCORE)
+		String tName = s.substring( s.indexOf(":") +1, s.indexOf(".") );
+		String colName = s.substring(s.indexOf(".") + 1, s.lastIndexOf(":"));
+		this.qN = new QualifiedName( tName, colName );
+		int id = Integer.parseInt(s.substring( 1, s.indexOf(":") ));
+		this.id = id;
+		String quoting = s.substring(s.lastIndexOf(":") + 1, s.length() -1);
+		this.quote = Quoting.fromString(quoting);
+	    }
+	    
+	    public Quoting quote(){
+		return this.quote;
 	    }
 	    
 	    public int getId(){
@@ -71,6 +81,23 @@ public class Template{
 	    @Override
 	    public int hashCode(){
 		return this.toString().hashCode();
+	    }
+
+	    public String applyQuote(String toInsert, Quoting quotingType) {
+		String result = toInsert;
+		switch(quotingType){
+		case NONE:
+		    break;
+		case PERCENT:
+		    result = toInsert.replaceAll(" ", "%20");
+		    break;
+		case UNDERSCORE:
+		    result = toInsert.replaceAll(" ", "_");
+		    break;
+		default:
+		    break;
+		}
+		return result;
 	    }
 	};
 	

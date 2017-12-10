@@ -24,7 +24,7 @@ WHERE {
     npdv:producedGas     ?g ;
     npdv:producedOil     ?o 
  ]
- FILTER (?year > ${1:field_production_totalt_NCS_year.prfYear}) 
- FILTER(?m >= ${1:field_production_totalt_NCS_month.prfMonth} && ?m <= ${2:field_production_totalt_NCS_month.prfMonth} )
-} 
+ FILTER (?year > ${1:field_production_totalt_NCS_year.prfYear:none}) 
+ FILTER(?m >= ${1:field_production_totalt_NCS_month.prfMonth:none} && ?m <= ${2:field_production_totalt_NCS_month.prfMonth:none} )
+}  
 

@@ -26,17 +26,16 @@ WHERE {
           npdv:drillingOperatorCompany  [ npdv:name ?company ] 
         ] .
   { ?wc npdv:coresTotalLength ?l ;
-        npdv:coreIntervalUOM "[m   ]"^^xsd:string . # Meters
+        npdv:coreIntervalUOM "[m   ]"^^xsd:string . 
     BIND(?l AS ?length)
   } 
 
   UNION
   { ?wc npdv:coresTotalLength ?l ;
-        npdv:coreIntervalUOM "[ft   ]"^^xsd:string . # Feets
-    BIND((?l) AS ?length) # Originally (?l * 0.3048) 
+        npdv:coreIntervalUOM "[ft   ]"^^xsd:string .
+    BIND((?l * 0.3048) AS ?length) 
   }
-  FILTER(?year >= "${1:wellbore_development_all.wlbCompletionYear}"^^xsd:integer &&
-         ?length > ${1:wellbore_core.wlbTotalCoreLength} 
-         # && regex(?company, "^STATOIL", "i")
+  FILTER(?year >= "${1:wellbore_development_all.wlbCompletionYear:none}"^^xsd:integer &&
+         ?length > ${1:wellbore_core.wlbTotalCoreLength:none} 
   )
-} ORDER BY ?wellbore
+}  ORDER BY ?wellbore

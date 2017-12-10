@@ -3,7 +3,7 @@
   <groupId>it.unibz.inf.mixer</groupId>
   <artifactId>mixer</artifactId>
   <packaging>pom</packaging>
-  <version>1.1.0</version>
+  <version>1.2</version>
   <name>mixer</name>
 	<url />
 
@@ -182,6 +182,7 @@
 				<groupId>postgresql</groupId>
 				<artifactId>postgresql</artifactId>
 				<version>9.0-801.jdbc4</version>
+				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.ibm</groupId>
@@ -207,6 +208,7 @@
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
 				<version>5.1.22</version>
+				<scope>compile</scope>
 			</dependency>
 			<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -228,8 +230,14 @@
 		<module>mixer-mastro</module>
 		<module>mixer-distribution</module>
 		<module>mixer-main</module>
-		<module>mixer-ontop-v2</module>
 		<module>mixer-utils</module>
 		<module>mixer-web</module>
+		<module>mixer-shell</module>
 	</modules>
+
+  <scm>
+    <connection>scm:svn:http://svn.sonatype.org/spice/tags/mixer-1.2</connection>
+    <developerConnection>scm:svn:https://svn.sonatype.org/spice/tags/mixer-1.2</developerConnection>
+    <url>http://svn.sonatype.org/spice/tags/mixer-1.2</url>
+  </scm>
 </project>

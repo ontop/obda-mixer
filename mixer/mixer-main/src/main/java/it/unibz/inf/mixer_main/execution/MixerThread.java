@@ -30,8 +30,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
@@ -47,6 +51,7 @@ import it.unibz.inf.mixer_main.utils.Template;
 public class MixerThread extends Thread {
 
     private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
+    static Logger log = LoggerFactory.getLogger(MixerThread.class);
 
     // Logging
     private Statistics stat;
@@ -63,12 +68,12 @@ public class MixerThread extends Thread {
     private Chrono chrono;
     private Chrono chronoMix;
 
-    public MixerThread(Mixer m, int nRuns, int nWUps, int timeout, Statistics stat, File[] listOfFiles){
+    public MixerThread(Mixer m, Statistics stat, File[] listOfFiles){
 	this.stat = stat;
 	this.mixer = m;
-	this.nRuns = nRuns;
-	this.nWUps = nWUps;
-	this.timeout = timeout;
+	this.nRuns = m.getConfiguration().getNumRuns();
+	this.nWUps = m.getConfiguration().getNumWarmUps();
+	this.timeout = m.getConfiguration().getTimeout();
 
 	chrono = new Chrono();
 	chronoMix = new Chrono();
@@ -109,6 +114,7 @@ public class MixerThread extends Thread {
     private void test(TemplateQuerySelector tqs) {
 
 	for( int j = 0; j < nRuns; ++j ){
+	    long forcedTimeoutsSum = 0;
 	    long timeWasted = 0;
 	    chronoMix.start();
 	    //			 int i = 0;
@@ -117,21 +123,18 @@ public class MixerThread extends Thread {
 	    while( !stop ){
 		chrono.start();
 		String query = tqs.getNextQuery();
-		System.out.println(query);
+		log.debug(query);
+		
 		timeWasted += chrono.stop();
 		if( query == null ){
 		    stop = true;
 		}
+		else if( query.equals("force-timeout") ){
+		    int forcedTimeout = mixer.getConfiguration().getForcedTimeoutsTimeoutValue();
+		    localStat.addTime("execution_time#"+tqs.getCurQueryName(), forcedTimeout*1000); // Convert to milliseconds
+		    forcedTimeoutsSum += forcedTimeout*1000; // Convert to milliseconds
+		}
 		else{
-		    //				     LogToFile l = LogToFile.getInstance();
-		    //				     try {
-		    //				     l.openFile("listQueries"+(++i));
-		    //						l.appendLine(tqs.getCurQueryName());
-		    //						l.closeFile();
-		    //					 } catch (IOException e) {
-		    //						e.printStackTrace();
-		    //					}
-
 		    Object resultSet = null;
 		    chrono.start();
 
@@ -156,7 +159,7 @@ public class MixerThread extends Thread {
 		}
 	    }
 	    // mix time
-	    localStat.addTime("mix_time#"+j, chronoMix.stop() - timeWasted);
+	    localStat.addTime("mix_time#"+j, chronoMix.stop() - timeWasted + forcedTimeoutsSum);
 	}
     }
 
@@ -165,17 +168,19 @@ public class MixerThread extends Thread {
 	    boolean stop = false;
 	    while( !stop ){
 		String query = tqs.getNextQuery();
-		System.out.println(query);
+		log.debug(query);
 		if( query == null ){
 		    stop = true;
 		}
 		else{
-		    if( timeout == 0 ) mixer.executeWarmUpQuery(query); else mixer.executeWarmUpQuery(query, timeout);
+		    if( !query.equals("force-timeout") ){
+			if( timeout == 0 ) mixer.executeWarmUpQuery(query); else mixer.executeWarmUpQuery(query, timeout);
+		    }
 		}
 	    }
 	}
     }
-}
+};
 
 class TemplateQuerySelector{
 
@@ -196,6 +201,9 @@ class TemplateQuerySelector{
     // State
     private int nExecutedTemplate;
 
+    // Queries to skip
+    private List<String> forceTimeoutQueries;
+    
     public TemplateQuerySelector(Conf configuration, DBMSConnection db){
 	index = 0;
 	templatesDir = configuration.getTemplatesDir();
@@ -207,6 +215,9 @@ class TemplateQuerySelector{
 	listOfFiles = folder.listFiles();
 
 	this.nExecutedTemplate = 0;
+	
+	// Force timeouts
+	this.forceTimeoutQueries = configuration.getForcedTimeouts();
     }
 
     public String getCurQueryName(){
@@ -232,6 +243,13 @@ class TemplateQuerySelector{
 
 	String result = null;
 
+	String queryName = listOfFiles[index].getName();
+	if( this.forceTimeoutQueries.contains(queryName) ){
+	    // Forcibly timeout the query
+	    ++index;
+	    return "force-timeout";
+	}
+	
 	try {
 	    BufferedReader in;
 	    in = new BufferedReader(new FileReader(inFile));
@@ -245,11 +263,12 @@ class TemplateQuerySelector{
 	    in.close();
 
 	    Template sparqlQueryTemplate = new Template(queryBuilder.toString());
-	    
+	    int maxTries = 200;
+	    int i = 0;
 	    do{
 		fillPlaceholders(sparqlQueryTemplate);
 	    }
-	    while( executedQueries.contains(sparqlQueryTemplate.getFilled()) );
+	    while( i++ < maxTries && sparqlQueryTemplate.getNumPlaceholders() != 0 && executedQueries.contains(sparqlQueryTemplate.getFilled()) );
 	    
 	    result = sparqlQueryTemplate.getFilled();
 	    executedQueries.add(result);
@@ -261,6 +280,8 @@ class TemplateQuerySelector{
     }
 
     private void fillPlaceholders(Template sparqlQueryTemplate) {
+	
+	MixerThread.log.debug("[mixer-debug] Call fillPlaceholders");
 
 	Map<Template.PlaceholderInfo, String> mapTIToValue = new HashMap<Template.PlaceholderInfo, String>();
 
@@ -281,6 +302,7 @@ class TemplateQuerySelector{
 		toInsert = findValueToInsert( info.getQN() );
 		mapTIToValue.put(info, toInsert);
 	    }
+	    toInsert = info.applyQuote(toInsert, info.quote());
 	    sparqlQueryTemplate.setNthPlaceholder(i, toInsert);
 	}
     }
@@ -306,7 +328,8 @@ class TemplateQuerySelector{
 	pointer += this.nExecutedTemplate;
 
 	String query = "SELECT " + "*" + " FROM " 
-		+ qN.getFirst() + " LIMIT " + pointer+ ", 1";
+		+ qN.getFirst() + " WHERE " + qN.getSecond() + " IS NOT NULL " 
+		+ " LIMIT " + pointer+ ", 1";
 
 	if( db.getJdbcConnector().equals("jdbc:postgresql") ){
 	    query = "SELECT \""+
@@ -346,19 +369,19 @@ class TemplateQuerySelector{
 
 		rs = stmt.executeQuery();
 		if( !rs.next() ){
-		    System.err.println("[QueryMixer.MainThread] Problem: No result to fill placeholder.");
-		    System.exit(1);
+		    String msg = "Unexpected Problem: No result to fill placeholder. Contact the developers.";
+		    MixerMain.closeEverything(msg);
 		}
 	    }
 	    result = rs.getString(qN.getSecond());
 	} catch (SQLException e) {
-	    e.printStackTrace();
 	    try {
 		conn.close();
 	    } catch (SQLException e1) {
-		e1.printStackTrace();
+		String msg = "Could not close Connection.";
+		MixerMain.closeEverything(msg, e1);
 	    }
-	    System.exit(1);
+	    MixerMain.closeEverything("Error while executing the SQL statement.", e);
 	}
 	return result;
     }

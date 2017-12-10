@@ -27,7 +27,7 @@ WHERE {
         ] .
   { ?wc npdv:coresTotalLength ?length } 
 
-  FILTER(?year >= "${1:wellbore_development_all.wlbCompletionYear}"^^xsd:integer &&
-         ?length > ${1:wellbore_core.wlbTotalCoreLength}
+  FILTER(?year >= "${1:wellbore_development_all.wlbCompletionYear:none}"^^xsd:integer &&
+         ?length > ${1:wellbore_core.wlbTotalCoreLength:none}
   )
-} ORDER BY ?wellbore
+}  ORDER BY ?wellbore

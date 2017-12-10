@@ -38,12 +38,7 @@ public abstract class Mixer {
 		this.configuration = configuration;
 		this.rewriting = false;
 	}
-	
-	public Mixer(Conf configuration, boolean rewriting){
-		this.configuration = configuration;
-		this.rewriting = rewriting;
-	}
-	
+		
 	// ******************** Abstract Methods Section ********************* //
 	
 	// --------------- Operations ---------------- //

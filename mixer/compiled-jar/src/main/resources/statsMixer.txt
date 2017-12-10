@@ -1,0 +1,41 @@
+[GLOBAL]
+[main] [load-time] = 14037
+[thread#0]
+[run#1] [num_results#01.q] = 44388
+[run#1] [rewriting_time#01.q] = 0
+[run#1] [resultset_traversal_time#01.q] = 333
+[run#1] [execution_time#01.q] = 473
+[run#1] [unfolding_time#01.q] = 0
+[run#1] [mix_time#1] = 806
+[run#0] [num_results#01.q] = 39108
+[run#0] [rewriting_time#01.q] = 0
+[run#0] [resultset_traversal_time#01.q] = 981
+[run#0] [execution_time#01.q] = 289
+[run#0] [unfolding_time#01.q] = 0
+[run#0] [mix_time#0] = 1270
+[thread#1]
+[run#1] [num_results#01.q] = 44388
+[run#1] [rewriting_time#01.q] = 0
+[run#1] [resultset_traversal_time#01.q] = 602
+[run#1] [execution_time#01.q] = 180
+[run#1] [unfolding_time#01.q] = 0
+[run#1] [mix_time#1] = 782
+[run#0] [num_results#01.q] = 39108
+[run#0] [rewriting_time#01.q] = 0
+[run#0] [resultset_traversal_time#01.q] = 728
+[run#0] [execution_time#01.q] = 392
+[run#0] [unfolding_time#01.q] = 0
+[run#0] [mix_time#0] = 1120
+[thread#2]
+[run#1] [num_results#01.q] = 44388
+[run#1] [rewriting_time#01.q] = 0
+[run#1] [resultset_traversal_time#01.q] = 472
+[run#1] [execution_time#01.q] = 292
+[run#1] [unfolding_time#01.q] = 0
+[run#1] [mix_time#1] = 764
+[run#0] [num_results#01.q] = 39108
+[run#0] [rewriting_time#01.q] = 0
+[run#0] [resultset_traversal_time#01.q] = 901
+[run#0] [execution_time#01.q] = 550
+[run#0] [unfolding_time#01.q] = 0
+[run#0] [mix_time#0] = 1451

@@ -23,102 +23,127 @@ package it.unibz.inf.mixer_main.execution;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
 import it.unibz.inf.mixer_main.configuration.ConfParser;
+import it.unibz.inf.mixer_main.exception.UnsupportedSystemException;
 import it.unibz.inf.mixer_main.statistics.Statistics;
 import it.unibz.inf.mixer_main.time.Chrono;
-import it.unibz.inf.mixer_ontop.core.MixerOntop;
+import it.unibz.inf.mixer_shell.core.MixerShell;
 import it.unibz.inf.mixer_web.core.MixerWeb;
-import it.unibz.inf.utils_options.core.BooleanOption;
-import it.unibz.inf.utils_options.core.IntOption;
 import it.unibz.inf.utils_options.core.Option;
-import it.unibz.inf.utils_options.core.StringOption;
-import it.unibz.inf.utils_options.core.StringOptionWithRange;
-import it.unibz.inf.utils_options.ranges.IntRange;
-import it.unibz.inf.utils_options.ranges.StringRange;
 
-public class MixerMain {
+public class MixerMain extends MixerOptionsInterface{
+
+    private static Logger log = LoggerFactory.getLogger(MixerMain.class);
 
     private Chrono chrono;
     private Statistics mainStat;
-    private ConfParser cP;
     private Mixer mixer;
 
-    // Command-line options
-    private IntOption optNumRuns = new IntOption("--runs", "Number of query mix runs.", "Mixer", 2, new IntRange(1, Integer.MAX_VALUE, true, true));
-    private IntOption optNumWarmUps = new IntOption("--warm-ups", "Number of warm up runs.", "Mixer", 2, new IntRange(0, Integer.MAX_VALUE, true, true));
-    private IntOption optTimeout = new IntOption("--timeout", "Maximum execution time allowed to a query, in seconds. A value of zero means no timeout.", "Mixer", 0, new IntRange(0, Integer.MAX_VALUE, true, true));
-    private IntOption optNumClients = new IntOption("--clients", "Number of clients querying the system in parallel. Rewriting and unfolding times are unavailable in multi-client mode", "Mixer", 1, new IntRange(1, 64, true, true));
-    private BooleanOption optRewriting = new BooleanOption("--rewriting", "On or Off?", "Mixer", false);
-
-    // Command-line option deciding which Mixer implementation should be used
-    private StringOptionWithRange optOBDASystem = new StringOptionWithRange("--obda", "The OBDA system under test", "Mixer", "ontop", new StringRange("[ontop,web]"));
-    private StringOption optServiceUrl = new StringOption("--url", "URL for the SPARQL Endpoint (To be used with --obda=web)", "Mixer", "http://10.7.20.65:2021/sparql/");
-
-    private static StringOption optResources = new StringOption("--res", "Location of the resources directory", "CONFIGURATION", "src/main/resources");
-
-    // Internal state
-    private int numRuns;
-    private int numWarmUps;
-    private int timeout;
-    private int numClients;
-    private boolean rewriting;
-    private String serviceUrl;
     private List<Statistics> threadStatistics;
-    private String resourcesDir;
 
     public MixerMain(String[] args){
-	// Parse command-line options
-	Option.parseOptions(args);
-
-	this.numRuns = optNumRuns.getValue();
-	this.numWarmUps = optNumWarmUps.getValue();
-	this.timeout = optTimeout.getValue();
-	this.numClients = optNumClients.getValue();
-	this.rewriting = optRewriting.getValue();
-	this.serviceUrl = optServiceUrl.getValue();
-	this.resourcesDir = optResources.getValue();
-
-	this.threadStatistics = new ArrayList<Statistics>();
-
-	cP = ConfParser.initInstance(resourcesDir);
-
-	Conf configuration = new Conf(
-		cP.owlFile(), 
-		cP.mappingsFile(), 
-		cP.dbDriver(),
-		cP.dbUrl(), 
-		cP.dbUsername(),
-		cP.dbPassword(), 
-		cP.getLogPath(), 
-		cP.getQueriesDir() + "/Templates");
-
-
+	// Parse command-line options	
+	Conf configuration = configure(args);
 	instantiateMixer(configuration);
+    }
+
+    private Conf configure(String[] args) {
+	Option.parseOptions(args);
+	String confFile = optConfFile.getValue();
+	this.threadStatistics = new ArrayList<Statistics>();
+	ConfParser cP = ConfParser.initInstance(confFile);
+	
+	Conf configuration = new Conf(
+		optNumRuns.parsed() ? optNumRuns.getValue() : cP.numRuns().equals("error") ? optNumRuns.getValue() : Integer.valueOf(cP.numRuns()),
+		optNumWarmUps.parsed() ? optNumWarmUps.getValue() : cP.numWarmUps().equals("error") ? optNumWarmUps.getValue() : Integer.valueOf(cP.numWarmUps()),
+		optTimeout.parsed() ? optTimeout.getValue() : cP.timeout().equals("error") ? optTimeout.getValue() : Integer.valueOf(cP.timeout()),
+		optNumClients.parsed() ? optNumClients.getValue() : cP.numClients().equals("error") ? optNumClients.getValue() : Integer.valueOf(cP.numClients()),
+		optRewriting.parsed() ? optRewriting.getValue() : cP.rewriting().equals("error") ? optRewriting.getValue() : Boolean.parseBoolean(cP.rewriting()),
+		optMode.parsed() ? optMode.getValue() : cP.mode().equals("error") ? optMode.getValue() : cP.mode(),
+		optServiceUrl.parsed() ? optServiceUrl.getValue() : cP.serviceUrl(),
+		optOwlFile.parsed() ? optOwlFile.getValue() : cP.owlFile(), 
+		optMappingsFile.parsed() ? optMappingsFile.getValue() : cP.mappingsFile(), 
+		optDbDriverClass.parsed() ? optDbDriverClass.getValue() : cP.dbDriverClass(),
+		optDbUrl.parsed() ? optDbUrl.getValue() : cP.dbURL(), 
+		optDbUsername.parsed() ? optDbUsername.getValue() : cP.dbUsername(),
+		optDbPassword.parsed() ? optDbPassword.getValue() : cP.dbPassword(), 
+		optLogFile.parsed() ? optLogFile.getValue() : cP.logPath().equals("error") ? optLogFile.getValue() : cP.logPath(), 
+		optQueriesDir.parsed() ? optQueriesDir.getValue() : cP.queriesDir().equals("error") ? optQueriesDir.getValue() : cP.queriesDir(),
+		optShellCmd.parsed() ? optShellCmd.getValue() : cP.shellCmd(),
+		optShellOut.parsed() ? optShellOut.getValue() : Boolean.parseBoolean(cP.shellOut()),
+		optForceTimeouts.parsed() ? optForceTimeouts.getValue() : cP.forceTimeouts(),
+		optForcedTimeoutsValue.parsed() ? optForcedTimeoutsValue.getValue() : cP.forcedTimeoutsValue().equals("error") ? optForcedTimeoutsValue.getValue() : Integer.valueOf(cP.forcedTimeoutsValue()),
+		optJavaApiClass.parsed() ? optJavaApiClass.getValue() : cP.javaAPIClass().equals("error") ? optJavaApiClass.getValue() : cP.javaAPIClass()
+		);
+	return configuration;
     }
 
     /** Modify this method to add other systems **/
     private void instantiateMixer(Conf configuration) {
-	String system = optOBDASystem.getValue();
 
-	if( system.equals("ontop") ){
-	    mixer = new MixerOntop(configuration, rewriting); 
+	String mode = optMode.getValue();
+
+	switch(mode){
+	case "java-api" : 
+	    try {
+		this.mixer = instantiateOwlapiMixer(configuration);
+		if( configuration.rewriting() ) this.mixer.rewritingON();
+	    } catch (Exception e) {
+		String msg = "Error: The class " + configuration.getJavaAPIClass() + " provided as java-api handler does not exist";
+		MixerMain.closeEverything(msg, e);
+	    }
+	    break;
+	case "web" : 
+	    this.mixer = instantiateWebMixer(configuration);
+	    break;
+	case "shell" :
+	    this.mixer = instantiateShellMixer(configuration);
+	    break;
 	}
-	else if( system.equals("web") ){
-	    mixer = new MixerWeb(configuration, this.serviceUrl);
+	if( this.mixer == null ){
+	    try {
+		throw new UnsupportedSystemException("The string "+mode+" is not a valid parameter");
+	    } catch (UnsupportedSystemException e) {
+		MixerMain.closeEverything("Could not instantiate the OBDA system.", e);
+	    }
 	}
+
+    }
+
+    private Mixer instantiateShellMixer(Conf configuration) {
+	Mixer result = new MixerShell(configuration);
+	return result;
+    }
+
+    private Mixer instantiateWebMixer(Conf configuration) {
+	Mixer result = new MixerWeb(configuration);
+	return result;
+    }
+
+    private Mixer instantiateOwlapiMixer(Conf configuration) 
+	    throws UnsupportedSystemException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException 
+    {
+	Class<?> clazz= Class.forName( configuration.getJavaAPIClass() );
+	Constructor<?> ctor = clazz.getConstructor(Conf.class);
+	Mixer result = (Mixer)ctor.newInstance(new Object[] { configuration });
+
+	return result;
     }
 
     private void do_tests(){
 
 	mainStat = new Statistics("GLOBAL");
-
 	chrono = new Chrono();
-
 
 	// Load the system
 	chrono.start();
@@ -168,14 +193,14 @@ public class MixerMain {
     }
 
     private FileWriter getLogWriter() {
-	String statsFileName = cP.getLogPath() + "/statsMixer.txt";
+	String statsFileName = mixer.getConfiguration().getLogFile();
 	File statsFile = new File(statsFileName);
 	if( statsFile.exists() ) statsFile.delete();
 	FileWriter statsWriter = null;
 	try {
 	    statsWriter = new FileWriter(statsFile);
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    MixerMain.closeEverything("Cannot find log file " + statsFileName, e);
 	}
 	return statsWriter;
     }
@@ -191,11 +216,11 @@ public class MixerMain {
 	File folder = new File(mixer.getConfiguration().getTemplatesDir());
 	File[] listOfFiles = folder.listFiles();
 
-	for( int i = 0; i < this.numClients; ++i ){
+	for( int i = 0; i < mixer.getConfiguration().getNumClients(); ++i ){
 	    // Configure each mixerThread
 	    Statistics stat = new Statistics("thread#"+i);
 	    this.threadStatistics.add(stat);
-	    MixerThread mT = new MixerThread(mixer, numRuns, numWarmUps, timeout, stat, listOfFiles);
+	    MixerThread mT = new MixerThread(mixer, stat, listOfFiles);
 	    threads.add(mT);
 	}
 
@@ -208,4 +233,15 @@ public class MixerMain {
 	main.do_tests();
 
     }
+
+    public static void closeEverything(String msg, Exception e) {
+	log.error(msg);
+	throw new RuntimeException(e);
+    }
+    
+    public static void closeEverything(String msg) {
+	log.error(msg);
+	throw new RuntimeException();
+    }
 };
+

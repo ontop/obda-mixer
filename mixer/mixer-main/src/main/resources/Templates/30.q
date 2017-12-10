@@ -14,7 +14,7 @@ SELECT DISTINCT ?wellbore ?wc ?well ?length
   {
     ?wc npdv:coresTotalLength ?lfeets ;
         npdv:coreIntervalUOM "[ft   ]"^^xsd:string .
-    BIND((?lfeets * 0.3048) AS ?length) # originally   
+    BIND((?lfeets * 0.3048) AS ?length) 
   }                
-  FILTER (?length < ${1:wellbore_core.wlbTotalCoreLength})
-}
+  FILTER (?length < ${1:wellbore_core.wlbTotalCoreLength:none})
+} 

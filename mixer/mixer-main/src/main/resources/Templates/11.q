@@ -28,8 +28,7 @@ WHERE {
   { ?wc npdv:coresTotalLength ?length ;
         npdv:coreIntervalUOM "[m   ]"^^xsd:string .
   } 
-  FILTER(?year >= ${1:wellbore_development_all.wlbCompletionYear} &&
-         ?length > ${1:wellbore_core.wlbTotalCoreLength} 
-         # && regex(?company, "^STATOIL", "i")
+  FILTER(?year >= ${1:wellbore_development_all.wlbCompletionYear:none} &&
+         ?length > ${1:wellbore_core.wlbTotalCoreLength:none} 
   )
-} ORDER BY ?wellbore
+}  ORDER BY ?wellbore

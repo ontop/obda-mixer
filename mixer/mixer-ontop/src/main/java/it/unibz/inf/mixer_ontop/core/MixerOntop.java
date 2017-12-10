@@ -77,21 +77,6 @@ public class MixerOntop extends Mixer {
 	subQuery = 0;
     }
 
-    public MixerOntop(Conf configuration, boolean rewriting){
-	super(configuration, rewriting);
-
-	obdaModel = null;
-	ontology = null;
-	reasoner = null;
-	rewritingTime = 0;
-	unfoldingTime = 0;
-	rewritingSize = 0;
-	unfoldingSize = 0;
-	conn = null;
-	subQuery = 0;
-    }
-
-
     @Override
     public void load() {
 	loadOntology();	
@@ -108,6 +93,7 @@ public class MixerOntop extends Mixer {
 	    if(conn == null) conn = reasoner.getConnection(); // Warn: this methods will return always 
 	    //       the same connection
 	    QuestOWLStatement st = conn.createStatement();
+	    log.debug("Davide> Executing Query:" + query);
 	    rs = st.executeTuple(query);
 	    
 	    
@@ -209,17 +195,15 @@ public class MixerOntop extends Mixer {
 
     @Override
     public void rewritingOFF() {
-	// TODO Auto-generated method stub
-
+	this.rewriting = false;
     }
 
     @Override
     public void rewritingON() {
-	// TODO Auto-generated method stub
-
+	this.rewriting = true;
     }
 
-    // PRIVATE INTERFACE
+    // ---- PRIVATE INTERFACE ---- //
 
     private void createReasoner() {
 

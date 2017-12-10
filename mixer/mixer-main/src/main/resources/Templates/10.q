@@ -19,7 +19,7 @@ WHERE {
       [] a npdv:DiscoveryWellbore ;
          npdv:name ?wellbore; 
         npdv:dateUpdated ?date .
-FILTER (?date > "${1:licence.prlDateValidTo}"^^xsd:date)
+FILTER (?date > "${1:licence.prlDateValidTo:none}"^^xsd:date)
 }
-ORDER BY ?wellbore
+ ORDER BY ?wellbore
 

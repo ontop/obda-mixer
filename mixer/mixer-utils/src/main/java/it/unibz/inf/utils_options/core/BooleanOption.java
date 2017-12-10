@@ -33,7 +33,7 @@ public class BooleanOption extends Option {
 	 *  Does it match with optName ? 
 	 */
 	@Override
-	public boolean parse(String toParse) {
+	public boolean parseImpl(String toParse) {
 		
 		String temp = toParse.trim(); // Eliminate whitespaces
 		
