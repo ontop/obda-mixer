@@ -1,7 +1,6 @@
 # Setup
 
-The configuration file (_configuration.conf_) contains various information like the location of the mappings file, or the desired path for logging. Parameters
-are specified in the CSV format:
+The configuration file (`configuration.conf` in this guide) contains various information like the location of the mappings file, or the desired path for logging. Parameters are specified in the CSV format:
 
 ~~~~~~~
 num-runs 1
@@ -32,6 +31,13 @@ forced-timeouts-timeout-value 1200
 
 **Legenda:**
 
+* **num-runs**: Number of test runs
+* **num-warmups**: Number of warm-up runs (i.e., runs whose execution times will not be recorded)
+* **timeout**: Maximum execution time allowed to a query, in seconds. A value of zero means no timeout. This parameter works only in `owl-api` mode, and only with jdbc drivers supporting the timeout feature.
+* **num-clients**: querying the system in parallel. Rewriting and unfolding times are unavailable in multi-client mode.
+* **rewriting**: If query rewriting is enabled. True or False.
+* **mode**: Execution mode. One of: java api mode (`java-api`), sparql endpoint mode (`web`), or shell script mode (`shell`)
+* **service-url**: URL for the SPARQL Endpoint (To be used with --obda=web)
 * **db-url**: URL of the database that the obda-mixer should use for extracting values in order to instantiate the [query templates](Query Templates Syntax)
 * **db-username**: Username for accessing the database
 * **db-pwd**: Password for accessing the database
