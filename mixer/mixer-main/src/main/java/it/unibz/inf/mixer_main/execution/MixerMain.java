@@ -239,5 +239,10 @@ public class MixerMain extends MixerOptionsInterface{
 	log.error(msg);
 	throw new RuntimeException(e);
     }
+    
+    public static void closeEverything(String msg) {
+	log.error(msg);
+	throw new RuntimeException();
+    }
 };
 

@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
 import it.unibz.inf.mixer_main.connection.DBMSConnection;
@@ -48,6 +51,7 @@ import it.unibz.inf.mixer_main.utils.Template;
 public class MixerThread extends Thread {
 
     private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
+    static Logger log = LoggerFactory.getLogger(MixerThread.class);
 
     // Logging
     private Statistics stat;
@@ -119,7 +123,7 @@ public class MixerThread extends Thread {
 	    while( !stop ){
 		chrono.start();
 		String query = tqs.getNextQuery();
-		System.out.println(query);
+		log.debug(query);
 		
 		timeWasted += chrono.stop();
 		if( query == null ){
@@ -164,7 +168,7 @@ public class MixerThread extends Thread {
 	    boolean stop = false;
 	    while( !stop ){
 		String query = tqs.getNextQuery();
-		System.out.println(query);
+		log.debug(query);
 		if( query == null ){
 		    stop = true;
 		}
@@ -277,7 +281,7 @@ class TemplateQuerySelector{
 
     private void fillPlaceholders(Template sparqlQueryTemplate) {
 	
-	System.out.println("[mixer-debug] Call fillPlaceholders");
+	MixerThread.log.debug("[mixer-debug] Call fillPlaceholders");
 
 	Map<Template.PlaceholderInfo, String> mapTIToValue = new HashMap<Template.PlaceholderInfo, String>();
 
@@ -365,19 +369,19 @@ class TemplateQuerySelector{
 
 		rs = stmt.executeQuery();
 		if( !rs.next() ){
-		    System.err.println("[QueryMixer.MainThread] Problem: No result to fill placeholder.");
-		    System.exit(1);
+		    String msg = "Unexpected Problem: No result to fill placeholder. Contact the developers.";
+		    MixerMain.closeEverything(msg);
 		}
 	    }
 	    result = rs.getString(qN.getSecond());
 	} catch (SQLException e) {
-	    e.printStackTrace();
 	    try {
 		conn.close();
 	    } catch (SQLException e1) {
-		e1.printStackTrace();
+		String msg = "Could not close Connection.";
+		MixerMain.closeEverything(msg, e1);
 	    }
-	    System.exit(1);
+	    MixerMain.closeEverything("Error while executing the SQL statement.", e);
 	}
 	return result;
     }
