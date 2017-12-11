@@ -5,7 +5,7 @@ In this tutorial we will set-up a testing environment based on the [NPD benchmar
 This tutorial requires:
 
 - The [MySQL](https://www.mysql.com) relational engine;
-- The [Ontop](https://github.com/ontop/ontop/tree/release/1.18.1) OBDA system, version `1.18.1` (already included in `obda-mixer` as Maven dependency).
+- The [Ontop](https://github.com/ontop/ontop/tree/release/1.18.1) OBDA system, version `1.18.1` (already included by `obda-mixer` as Maven dependency).
 
 ### Downoload and build `obda-mixer`
 
@@ -54,7 +54,6 @@ mappings-file resources/npd.obda
 owl-file resources/npd.owl
 queries-dir resources/Templates
 log-file resources/statsMixer.csv
-resources
 driver-class com.mysql.jdbc.Driver
 ~~~
 
