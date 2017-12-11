@@ -57,14 +57,14 @@ log-file resources/statsMixer.csv
 driver-class com.mysql.jdbc.Driver
 ~~~
 
-Such parameters tells `obda-mixer` how to access the database, where to find the files necessary to its execution, and to log the results in the file `statsMixer.csv`. For detailed information on the configuration file, please refer to the [Setup page](setup).
+Such parameters tell `obda-mixer` how to access the database, where to find the files necessary to query execution, and to log the results in the file `statsMixer.csv`. For detailed information on the configuration file, please refer to the [Setup page](setup).
 
 ### Run
 
 Run `obda-mixer` through:
 
 ~~~
-java -jar obda-mixer.jar --conf=resources/configuration.conf
+java -jar obda-mixer.jar --conf="resources/configuration.conf"
 ~~~
 
 Such command runs the mixer with the parameters passed through the configuration files, as well as the default values for the parameters not explicitly specified in the configuration file. To see what such values are set to, use:
