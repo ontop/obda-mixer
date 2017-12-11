@@ -78,8 +78,8 @@ public class ConfParser {
 	return searchTag("queries-dir");
     }
     /** Returns the path to the log file **/
-    public String logPath(){
-	return searchTag("log-path");
+    public String logFile(){
+	return searchTag("log-file");
     }
 
     public String javaAPIClass(){

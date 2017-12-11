@@ -77,7 +77,7 @@ public class MixerMain extends MixerOptionsInterface{
 		optDbUrl.parsed() ? optDbUrl.getValue() : cP.dbURL(), 
 		optDbUsername.parsed() ? optDbUsername.getValue() : cP.dbUsername(),
 		optDbPassword.parsed() ? optDbPassword.getValue() : cP.dbPassword(), 
-		optLogFile.parsed() ? optLogFile.getValue() : cP.logPath().equals("error") ? optLogFile.getValue() : cP.logPath(), 
+		optLogFile.parsed() ? optLogFile.getValue() : cP.logFile().equals("error") ? optLogFile.getValue() : cP.logFile(), 
 		optQueriesDir.parsed() ? optQueriesDir.getValue() : cP.queriesDir().equals("error") ? optQueriesDir.getValue() : cP.queriesDir(),
 		optShellCmd.parsed() ? optShellCmd.getValue() : cP.shellCmd(),
 		optShellOut.parsed() ? optShellOut.getValue() : Boolean.parseBoolean(cP.shellOut()),
