@@ -13,7 +13,7 @@ abstract class MixerOptionsInterface {
     static final IntOption optNumWarmUps = new IntOption("--warm-ups", "Number of warm up runs.", "Mixer", 1, new IntRange(0, Integer.MAX_VALUE, true, true));
     static final IntOption optTimeout = new IntOption("--timeout", "Maximum execution time allowed to a query, in seconds. A value of zero means no timeout. This parameter works only in `owl-api` mode, and only with jdbc drivers supporting the timeout feature.", "Mixer", 0, new IntRange(0, Integer.MAX_VALUE, true, true));
     static final IntOption optNumClients = new IntOption("--clients", "Number of clients querying the system in parallel. Rewriting and unfolding times are unavailable in multi-client mode", "Mixer", 1, new IntRange(1, 64, true, true));
-    static final BooleanOption optRewriting = new BooleanOption("--rewriting", "On or Off?", "Mixer", false);
+    static final BooleanOption optRewriting = new BooleanOption("--rewriting", "If query rewriting is enabled. Either true or false.", "Mixer", false);
 
     // Command-line option deciding which Mixer implementation should be used
     static final StringOptionWithRange optMode = new StringOptionWithRange("--mode", "The operating mode, "

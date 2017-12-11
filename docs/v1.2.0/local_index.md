@@ -21,11 +21,11 @@ WHERE {
       	npdv:dateLicenseeValidFrom ?date ;
       	npdv:licenseeInterest ?interest ;
       	npdv:licenseeForLicence ?licenceURI .   
-   FILTER(?date > "${1:licence_licensee_hst.prlLicenseeDateValidFrom}"^^xsd:date)	
+   FILTER(?date > "${1:licence_licensee_hst.prlLicenseeDateValidFrom:none}"^^xsd:date)	
 }
 ~~~
 
-In the query above, the placeholder is `${1:licence_licensee_hst.prlLicenseeDateValidFrom}`. At runtime, obda-mixer instantiates this placeholder with values from the column `prlLicenseeDateValidFrom` in table `licence_licensee_hst`.
+In the query above, the placeholder is `${1:licence_licensee_hst.prlLicenseeDateValidFrom:none}`. At runtime, obda-mixer instantiates this placeholder with values from the column `prlLicenseeDateValidFrom` in table `licence_licensee_hst`.
 
 A possible instantiation  of the query template above is:
 
@@ -51,7 +51,7 @@ reduce the impact of caching on the measured execution times (useful for cold-ru
 
 See [Build and Run the Mixer](Build and Run the Mixer).
 
-## Implementing the Java API Interface
+## Contribute by Extending the Java API Interface!!
 
 The Java API interface is currently implemented for the [Ontop](https://github.com/ontop/ontop) system. 
 To implement your own interface for an OBDA system of your choice, refer to [How To Instantiate the Mixer Interface with an OBDA System through the Java API](How Instantiate the Mixer Interface with an OBDA System through the Java API)

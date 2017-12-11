@@ -7,20 +7,19 @@ num-runs 1
 num-warmups 1
 timeout 1200
 num-clients 1
-rewriting off
+rewriting false
 mode java-api
-service-url 
+service-url http://sparql-endpoint.sparql/
 
-db-url localhost/npd_clean_no_spatial
+db-url localhost/npd
 db-username user
 db-pwd pwd
 driver-class com.mysql.jdbc.Driver
 
-owl-file src/main/resources/npd-v2-ql.owl
-mappings-file src/main/resources/npd-v2-ql-mysql-ontop1.17.obda
-
-queries-dir src/main/resources/Templates
-log-path src/main/resources
+owl-file resources/npd-v2-ql.owl
+mappings-file resources/npd-v2-ql-mysql-ontop1.17.obda
+queries-dir resources/Templates
+log-file resources
 
 java-api-class it.unibz.inf.mixer_ontop.core.MixerOntop
 shell-cmd null

@@ -13,7 +13,7 @@ USAGE: java -jar vig.jar [OPTIONS]
 
 CONFIGURATION OPTIONS
 
---conf              <string>                                               (default: src/main/resources/configuration.conf)Location of the configuration file
+--conf              <string>                                               (default: resources/configuration.conf)Location of the configuration file
 
 --db-url            <string>                                               (default: )         URL of the database that the obda-mixer should use for extracting values in order to instantiate the query templates
 
@@ -27,21 +27,21 @@ CONFIGURATION OPTIONS
 
 --mappings-file     <string>                                               (default: )         Path to the mapping file
 
---queries-dir       <string>                                               (default: src/main/resources/Templates)Path to the queries directory
+--queries-dir       <string>                                               (default: resources/Templates)Path to the queries directory
 
 --api-class         <string>                                               (default: it.unibz.inf.mixer_ontop.core.MixerOntop)Class for the Mixer implementation. This parameter should be used in combination with the `--mode=java-api` option.
 
 Mixer OPTIONS
 
---rewriting         <bool>              [on -- off]                        (default: false)    On or Off?
+--rewriting         <bool>              [true -- false]                    (default: false)    If query rewriting is enabled. Either true or false.
 
---shell-out         <bool>              [on -- off]                        (default: false)    Should the output of the shell command be logged? This parameter should be used in combination with the `--mode=shell` option.
+--shell-out         <bool>              [true -- false]                    (default: false)    Should the output of the shell command be logged? This parameter should be used in combination with the `--mode=shell` option.
 
 --runs              <int>               [1 -- 2147483647]                  (default: 1)        Number of query mix runs.
 
 --warm-ups          <int>               [0 -- 2147483647]                  (default: 1)        Number of warm up runs.
 
---timeout           <int>               [0 -- 2147483647]                  (default: 0)        Maximum execution time allowed to a query, in seconds. A value of zero means no timeout.
+--timeout           <int>               [0 -- 2147483647]                  (default: 0)        Maximum execution time allowed to a query, in seconds. A value of zero means no timeout. This parameter works only in `owl-api` mode, and only with jdbc drivers supporting the timeout feature.
 
 --clients           <int>               [1 -- 64]                          (default: 1)        Number of clients querying the system in parallel. Rewriting and unfolding times are unavailable in multi-client mode
 
@@ -51,7 +51,7 @@ Mixer OPTIONS
 
 --url               <string>                                               (default: )         URL for the SPARQL Endpoint (To be used with --obda=web)
 
---log-file          <string>                                               (default: src/main/resources/MixerStats.txt)Path where obda-mixer will write the results of the tests
+--log-file          <string>                                               (default: resources/MixerStats.txt)Path where obda-mixer will write the results of the tests
 
 --shell-cmd         <string>                                               (default: )         Command-line string for shell execution. This parameter should be usedin combination with the `--mode=shell` option.
 
