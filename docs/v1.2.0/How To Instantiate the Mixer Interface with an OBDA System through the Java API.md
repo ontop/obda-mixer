@@ -40,7 +40,7 @@
 
 For example, the method `Mixer.executeQuery()` is implemented through the `ontop` Java API as:
 
-~~~~~~~
+```java
 	@Override
 	public Object executeQuery(String query) {
 		QuestOWLResultSet rs = null;
@@ -53,27 +53,27 @@ For example, the method `Mixer.executeQuery()` is implemented through the `ontop
 		} 
 		return rs;
 	}
-~~~~~~~
+```
 
 **Third Step: Add your OBDA System to the Options**
 
 You need to enrich the set of values allowed for the --obda option. This is done by modifying a single line in the `MixerOptionsInterface` class, contained in the `mixer-main` project. For example:
 
-~~~~~~~~~~~~~~
+```java
 // Command-line option deciding which Mixer implementation should be used
 	private StringOptionWithRange optOBDASystem = new StringOptionWithRange("--obda", "The OBDA system under test", "Mixer", "ontop", new StringRange("[ontop]"));
-~~~~~~~~~~~~~~
+```
 
 becomes
 
-~~~~~~~~~~~~~~~~~~
+```java
 // Command-line option deciding which Mixer implementation should be used
 	private StringOptionWithRange optOBDASystem = new StringOptionWithRange("--obda", "The OBDA system under test", "Mixer", "ontop", new StringRange("[ontop,my_obda_system]"));
-~~~~~~~~~~~~~~~~~~
+```
 
 The next step is to tell the Mixer what concrete class corresponds to the freshly added option "_--obda=my_obda_system_". For example, if the implementation of the _Mixer_ class is called _MixerMyOBDA_, then the method
 
-~~~~~~~~~~~~
+```java
 	/** Modify this method to add other systems **/
 	private void instantiateMixer(Conf configuration) {
 		String system = optOBDASystem.getValue();
@@ -82,11 +82,11 @@ The next step is to tell the Mixer what concrete class corresponds to the freshl
 			mixer = new MixerOntop(configuration);
 		}		
 	}
-~~~~~~~~~~~~
+```
 
 contained in class `MixerMain` should be changed in
 
-~~~~~~~~~~~~
+```java
 	/** Modify this method to add other systems **/
 	private void instantiateMixer(Conf configuration) {
 		String system = optOBDASystem.getValue();
@@ -98,7 +98,7 @@ contained in class `MixerMain` should be changed in
 			mixer = new MixerMyOBDA(configuration);
 		}
 	}
-~~~~~~~~~~~~
+```
 
 After [setting up the configuration file](Build and Run the Mixer), you can tell `obda-mixer` to run tests over the newly added OBDA system by the command-line option
 

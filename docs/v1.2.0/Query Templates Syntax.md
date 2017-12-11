@@ -10,7 +10,7 @@ where `id` is an integer, source is a string of the form `table_name.col_name`, 
 
 We now provide an example. Consider the following query _08.rq_ from the [NPD Benchmark](NPD Benchmark):
 
-~~~~~~~~
+```sparql
 PREFIX npdv: <http://sws.ifi.uio.no/vocab/npd-v2#>
 
 SELECT *
@@ -23,13 +23,13 @@ WHERE {
  FILTER (?year > ${1:field_production_totalt_NCS_year.prfYear}) 
  FILTER(?m >= ${1:field_production_totalt_NCS_month.prfMonth} && ?m <= ${2:field_production_totalt_NCS_month.prfMonth} )
 } 
-~~~~~~~~
+```
 
 Observe that the query contains three placeholders in the FILTER conditions. 
 
 `obda-mixer` instantiates the three placeholders with values retrieved from the columns `field_production_totalt_NCS_month.[prfYear, month]`; Observe that the second and the third placeholders will be instantiated to different values, although they have a common _source part_, since their _id_ part differs. A possible instantiation  of the query template above is:
 
-~~~
+```sparql
 PREFIX npdv: <http://sws.ifi.uio.no/vocab/npd-v2#>
 
 SELECT *
@@ -42,4 +42,4 @@ WHERE {
  FILTER (?year > 2008) 
  FILTER(?m >= 1 && ?m <= 12 )
 } 
-~~~
+```

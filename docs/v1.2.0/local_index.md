@@ -10,7 +10,7 @@
 
 `obda-mixer` runs a set of SPARQL queries (_query mix_) over an OBDA system. A typical query is an instance of a [SPARQL query template](Query Templates Syntax), where a SPARQL query template is a SPARQL query with placeholders. Such templates will be instantiated by obda-mixer at runtime with values taken from a database of choice. For instance, a query with placeholders is:
 
-~~~
+```sparql
 PREFIX npdv: <http://sws.ifi.uio.no/vocab/npd-v2#>
 
 SELECT DISTINCT ?licenceURI ?interest ?date
@@ -23,13 +23,13 @@ WHERE {
       	npdv:licenseeForLicence ?licenceURI .   
    FILTER(?date > "${1:licence_licensee_hst.prlLicenseeDateValidFrom:none}"^^xsd:date)	
 }
-~~~
+```
 
 In the query above, the placeholder is `${1:licence_licensee_hst.prlLicenseeDateValidFrom:none}`. At runtime, obda-mixer instantiates this placeholder with values from the column `prlLicenseeDateValidFrom` in table `licence_licensee_hst`.
 
 A possible instantiation  of the query template above is:
 
-~~~
+```sparql
 PREFIX npdv: <http://sws.ifi.uio.no/vocab/npd-v2#>
 
 SELECT *
@@ -42,7 +42,7 @@ WHERE {
  FILTER (?year > 2008) 
  FILTER(?m >= 1 && ?m <= 12 )
 } 
-~~~
+```
 
 In this way, it is possible to instantiate the same queries in many different ways, so as to
 reduce the impact of caching on the measured execution times (useful for cold-run analyses).
