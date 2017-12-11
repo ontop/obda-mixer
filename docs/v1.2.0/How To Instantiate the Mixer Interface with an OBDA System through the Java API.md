@@ -4,7 +4,7 @@
 
 `obda-mixer` can test all OBDA systems that provide a Java API for query answering. To do so, it suffices to provide an implementation to the abstract method of the class `Mixer`. The first step is to create a Maven module, and then add a dependency to the `mixer-interface` project in order to allow inheritance from the class `Mixer`. As an example, we report the pom file of the maven module `mixer-ontop`, containing the concrete class that implements the methods in class `Mixer` through the `ontop` java API.
 
-```xml
+~~~
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -34,7 +34,7 @@
 		</dependency>
   </dependencies>
 </project>
-```
+~~~
 
 **Second Step: Provide Implementations to the Public Interface of `Mixer`**
 
