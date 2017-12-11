@@ -1,12 +1,11 @@
 # Quick Start Guide
 
-In this tutorial we will set-up a testing environment based on the [NPD benchmark](https://github.com/ontop/npd-benchmark). We assume 
-the steps described in this tutorial to be performed from the `${MIXER_HOME}` directory.
+In this tutorial we will set-up a testing environment based on the [NPD benchmark](https://github.com/ontop/npd-benchmark). We assume the steps described in this tutorial to be performed from the `${MIXER_HOME}` directory.
 
 This tutorial requires:
 
 - The [MySQL](https://www.mysql.com) relational engine;
-- The [Ontop](https://github.com/ontop/ontop/tree/release/1.18.1) OBDA system, version `1.18.1`.
+- The [Ontop](https://github.com/ontop/ontop/tree/release/1.18.1) OBDA system, version `1.18.1` (already included in `obda-mixer` as Maven dependency).
 
 ### Downoload and build `obda-mixer`
 
