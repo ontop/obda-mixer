@@ -54,4 +54,4 @@ See [Build and Run the Mixer](Build and Run the Mixer).
 ## Contribute by Extending the Java API Interface!!
 
 The Java API interface is currently implemented for the [Ontop](https://github.com/ontop/ontop) system. 
-To implement your own interface for an OBDA system of your choice, refer to [How To Instantiate the Mixer Interface with an OBDA System through the Java API](How Instantiate the Mixer Interface with an OBDA System through the Java API)
+To implement your own interface for an OBDA system of your choice, refer to [How To Instantiate the Mixer Interface with an OBDA System through the Java API](How To Instantiate the Mixer Interface with an OBDA System through the Java API)
