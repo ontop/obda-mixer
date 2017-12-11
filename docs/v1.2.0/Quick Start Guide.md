@@ -14,9 +14,9 @@ We here use the already compiled jar available in the [`mixer/compiled-jar`](htt
 
 In particular, we will need:
 
-- The [NPD MySQL database](https://github.com/ontop/npd-benchmark/tree/master/data/mysql/original_npd)
-- Some [query templates](https://github.com/ontop/npd-benchmark/tree/master/query_templates/Templates)
-- The NPD [mappings](https://github.com/ontop/npd-benchmark/blob/master/mappings/mysql/ontop>%3D1.17/npd-v2-ql-mysql-ontop1.17.obda) and [ontology](https://github.com/ontop/npd-benchmark/blob/master/ontology/npd-v2-ql.owl) files. We call such files `npd.obda` and `npd.owl`, respectively.
+- The [NPD MySQL database](https://github.com/ontop/npd-benchmark/tree/develop/data/mysql/original_npd/npd.mysql)
+- A [query template](https://github.com/ontop/npd-benchmark/tree/develop/query_templates/Templates/01.rq)
+- The NPD [mappings](https://github.com/ontop/npd-benchmark/blob/develop/mappings/mysql/ontopv1/ontop>%3D1.17/npd-v2-ql-mysql-ontop1.17.obda) and [ontology](https://github.com/ontop/npd-benchmark/blob/develop/ontology/npd-v2-ql.owl) files. We call such files `npd.obda` and `npd.owl`, respectively.
 
 ### Create the Database Instance
 
@@ -52,15 +52,16 @@ db-pwd test
 mappings-file resources/npd.obda
 owl-file resources/npd.owl
 queries-dir resources/Templates
-log-path resources
+log-file resources/statsMixer.csv
+resources
 driver-class com.mysql.jdbc.Driver
 ~~~
 
-Such parameters tells `obda-mixer` how to access the database, and where to find the files necessary to its execution. For detailed information on the configuration file, please refer to the [Setup page](setup).
+Such parameters tells `obda-mixer` how to access the database, where to find the files necessary to its execution, and to log the results in the file `statsMixer.csv`. For detailed information on the configuration file, please refer to the [Setup page](setup).
 
-### Run!!
+### Run
 
-That's it. Just run through
+Run `obda-mixer` through:
 
 ~~~
 java -jar obda-mixer.jar --conf=resources/configuration.conf
@@ -71,3 +72,19 @@ Such command runs the mixer with the parameters passed through the configuration
 ~~~
 java -jar obda-mixer.jar --help-verbose
 ~~~
+
+The results of the test will be saved in the file `resources/statsMixer.csv`. If you open that file, you will observe something as:
+
+~~~
+[GLOBAL]
+[main] [load-time] = 63104
+[thread#0]
+[run#0] [num_results#01.q] = 39108
+[run#0] [rewriting_time#01.q] = 0
+[run#0] [resultset_traversal_time#01.q] = 941
+[run#0] [execution_time#01.q] = 1315
+[run#0] [unfolding_time#01.q] = 82
+[run#0] [mix_time#0] = 2258 
+~~~
+
+Such information says that the query was unfolded in 82 ms, executed in 1315 ms, and the results set (containing 39108 answers) was traversed in 941 ms. The time to execute all the queries in the queries mix, which in our case was made only of one query, amounted to roughly 2 seconds.
