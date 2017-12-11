@@ -1,3 +1,5 @@
+# Quick Start Guide
+
 In this tutorial we will set-up a testing environment based on the [NPD benchmark](https://github.com/ontop/npd-benchmark). We assume 
 the steps described in this tutorial to be performed from the `${MIXER_HOME}` directory.
 
