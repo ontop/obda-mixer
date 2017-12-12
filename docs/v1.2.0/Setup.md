@@ -4,18 +4,18 @@ The configuration file (`configuration.conf` in this guide) contains various inf
 
 ~~~~~~~
 ## Test Config
-num-runs 1												# Number of test runs
-num-warmups 1 											# Number of warm-up runs
-timeout 1200 											# Query Execution Timeout
-num-clients 1 											# Number of clients
-rewriting false											# Rewriting [true-false]
+num-runs 1                                              # Number of test runs
+num-warmups 1                                           # Number of warm-up runs
+timeout 1200                                            # Query Execution Timeout
+num-clients 1                                           # Number of clients
+rewriting false                                         # Rewriting [true-false]
 
 ## Execution Modes
-mode java-api											# Mode [java-api, web, shell]
+mode java-api                                           # Mode [java-api, web, shell]
 java-api-class it.unibz.inf.mixer_ontop.core.MixerOntop # Name of the `Mixer` implementation, `java-api` mode. 
-service-url http://sparql-endpoint.sparql/				# Addr. of the SPARQL endpoint, `web` mode.
-shell-cmd cmdName.sh									# Name of the shell script to execute, `shell` mode.
-shell-out filePath.log									# Logging of the shell script output, `shell` mode.
+service-url http://sparql-endpoint.sparql/              # Addr. of the SPARQL endpoint, `web` mode.
+shell-cmd cmdName.sh                                    # Name of the shell script to execute, `shell` mode.
+shell-out filePath.log                                  # Logging of the shell script output, `shell` mode.
 
 ## Database Connection Credentials
 db-url localhost/npd
@@ -30,8 +30,8 @@ queries-dir resources/Templates
 log-file resources
 
 ## Advanced Test Config
-forced-timeouts 01.rq 02.rq								# Space-separated list of queries to consider as timeout
-forced-timeouts-timeout-value 1200						# Timeout to be assigned to the queries specified as `forced-timeout`
+forced-timeouts 01.rq 02.rq                             # Space-separated list of queries to consider as timeout
+forced-timeouts-timeout-value 1200                      # Timeout to be assigned to the queries specified as `forced-timeout`
 ~~~~~~~
 
 **Legenda:**
