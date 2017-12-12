@@ -9,7 +9,7 @@ Command-line options specified by the user override the settings provided by the
 You should observe a description similar to the following one:
 
 ~~~~~~~~~~~~
-USAGE: java -jar vig.jar [OPTIONS]
+USAGE: java -jar obda-mixer.jar [OPTIONS]
 
 CONFIGURATION OPTIONS
 

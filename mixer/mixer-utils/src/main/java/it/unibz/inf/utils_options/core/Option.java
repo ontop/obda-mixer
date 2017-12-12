@@ -29,7 +29,7 @@ public abstract class Option {
     /** The name of the application
      * 
      */
-    public static String appName = "vig";
+    public static String appName = "obda-mixer";
     public static boolean verbose = false;
 
     protected static List<Option> options = null; // All options
