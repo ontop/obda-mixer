@@ -1,6 +1,7 @@
 package it.unibz.inf.mixer_interface.configuration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /*
@@ -171,10 +172,10 @@ public class Conf {
 
     public List<String> getForcedTimeouts() {
 
-	if( this.forcedTimeouts.equals("none") ) return new ArrayList<>();
+	if( this.forcedTimeouts.equals("null") ) return new ArrayList<>();
 
+	List<String> splits = Arrays.asList(forcedTimeouts.split("\\s+"));
 	List<String> result = new ArrayList<>();
-	String[] splits = this.forcedTimeouts.split("-");
 	for( String split : splits ){
 	    result.add(split);
 	}

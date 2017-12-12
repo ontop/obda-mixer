@@ -141,6 +141,7 @@ public abstract class Option {
 
     private static void sortOptionsAccordingToCategoriesAndTypes(){
 	Collections.sort(Option.options, new Comparator<Option>() {
+	    @Override
 	    public int compare(Option o1, Option o2) { 
 		if( o1.category.compareTo(o2.category) == 0 ){
 		    return o1.typeName.compareTo(o2.typeName);

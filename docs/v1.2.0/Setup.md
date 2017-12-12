@@ -3,29 +3,35 @@
 The configuration file (`configuration.conf` in this guide) contains various information like the location of the mappings file, or the desired path for logging. Parameters are specified in the CSV format:
 
 ~~~~~~~
-num-runs 1
-num-warmups 1
-timeout 1200
-num-clients 1
-rewriting false
-mode java-api
-service-url http://sparql-endpoint.sparql/
+## Test Config
+num-runs 1												# Number of test runs
+num-warmups 1 											# Number of warm-up runs
+timeout 1200 											# Query Execution Timeout
+num-clients 1 											# Number of clients
+rewriting false											# Rewriting [true-false]
 
+## Execution Modes
+mode java-api											# Mode [java-api, web, shell]
+java-api-class it.unibz.inf.mixer_ontop.core.MixerOntop # Name of the `Mixer` implementation, `java-api` mode. 
+service-url http://sparql-endpoint.sparql/				# Addr. of the SPARQL endpoint, `web` mode.
+shell-cmd cmdName.sh									# Name of the shell script to execute, `shell` mode.
+shell-out filePath.log									# Logging of the shell script output, `shell` mode.
+
+## Database Connection Credentials
 db-url localhost/npd
 db-username user
 db-pwd pwd
 driver-class com.mysql.jdbc.Driver
 
+## Ontology, mappings, and log info
 owl-file resources/npd-v2-ql.owl
 mappings-file resources/npd-v2-ql-mysql-ontop1.17.obda
 queries-dir resources/Templates
 log-file resources
 
-java-api-class it.unibz.inf.mixer_ontop.core.MixerOntop
-shell-cmd null
-shell-out null
-forced-timeouts null
-forced-timeouts-timeout-value 1200
+## Advanced Test Config
+forced-timeouts 01.rq 02.rq								# Space-separated list of queries to consider as timeout
+forced-timeouts-timeout-value 1200						# Timeout to be assigned to the queries specified as `forced-timeout`
 ~~~~~~~
 
 **Legenda:**
