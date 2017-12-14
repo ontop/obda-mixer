@@ -172,6 +172,6 @@ public class ConfParser {
 		    + "another path, use the --conf option.";
 	    MixerMain.closeEverything(msg,e);
 	}
-	return "error";
+	return "";
     }
 }

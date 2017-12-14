@@ -25,7 +25,6 @@ public class BooleanOption extends Option {
 	
 	public BooleanOption(String name, String description, String category, boolean value) {
 		super(name, description, category, "<bool>");
-	
 		this.value = value;
 	}
 	

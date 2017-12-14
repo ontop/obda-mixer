@@ -64,12 +64,12 @@ public class MixerMain extends MixerOptionsInterface{
 	ConfParser cP = ConfParser.initInstance(confFile);
 	
 	Conf configuration = new Conf(
-		optNumRuns.parsed() ? optNumRuns.getValue() : cP.numRuns().equals("error") ? optNumRuns.getValue() : Integer.valueOf(cP.numRuns()),
-		optNumWarmUps.parsed() ? optNumWarmUps.getValue() : cP.numWarmUps().equals("error") ? optNumWarmUps.getValue() : Integer.valueOf(cP.numWarmUps()),
-		optTimeout.parsed() ? optTimeout.getValue() : cP.timeout().equals("error") ? optTimeout.getValue() : Integer.valueOf(cP.timeout()),
-		optNumClients.parsed() ? optNumClients.getValue() : cP.numClients().equals("error") ? optNumClients.getValue() : Integer.valueOf(cP.numClients()),
-		optRewriting.parsed() ? optRewriting.getValue() : cP.rewriting().equals("error") ? optRewriting.getValue() : Boolean.parseBoolean(cP.rewriting()),
-		optMode.parsed() ? optMode.getValue() : cP.mode().equals("error") ? optMode.getValue() : cP.mode(),
+		optNumRuns.parsed() ? optNumRuns.getValue() : cP.numRuns().equals("") ? optNumRuns.getValue() : Integer.valueOf(cP.numRuns()),
+		optNumWarmUps.parsed() ? optNumWarmUps.getValue() : cP.numWarmUps().equals("") ? optNumWarmUps.getValue() : Integer.valueOf(cP.numWarmUps()),
+		optTimeout.parsed() ? optTimeout.getValue() : cP.timeout().equals("") ? optTimeout.getValue() : Integer.valueOf(cP.timeout()),
+		optNumClients.parsed() ? optNumClients.getValue() : cP.numClients().equals("") ? optNumClients.getValue() : Integer.valueOf(cP.numClients()),
+		optRewriting.parsed() ? optRewriting.getValue() : cP.rewriting().equals("") ? optRewriting.getValue() : Boolean.parseBoolean(cP.rewriting()),
+		optMode.parsed() ? optMode.getValue() : cP.mode().equals("") ? optMode.getValue() : cP.mode(),
 		optServiceUrl.parsed() ? optServiceUrl.getValue() : cP.serviceUrl(),
 		optOwlFile.parsed() ? optOwlFile.getValue() : cP.owlFile(), 
 		optMappingsFile.parsed() ? optMappingsFile.getValue() : cP.mappingsFile(), 
@@ -77,13 +77,13 @@ public class MixerMain extends MixerOptionsInterface{
 		optDbUrl.parsed() ? optDbUrl.getValue() : cP.dbURL(), 
 		optDbUsername.parsed() ? optDbUsername.getValue() : cP.dbUsername(),
 		optDbPassword.parsed() ? optDbPassword.getValue() : cP.dbPassword(), 
-		optLogFile.parsed() ? optLogFile.getValue() : cP.logFile().equals("error") ? optLogFile.getValue() : cP.logFile(), 
-		optQueriesDir.parsed() ? optQueriesDir.getValue() : cP.queriesDir().equals("error") ? optQueriesDir.getValue() : cP.queriesDir(),
+		optLogFile.parsed() ? optLogFile.getValue() : cP.logFile().equals("") ? optLogFile.getValue() : cP.logFile(), 
+		optQueriesDir.parsed() ? optQueriesDir.getValue() : cP.queriesDir().equals("") ? optQueriesDir.getValue() : cP.queriesDir(),
 		optShellCmd.parsed() ? optShellCmd.getValue() : cP.shellCmd(),
 		optShellOut.parsed() ? optShellOut.getValue() : Boolean.parseBoolean(cP.shellOut()),
 		optForceTimeouts.parsed() ? optForceTimeouts.getValue() : cP.forceTimeouts(),
-		optForcedTimeoutsValue.parsed() ? optForcedTimeoutsValue.getValue() : cP.forcedTimeoutsValue().equals("error") ? optForcedTimeoutsValue.getValue() : Integer.valueOf(cP.forcedTimeoutsValue()),
-		optJavaApiClass.parsed() ? optJavaApiClass.getValue() : cP.javaAPIClass().equals("error") ? optJavaApiClass.getValue() : cP.javaAPIClass()
+		optForcedTimeoutsValue.parsed() ? optForcedTimeoutsValue.getValue() : cP.forcedTimeoutsValue().equals("") ? optForcedTimeoutsValue.getValue() : Integer.valueOf(cP.forcedTimeoutsValue()),
+		optJavaApiClass.parsed() ? optJavaApiClass.getValue() : cP.javaAPIClass().equals("") ? optJavaApiClass.getValue() : cP.javaAPIClass()
 		);
 	return configuration;
     }
