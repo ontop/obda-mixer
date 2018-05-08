@@ -27,7 +27,7 @@ driver-class com.mysql.jdbc.Driver
 owl-file resources/npd-v2-ql.owl
 mappings-file resources/npd-v2-ql-mysql-ontop1.17.obda
 queries-dir resources/Templates
-log-file resources
+log-file resources/MixerStats.txt
 
 ## Advanced Test Config
 forced-timeouts 01.rq 02.rq                             # Space-separated list of queries to consider as timeout
@@ -49,7 +49,7 @@ forced-timeouts-timeout-value 1200                      # Timeout to be assigned
 * **mappings-file**: Path to the mapping file
 * **owl-file**: Path to the file containing the ontology
 * **queries-dir**: Location of the directory containing the [query templates](Query Templates Syntax) (_Templates_ folder). 
-* **log-path**: Path where obda-mixer will write the results of the tests (_MixerStats.txt_)
+* **log-file**: File where obda-mixer will write the results of the tests (_resources/MixerStats.txt_)
 * **driver-class**: Database driver class. Database values are used to instantiate the [query templates](Query Templates Syntax).
 * **java-api-class**: Class for the Mixer implementation. This parameter should be used in combination with the `--mode=java-api` option.
 * **shell-cmd**: Command-line string for shell execution. This parameter should be used in combination with the `--mode=shell` option.
