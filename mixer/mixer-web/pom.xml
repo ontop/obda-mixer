@@ -5,13 +5,18 @@
     <artifactId>mixer</artifactId>
     <version>1.2</version>
   </parent>
-  <artifactId>mixer-web</artifactId>
-  
+    <artifactId>mixer-web</artifactId>
+    <version>1.2</version>
   <dependencies>
   	<dependency>
   		<artifactId>mixer-interface</artifactId>
   		<groupId>it.unibz.inf.mixer</groupId>
   		<version>1.2</version>
   	</dependency>
+      <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <scope>test</scope>
+      </dependency>
   </dependencies>
 </project>

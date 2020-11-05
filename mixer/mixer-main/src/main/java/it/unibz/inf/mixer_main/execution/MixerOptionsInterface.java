@@ -47,6 +47,10 @@ abstract class MixerOptionsInterface {
 	    new StringOption("--mappings-file", 
 		    "Path to the mapping file", 
 		    "CONFIGURATION", "");
+	static final StringOption optPropertiesFile =
+	    new StringOption("--properties-file",
+		    "Path to the properties file",
+		    "CONFIGURATION", "");
     static final StringOption optQueriesDir = 
 	    new StringOption("--queries-dir", 
 		    "Path to the queries directory", 

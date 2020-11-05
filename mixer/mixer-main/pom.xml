@@ -67,7 +67,7 @@
 	 	<groupId>it.unibz.inf.mixer</groupId>
     	<artifactId>mixer-utils</artifactId>	
     	<version>1.2</version>
-	</dependency> 
+	</dependency>
     <dependency>
   		<artifactId>mixer-ontop</artifactId>
   		<groupId>it.unibz.inf.mixer</groupId>	

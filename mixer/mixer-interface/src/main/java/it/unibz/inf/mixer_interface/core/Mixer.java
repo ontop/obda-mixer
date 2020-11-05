@@ -46,7 +46,7 @@ public abstract class Mixer {
 	/**
 	 * It loads the OBDA system
 	 */
-	public abstract void load();
+	public abstract void load() throws Exception;
 	
 	/**
 	 * Issues a query with an execution timeout

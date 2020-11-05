@@ -9,9 +9,9 @@ package it.unibz.inf.mixer_main.execution;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,207 +41,214 @@ import it.unibz.inf.mixer_shell.core.MixerShell;
 import it.unibz.inf.mixer_web.core.MixerWeb;
 import it.unibz.inf.utils_options.core.Option;
 
-public class MixerMain extends MixerOptionsInterface{
+public class MixerMain extends MixerOptionsInterface {
 
-    private static Logger log = LoggerFactory.getLogger(MixerMain.class);
+  private static Logger log = LoggerFactory.getLogger(MixerMain.class);
 
-    private Chrono chrono;
-    private Statistics mainStat;
-    private Mixer mixer;
+  private Chrono chrono;
+  private Statistics mainStat;
+  private Mixer mixer;
 
-    private List<Statistics> threadStatistics;
+  private List<Statistics> threadStatistics;
 
-    public MixerMain(String[] args){
-	// Parse command-line options	
-	Conf configuration = configure(args);
-	instantiateMixer(configuration);
+  public MixerMain(String[] args) {
+    // Parse command-line options
+    Conf configuration = configure(args);
+    instantiateMixer(configuration);
+  }
+
+  private Conf configure(String[] args) {
+    Option.parseOptions(args);
+    String confFile = optConfFile.getValue();
+    this.threadStatistics = new ArrayList<Statistics>();
+    ConfParser cP = ConfParser.initInstance(confFile);
+
+    Conf configuration = new Conf(
+            optNumRuns.parsed() ? optNumRuns.getValue() : cP.numRuns().equals("") ? optNumRuns.getValue() : Integer.valueOf(cP.numRuns()),
+            optNumWarmUps.parsed() ? optNumWarmUps.getValue() : cP.numWarmUps().equals("") ? optNumWarmUps.getValue() : Integer.valueOf(cP.numWarmUps()),
+            optTimeout.parsed() ? optTimeout.getValue() : cP.timeout().equals("") ? optTimeout.getValue() : Integer.valueOf(cP.timeout()),
+            optNumClients.parsed() ? optNumClients.getValue() : cP.numClients().equals("") ? optNumClients.getValue() : Integer.valueOf(cP.numClients()),
+            optRewriting.parsed() ? optRewriting.getValue() : cP.rewriting().equals("") ? optRewriting.getValue() : Boolean.parseBoolean(cP.rewriting()),
+            optMode.parsed() ? optMode.getValue() : cP.mode().equals("") ? optMode.getValue() : cP.mode(),
+            optServiceUrl.parsed() ? optServiceUrl.getValue() : cP.serviceUrl(),
+            optOwlFile.parsed() ? optOwlFile.getValue() : cP.owlFile(),
+            optMappingsFile.parsed() ? optMappingsFile.getValue() : cP.mappingsFile(),
+            optPropertiesFile.parsed() ? optPropertiesFile.getValue() : cP.propertiesFile(),
+            optDbDriverClass.parsed() ? optDbDriverClass.getValue() : cP.dbDriverClass(),
+            optDbUrl.parsed() ? optDbUrl.getValue() : cP.dbURL(),
+            optDbUsername.parsed() ? optDbUsername.getValue() : cP.dbUsername(),
+            optDbPassword.parsed() ? optDbPassword.getValue() : cP.dbPassword(),
+            optLogFile.parsed() ? optLogFile.getValue() : cP.logFile().equals("") ? optLogFile.getValue() : cP.logFile(),
+            optQueriesDir.parsed() ? optQueriesDir.getValue() : cP.queriesDir().equals("") ? optQueriesDir.getValue() : cP.queriesDir(),
+            optShellCmd.parsed() ? optShellCmd.getValue() : cP.shellCmd(),
+            optShellOut.parsed() ? optShellOut.getValue() : Boolean.parseBoolean(cP.shellOut()),
+            optForceTimeouts.parsed() ? optForceTimeouts.getValue() : cP.forceTimeouts(),
+            optForcedTimeoutsValue.parsed() ? optForcedTimeoutsValue.getValue() : cP.forcedTimeoutsValue().equals("") ? optForcedTimeoutsValue.getValue() : Integer.valueOf(cP.forcedTimeoutsValue()),
+            optJavaApiClass.parsed() ? optJavaApiClass.getValue() : cP.javaAPIClass().equals("") ? optJavaApiClass.getValue() : cP.javaAPIClass()
+    );
+    return configuration;
+  }
+
+  /**
+   * Modify this method to add other systems
+   **/
+  private void instantiateMixer(Conf configuration) {
+
+    String mode = configuration.getMode();
+
+    switch (mode) {
+      case "java-api":
+        try {
+          this.mixer = instantiateOwlapiMixer(configuration);
+          if (configuration.rewriting()) this.mixer.rewritingON();
+        } catch (Exception e) {
+          String msg = "Error: The class " + configuration.getJavaAPIClass() + " provided as java-api handler does not exist";
+          MixerMain.closeEverything(msg, e);
+        }
+        break;
+      case "web":
+        this.mixer = instantiateWebMixer(configuration);
+        break;
+      case "shell":
+        this.mixer = instantiateShellMixer(configuration);
+        break;
+    }
+    if (this.mixer == null) {
+      try {
+        throw new UnsupportedSystemException("The string " + mode + " is not a valid parameter");
+      } catch (UnsupportedSystemException e) {
+        MixerMain.closeEverything("Could not instantiate the OBDA system.", e);
+      }
     }
 
-    private Conf configure(String[] args) {
-	Option.parseOptions(args);
-	String confFile = optConfFile.getValue();
-	this.threadStatistics = new ArrayList<Statistics>();
-	ConfParser cP = ConfParser.initInstance(confFile);
-	
-	Conf configuration = new Conf(
-		optNumRuns.parsed() ? optNumRuns.getValue() : cP.numRuns().equals("") ? optNumRuns.getValue() : Integer.valueOf(cP.numRuns()),
-		optNumWarmUps.parsed() ? optNumWarmUps.getValue() : cP.numWarmUps().equals("") ? optNumWarmUps.getValue() : Integer.valueOf(cP.numWarmUps()),
-		optTimeout.parsed() ? optTimeout.getValue() : cP.timeout().equals("") ? optTimeout.getValue() : Integer.valueOf(cP.timeout()),
-		optNumClients.parsed() ? optNumClients.getValue() : cP.numClients().equals("") ? optNumClients.getValue() : Integer.valueOf(cP.numClients()),
-		optRewriting.parsed() ? optRewriting.getValue() : cP.rewriting().equals("") ? optRewriting.getValue() : Boolean.parseBoolean(cP.rewriting()),
-		optMode.parsed() ? optMode.getValue() : cP.mode().equals("") ? optMode.getValue() : cP.mode(),
-		optServiceUrl.parsed() ? optServiceUrl.getValue() : cP.serviceUrl(),
-		optOwlFile.parsed() ? optOwlFile.getValue() : cP.owlFile(), 
-		optMappingsFile.parsed() ? optMappingsFile.getValue() : cP.mappingsFile(), 
-		optDbDriverClass.parsed() ? optDbDriverClass.getValue() : cP.dbDriverClass(),
-		optDbUrl.parsed() ? optDbUrl.getValue() : cP.dbURL(), 
-		optDbUsername.parsed() ? optDbUsername.getValue() : cP.dbUsername(),
-		optDbPassword.parsed() ? optDbPassword.getValue() : cP.dbPassword(), 
-		optLogFile.parsed() ? optLogFile.getValue() : cP.logFile().equals("") ? optLogFile.getValue() : cP.logFile(), 
-		optQueriesDir.parsed() ? optQueriesDir.getValue() : cP.queriesDir().equals("") ? optQueriesDir.getValue() : cP.queriesDir(),
-		optShellCmd.parsed() ? optShellCmd.getValue() : cP.shellCmd(),
-		optShellOut.parsed() ? optShellOut.getValue() : Boolean.parseBoolean(cP.shellOut()),
-		optForceTimeouts.parsed() ? optForceTimeouts.getValue() : cP.forceTimeouts(),
-		optForcedTimeoutsValue.parsed() ? optForcedTimeoutsValue.getValue() : cP.forcedTimeoutsValue().equals("") ? optForcedTimeoutsValue.getValue() : Integer.valueOf(cP.forcedTimeoutsValue()),
-		optJavaApiClass.parsed() ? optJavaApiClass.getValue() : cP.javaAPIClass().equals("") ? optJavaApiClass.getValue() : cP.javaAPIClass()
-		);
-	return configuration;
+  }
+
+  private Mixer instantiateShellMixer(Conf configuration) {
+    Mixer result = new MixerShell(configuration);
+    return result;
+  }
+
+  private Mixer instantiateWebMixer(Conf configuration) {
+    Mixer result = new MixerWeb(configuration);
+    return result;
+  }
+
+  private Mixer instantiateOwlapiMixer(Conf configuration)
+          throws UnsupportedSystemException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    Class<?> clazz = Class.forName(configuration.getJavaAPIClass());
+    Constructor<?> ctor = clazz.getConstructor(Conf.class);
+    Mixer result = (Mixer) ctor.newInstance(new Object[]{configuration});
+
+    return result;
+  }
+
+  private void do_tests() {
+
+    mainStat = new Statistics("GLOBAL");
+    chrono = new Chrono();
+
+    // Load the system
+    chrono.start();
+    try {
+      mixer.load();
+    } catch (Exception e) {
+      e.printStackTrace();
+      MixerMain.closeEverything("Failed to Load Mixer", e);
+    }
+    mainStat.getSimpleStatsInstance("main").addTime("load-time", chrono.stop());
+
+    List<MixerThread> threads = setUpMixerThreads();
+    test(threads);
+
+    logStatistics();
+  }
+
+
+  private void logStatistics() {
+
+    //		// Join statistics
+    //		for( Statistics s : threadStatistics ){
+    //			mainStat.merge(s);
+    //		}
+
+    FileWriter statsWriter = getLogWriter();
+    try {
+      statsWriter.write(mainStat.printStats());
+      statsWriter.flush();
+
+      for (Statistics s : threadStatistics) {
+        statsWriter.write(s.printStats());
+      }
+
+      statsWriter.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void test(List<MixerThread> threads) {
+    for (MixerThread mT : threads) {
+      mT.start();
+    }
+    for (MixerThread mT : threads) {
+      try {
+        mT.join();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  private FileWriter getLogWriter() {
+    String statsFileName = mixer.getConfiguration().getLogFile();
+    File statsFile = new File(statsFileName);
+    if (statsFile.exists()) statsFile.delete();
+    FileWriter statsWriter = null;
+    try {
+      statsWriter = new FileWriter(statsFile);
+    } catch (IOException e) {
+      MixerMain.closeEverything("Cannot find log file " + statsFileName, e);
+    }
+    return statsWriter;
+  }
+
+  private List<MixerThread> setUpMixerThreads() {
+
+    List<MixerThread> threads = new ArrayList<MixerThread>();
+    //		boolean rwAndUnf = false;
+    //		if( numClients == 1 ){
+    //			rwAndUnf = true;
+    //		}
+
+    File folder = new File(mixer.getConfiguration().getTemplatesDir());
+    File[] listOfFiles = folder.listFiles();
+
+    for (int i = 0; i < mixer.getConfiguration().getNumClients(); ++i) {
+      // Configure each mixerThread
+      Statistics stat = new Statistics("thread#" + i);
+      this.threadStatistics.add(stat);
+      MixerThread mT = new MixerThread(mixer, stat, listOfFiles);
+      threads.add(mT);
     }
 
-    /** Modify this method to add other systems **/
-    private void instantiateMixer(Conf configuration) {
+    return threads;
+  }
 
-	String mode = optMode.getValue();
+  public static void main(String[] args) {
 
-	switch(mode){
-	case "java-api" : 
-	    try {
-		this.mixer = instantiateOwlapiMixer(configuration);
-		if( configuration.rewriting() ) this.mixer.rewritingON();
-	    } catch (Exception e) {
-		String msg = "Error: The class " + configuration.getJavaAPIClass() + " provided as java-api handler does not exist";
-		MixerMain.closeEverything(msg, e);
-	    }
-	    break;
-	case "web" : 
-	    this.mixer = instantiateWebMixer(configuration);
-	    break;
-	case "shell" :
-	    this.mixer = instantiateShellMixer(configuration);
-	    break;
-	}
-	if( this.mixer == null ){
-	    try {
-		throw new UnsupportedSystemException("The string "+mode+" is not a valid parameter");
-	    } catch (UnsupportedSystemException e) {
-		MixerMain.closeEverything("Could not instantiate the OBDA system.", e);
-	    }
-	}
+    MixerMain main = new MixerMain(args);
+    main.do_tests();
 
-    }
+  }
 
-    private Mixer instantiateShellMixer(Conf configuration) {
-	Mixer result = new MixerShell(configuration);
-	return result;
-    }
+  public static void closeEverything(String msg, Exception e) {
+    log.error(msg);
+    throw new RuntimeException(e);
+  }
 
-    private Mixer instantiateWebMixer(Conf configuration) {
-	Mixer result = new MixerWeb(configuration);
-	return result;
-    }
-
-    private Mixer instantiateOwlapiMixer(Conf configuration) 
-	    throws UnsupportedSystemException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException 
-    {
-	Class<?> clazz= Class.forName( configuration.getJavaAPIClass() );
-	Constructor<?> ctor = clazz.getConstructor(Conf.class);
-	Mixer result = (Mixer)ctor.newInstance(new Object[] { configuration });
-
-	return result;
-    }
-
-    private void do_tests(){
-
-	mainStat = new Statistics("GLOBAL");
-	chrono = new Chrono();
-
-	// Load the system
-	chrono.start();
-	mixer.load();
-	mainStat.getSimpleStatsInstance("main").addTime("load-time", chrono.stop());
-
-	List<MixerThread> threads = setUpMixerThreads();
-	test(threads);
-
-	logStatistics();
-    }
-
-
-    private void logStatistics() {
-
-	//		// Join statistics
-	//		for( Statistics s : threadStatistics ){
-	//			mainStat.merge(s);
-	//		}
-
-	FileWriter statsWriter = getLogWriter();
-	try {
-	    statsWriter.write(mainStat.printStats());
-	    statsWriter.flush();
-
-	    for( Statistics s : threadStatistics ){
-		statsWriter.write(s.printStats());
-	    }
-
-	    statsWriter.close();
-	} catch (IOException e) {
-	    e.printStackTrace();
-	}
-    }
-
-    private void test(List<MixerThread> threads) {
-	for( MixerThread mT : threads){
-	    mT.start();
-	}
-	for( MixerThread mT : threads ){
-	    try {
-		mT.join();				
-	    } catch (InterruptedException e) {
-		e.printStackTrace();
-	    }
-	}
-    }
-
-    private FileWriter getLogWriter() {
-	String statsFileName = mixer.getConfiguration().getLogFile();
-	File statsFile = new File(statsFileName);
-	if( statsFile.exists() ) statsFile.delete();
-	FileWriter statsWriter = null;
-	try {
-	    statsWriter = new FileWriter(statsFile);
-	} catch (IOException e) {
-	    MixerMain.closeEverything("Cannot find log file " + statsFileName, e);
-	}
-	return statsWriter;
-    }
-
-    private List<MixerThread> setUpMixerThreads(){
-
-	List<MixerThread> threads = new ArrayList<MixerThread>();
-	//		boolean rwAndUnf = false;
-	//		if( numClients == 1 ){
-	//			rwAndUnf = true;
-	//		}
-
-	File folder = new File(mixer.getConfiguration().getTemplatesDir());
-	File[] listOfFiles = folder.listFiles();
-
-	for( int i = 0; i < mixer.getConfiguration().getNumClients(); ++i ){
-	    // Configure each mixerThread
-	    Statistics stat = new Statistics("thread#"+i);
-	    this.threadStatistics.add(stat);
-	    MixerThread mT = new MixerThread(mixer, stat, listOfFiles);
-	    threads.add(mT);
-	}
-
-	return threads;
-    }
-
-    public static void main( String[] args ){
-
-	MixerMain main = new MixerMain(args);
-	main.do_tests();
-
-    }
-
-    public static void closeEverything(String msg, Exception e) {
-	log.error(msg);
-	throw new RuntimeException(e);
-    }
-    
-    public static void closeEverything(String msg) {
-	log.error(msg);
-	throw new RuntimeException();
-    }
+  public static void closeEverything(String msg) {
+    log.error(msg);
+    throw new RuntimeException();
+  }
 };
 

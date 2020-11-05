@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="mixer-utils" />
+    <orderEntry type="module" module-name="mixer-ontop" />
+    <orderEntry type="module" module-name="mixer-interface" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-owlapi:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-system-owlapi:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-system-core:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-reformulation-core:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-obda-core:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-model:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.functionaljava:functionaljava:4.8.1" level="project" />
+    <orderEntry type="library" name="Maven: org.javabits.jgrapht:jgrapht-core:0.9.3" level="project" />
+    <orderEntry type="library" name="Maven: io.mikael:urlbuilder:2.0.9" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-optimization:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-ontology-owlapi:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-mapping-core:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-rdf-api:0.5.0" level="project" />
+    <orderEntry type="library" name="Maven: org.antlr:antlr4-runtime:4.8-1" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.owlapi:owlapi-api:4.5.9" level="project" />
+    <orderEntry type="library" name="Maven: org.tukaani:xz:1.6" level="project" />
+    <orderEntry type="library" name="Maven: com.github.ben-manes.caffeine:caffeine:2.5.6" level="project" />
+    <orderEntry type="library" name="Maven: javax.inject:javax.inject:1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.vsonnier:hppcrt:0.7.5" level="project" />
+    <orderEntry type="library" name="Maven: commons-io:commons-io:2.5" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.owlapi:owlapi-apibinding:4.5.9" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.owlapi:owlapi-impl:4.5.9" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.owlapi:owlapi-parsers:4.5.9" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.owlapi:owlapi-oboformat:4.5.9" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.owlapi:owlapi-tools:4.5.9" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.owlapi:owlapi-fixers:4.5.9" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.owlapi:owlapi-rio:4.5.9" level="project" />
+    <orderEntry type="library" name="Maven: org.openrdf.sesame:sesame-model:2.7.16" level="project" />
+    <orderEntry type="library" name="Maven: org.openrdf.sesame:sesame-util:2.7.16" level="project" />
+    <orderEntry type="library" name="Maven: org.openrdf.sesame:sesame-rio-api:2.7.16" level="project" />
+    <orderEntry type="library" name="Maven: org.openrdf.sesame:sesame-rio-languages:2.7.16" level="project" />
+    <orderEntry type="library" name="Maven: org.openrdf.sesame:sesame-rio-datatypes:2.7.16" level="project" />
+    <orderEntry type="library" name="Maven: org.openrdf.sesame:sesame-rio-binary:2.7.16" level="project" />
+    <orderEntry type="library" name="Maven: org.openrdf.sesame:sesame-rio-n3:2.7.16" level="project" />
+    <orderEntry type="library" name="Maven: org.openrdf.sesame:sesame-rio-nquads:2.7.16" level="project" />
+    <orderEntry type="library" name="Maven: org.openrdf.sesame:sesame-rio-ntriples:2.7.16" level="project" />
+    <orderEntry type="library" name="Maven: org.openrdf.sesame:sesame-rio-rdfjson:2.7.16" level="project" />
+    <orderEntry type="library" name="Maven: org.openrdf.sesame:sesame-rio-rdfxml:2.7.16" level="project" />
+    <orderEntry type="library" name="Maven: org.openrdf.sesame:sesame-rio-trix:2.7.16" level="project" />
+    <orderEntry type="library" name="Maven: org.openrdf.sesame:sesame-rio-turtle:2.7.16" level="project" />
+    <orderEntry type="library" name="Maven: org.openrdf.sesame:sesame-rio-trig:2.7.16" level="project" />
+    <orderEntry type="library" name="Maven: com.github.jsonld-java:jsonld-java-sesame:0.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.jsonld-java:jsonld-java:0.5.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient-cache:4.2.5" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.2.5" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.2.4" level="project" />
+    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.6" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.slf4j:jcl-over-slf4j:1.7.7" level="project" />
+    <orderEntry type="library" name="Maven: org.semarglproject:semargl-sesame:0.6.1" level="project" />
+    <orderEntry type="library" name="Maven: org.semarglproject:semargl-core:0.6.1" level="project" />
+    <orderEntry type="library" name="Maven: org.semarglproject:semargl-rdfa:0.6.1" level="project" />
+    <orderEntry type="library" name="Maven: org.semarglproject:semargl-rdf:0.6.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-queryparser-sparql:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-rio-trig:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-rio-api:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: javax.xml.bind:jaxb-api:2.3.1" level="project" />
+    <orderEntry type="library" name="Maven: javax.activation:javax.activation-api:1.2.0" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-rio-turtle:3.3.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.eclipse.rdf4j:rdf4j-rio-datatypes:3.3.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.eclipse.rdf4j:rdf4j-rio-languages:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-query:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.10.4" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.10.4" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.10.4" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-queryalgebra-model:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-model:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-util:3.3.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.guava:guava:18.0" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-system-sql-owlapi:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-system-sql-core:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-reformulation-sql:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-rdb:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-mapping-sql-all:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-mapping-sql-core:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.6" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-mapping-native:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-mapping-r2rml:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: junit:junit:4.10" level="project" />
+    <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
+    <orderEntry type="library" name="Maven: eu.optique-project:r2rml-api-core:0.6.0" level="project" />
+    <orderEntry type="library" name="Maven: eu.optique-project:r2rml-api-rdf4j-binding:0.6.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-rdf-rdf4j:0.3.0-incubating" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-rdf-simple:0.3.0-incubating" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-repository-api:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-rio-ntriples:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-rio-nquads:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-rio-rdfxml:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-rio-jsonld:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-sail-memory:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-sail-base:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-sail-inferencer:2.1.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.eclipse.rdf4j:rdf4j-queryparser-serql:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-sail-model:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-queryalgebra-evaluation:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-repository-sparql:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-queryresultio-sparqlxml:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.mapdb:mapdb:1.0.8" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-repository-sail:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-sail-api:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-http-client:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-http-protocol:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-queryresultio-api:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.jsqlparser:jsqlparser:3.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-jdbc:10.0.0-M7" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-juli:10.0.0-M7" level="project" />
+    <orderEntry type="library" name="Maven: com.zaxxer:HikariCP:3.4.5" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-mapping-sql-owlapi:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-mapping-owlapi:4.0.2" level="project" />
+    <orderEntry type="library" name="Maven: edu.stanford.protege:org.protege.xmlcatalog:1.0.5" level="project" />
+    <orderEntry type="library" name="Maven: log4j:log4j:1.2.17" level="project" />
+    <orderEntry type="library" name="Maven: xml-resolver:xml-resolver:1.2" level="project" />
+    <orderEntry type="library" name="Maven: com.google.inject:guice:4.1.0" level="project" />
+    <orderEntry type="library" name="Maven: aopalliance:aopalliance:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.inject.extensions:guice-assistedinject:4.1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:3.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-queryparser-api:3.3.0" level="project" />
+    <orderEntry type="module" module-name="mixer-web" />
+    <orderEntry type="module" module-name="mixer-shell" />
+    <orderEntry type="library" name="Maven: mysql:mysql-connector-java:5.1.22" level="project" />
+    <orderEntry type="library" name="Maven: postgresql:postgresql:9.0-801.jdbc4" level="project" />
+    <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.6.4" level="project" />
+    <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.0.2" level="project" />
+  </component>
+</module>
