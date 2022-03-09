@@ -1,0 +1,15 @@
+SELECT DISTINCT ?specquasar ?specquasar_declination ?specquasar_right_ascension WHERE {
+
+?specquasar a <http://www.semanticweb.org/skyserver/SpecQuasar>.
+
+?specquasar <http://www.semanticweb.org/skyserver/right_ascension> ?specquasar_right_ascension.
+
+?specquasar <http://www.semanticweb.org/skyserver/declination> ?specquasar_declination.
+
+FILTER (?specquasar_right_ascension > 120 )
+
+FILTER (?specquasar_declination > 5.2 )
+
+}
+
+LIMIT 100

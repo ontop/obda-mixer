@@ -25,9 +25,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.unibz.inf.mixer_jdbc.core.MixerJDBC;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -40,6 +42,7 @@ import it.unibz.inf.mixer_main.time.Chrono;
 import it.unibz.inf.mixer_shell.core.MixerShell;
 import it.unibz.inf.mixer_web.core.MixerWeb;
 import it.unibz.inf.utils_options.core.Option;
+
 
 public class MixerMain extends MixerOptionsInterface {
 
@@ -84,8 +87,11 @@ public class MixerMain extends MixerOptionsInterface {
             optShellOut.parsed() ? optShellOut.getValue() : Boolean.parseBoolean(cP.shellOut()),
             optForceTimeouts.parsed() ? optForceTimeouts.getValue() : cP.forceTimeouts(),
             optForcedTimeoutsValue.parsed() ? optForcedTimeoutsValue.getValue() : cP.forcedTimeoutsValue().equals("") ? optForcedTimeoutsValue.getValue() : Integer.valueOf(cP.forcedTimeoutsValue()),
-            optJavaApiClass.parsed() ? optJavaApiClass.getValue() : cP.javaAPIClass().equals("") ? optJavaApiClass.getValue() : cP.javaAPIClass()
-    );
+            optJavaApiClass.parsed() ? optJavaApiClass.getValue() : cP.javaAPIClass().equals("") ? optJavaApiClass.getValue() : cP.javaAPIClass(),
+            optJDBCModeDbDriverClass.parsed() ? optJDBCModeDbDriverClass.getValue() : cP.jdbcModeDBDriverClass(),
+            optJDBCModeDbUrl.parsed() ? optJDBCModeDbUrl.getValue() : cP.jdbcModeDBURL(),
+            optJDBCModeDbUsername.parsed() ? optJDBCModeDbUsername.getValue() : cP.jdbcModeDBUsername(),
+            optJDBCModeDbPassword.parsed() ? optJDBCModeDbPassword.getValue() : cP.jdbcModeDbPassword());
     return configuration;
   }
 
@@ -112,6 +118,9 @@ public class MixerMain extends MixerOptionsInterface {
       case "shell":
         this.mixer = instantiateShellMixer(configuration);
         break;
+      case "jdbc":
+        this.mixer = instantiateJDBCMixer(configuration);
+        break;
     }
     if (this.mixer == null) {
       try {
@@ -120,7 +129,16 @@ public class MixerMain extends MixerOptionsInterface {
         MixerMain.closeEverything("Could not instantiate the OBDA system.", e);
       }
     }
+  }
 
+  private Mixer instantiateJDBCMixer(Conf configuration) {
+    Mixer result = null;
+    try {
+      result = new MixerJDBC(configuration);
+    } catch (SQLException | ClassNotFoundException e) {
+      MixerMain.closeEverything("Failed to instantiate JDBCMixer", e);
+    }
+    return result;
   }
 
   private Mixer instantiateShellMixer(Conf configuration) {
@@ -242,6 +260,7 @@ public class MixerMain extends MixerOptionsInterface {
   }
 
   public static void closeEverything(String msg, Exception e) {
+
     log.error(msg);
     throw new RuntimeException(e);
   }

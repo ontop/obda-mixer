@@ -1,0 +1,19 @@
+SELECT DISTINCT ?photogalaxy ?photogalaxy_declination ?photogalaxy_magnitude_g  WHERE {
+
+?photogalaxy a <http://www.semanticweb.org/skyserver/PhotoGalaxy>.
+
+?photogalaxy <http://www.semanticweb.org/skyserver/magnitude_g> ?photogalaxy_magnitude_g.
+
+?photogalaxy <http://www.semanticweb.org/skyserver/declination> ?photogalaxy_declination.
+  
+?photogalaxy <http://www.semanticweb.org/skyserver/right_ascension> ?photogalaxy_right_ascension.
+
+FILTER (?photogalaxy_declination > 5 )
+
+FILTER (?photogalaxy_right_ascension < 130 )
+
+FILTER (?photogalaxy_magnitude_g <= 23 )
+
+}
+
+LIMIT 100

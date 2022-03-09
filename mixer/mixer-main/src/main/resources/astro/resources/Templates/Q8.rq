@@ -1,0 +1,11 @@
+SELECT DISTINCT ?photoasteroid ?photoasteroid_mode_of_photo_observation WHERE {
+
+?photoasteroid <http://www.semanticweb.org/skyserver/Photometry#mode_of_photo_observation> ?photoasteroid_mode_of_photo_observation.
+
+?photoasteroid a <http://www.semanticweb.org/skyserver/PhotoAsteroid>.
+
+FILTER (str(?photoasteroid_mode_of_photo_observation) = "1")
+
+}
+
+LIMIT 100

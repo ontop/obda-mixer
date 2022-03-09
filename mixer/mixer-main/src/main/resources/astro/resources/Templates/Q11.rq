@@ -1,0 +1,11 @@
+SELECT DISTINCT ?specstartypea ?specstartypea_plate_number WHERE {
+
+?specstartypea <http://www.semanticweb.org/skyserver/Spectroscopy#plate_number> ?specstartypea_plate_number.
+
+?specstartypea a <http://www.semanticweb.org/skyserver/SpecStarTypeA>.
+
+FILTER (str(?specstartypea_plate_number) = "1760")
+
+}
+
+LIMIT 100

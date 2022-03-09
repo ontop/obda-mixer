@@ -81,4 +81,22 @@ abstract class MixerOptionsInterface {
 	    new IntOption("--timeout-value", "Number of clients querying the system in parallel. Rewriting "
 		    + "and unfolding times are unavailable in multi-client mode", 
 		    "Mixer", 1200, new IntRange(1, Integer.MAX_VALUE, true, true));
+
+    // JDBC-mode
+	static final StringOption optJDBCModeDbUrl =
+			new StringOption("--db-url",
+					"In JDBC-mode, URL of the database to be queried",
+					"CONFIGURATION", "");
+	static final StringOption optJDBCModeDbUsername =
+			new StringOption("--db-user",
+					"In JDBC-mode, Username for accessing the database to be queried",
+					"CONFIGURATION", "");
+	static final StringOption optJDBCModeDbPassword =
+			new StringOption("--db-pwd",
+					"In JDBC-mode, Password for accessing the database to be queried",
+					"CONFIGURATION", "");
+	static final StringOption optJDBCModeDbDriverClass =
+			new StringOption("--db-driverclass",
+					"In JDBC-mode, driver class of the database to be queried",
+					"CONFIGURATION", "");
 };

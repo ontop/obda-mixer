@@ -1,0 +1,5 @@
+PREFIX : <http://www.semanticweb.org/skyserver/>
+SELECT ?p ?ra ?dec
+WHERE {?p a :Photometry; :right_ascension ?ra; :declination ?dec .
+       FILTER (?ra > 120 && ?ra < 140 && ?dec > 5 && ?dec < 7 )
+}

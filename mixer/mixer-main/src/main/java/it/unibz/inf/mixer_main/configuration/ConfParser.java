@@ -53,29 +53,44 @@ public class ConfParser {
     return instance;
   }
 
+  /** Returns the driver class of the database for instantiating the query-templates **/
   public String dbDriverClass() {
     return searchTag("driver-class");
   }
 
-  /**
-   * Returns the url of the database
-   **/
+  /** In JDBC-mode, driver class of the DB to be queried   */
+  public String jdbcModeDBDriverClass() {
+    return searchTag("jdbc-mode-driver-class");
+  }
+
+  /** Returns the url of the database for instantiating the query-templates **/
   public String dbURL() {
     return searchTag("db-url");
   }
 
-  /**
-   * Returns the username of the database
-   **/
+  /** In JDBC-mode, the url of the database to be queried **/
+  public String jdbcModeDBURL() {
+    return searchTag("jdbc-mode-db-url");
+  }
+
+  /** Returns the username of the database for instantiating the query-templates **/
   public String dbUsername() {
     return searchTag("db-username");
   }
 
-  /**
-   * Returns the password for the database
-   **/
+  /** Returns the username of the database to be queried **/
+  public String jdbcModeDBUsername() {
+    return searchTag("jdbc-mode-db-username");
+  }
+
+  /** Returns the password for the database **/
   public String dbPassword() {
     return searchTag("db-pwd");
+  }
+
+  /** In JDBC-mode, returns the password of the database to be queried **/
+  public String jdbcModeDbPassword() {
+    return searchTag("jdbc-mode-db-pwd");
   }
 
   /**

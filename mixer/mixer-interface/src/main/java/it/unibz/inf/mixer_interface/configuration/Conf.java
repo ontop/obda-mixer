@@ -40,8 +40,6 @@ public class Conf {
   protected final String logFile;
   protected final String templatesDir;
   private final String propertyFile;
-  protected String shellCmd;
-  protected boolean shellOutput;
   protected String forcedTimeouts;
   protected int forcedTimeoutsTimeoutValue;
 
@@ -52,8 +50,35 @@ public class Conf {
   protected int timeout;
   protected int numClients;
   protected boolean rewriting;
+
+  // modes
   protected String mode;
+  // shell-mode
+  protected String shellCmd;
+  protected boolean shellOutput;
+  // web-mode
   protected String serviceUrl;
+  // jdbc-mode
+  protected final String jdbcModeDriverClass;
+  protected final String jdbcModeDatabaseUrl;
+  protected final String jdbcModeDatabaseUser;
+  protected final String jdbcModeDatabasePwd;
+
+  public String getJdbcModeDriverClass() {
+    return jdbcModeDriverClass;
+  }
+
+  public String getJdbcModeDatabaseUrl() {
+    return jdbcModeDatabaseUrl;
+  }
+
+  public String getJdbcModeDatabaseUser() {
+    return jdbcModeDatabaseUser;
+  }
+
+  public String getJdbcModeDatabasePwd() {
+    return jdbcModeDatabasePwd;
+  }
 
   public Conf(
           int numRuns,
@@ -76,8 +101,8 @@ public class Conf {
           boolean shellOutput,
           String forcedTimeouts,
           int forcedTimeoutsValue,
-          String javaApiClass
-  ) {
+          String javaApiClass,
+          String jdbcModeDriverClass, String jdbcModeDatabaseUrl, String jdbcModeDatabaseUser, String jdbcModeDatabasePwd) {
     this.numRuns = numRuns;
     this.numWarmUps = numWarmUps;
     this.timeout = timeout;
@@ -99,7 +124,12 @@ public class Conf {
     this.forcedTimeouts = forcedTimeouts;
     this.forcedTimeoutsTimeoutValue = forcedTimeoutsValue;
     this.javaApiClass = javaApiClass;
+    this.jdbcModeDriverClass = jdbcModeDriverClass;
+    this.jdbcModeDatabaseUrl = jdbcModeDatabaseUrl;
+    this.jdbcModeDatabaseUser = jdbcModeDatabaseUser;
+    this.jdbcModeDatabasePwd = jdbcModeDatabasePwd;
   }
+
 
   public String getJavaApiClass() {
     return javaApiClass;

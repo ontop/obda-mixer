@@ -1,0 +1,5 @@
+PREFIX : <http://www.semanticweb.org/skyserver/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?x ?redshift WHERE {?x rdf:type :SpecQuasar; :redshift ?redshift}
+LIMIT 100

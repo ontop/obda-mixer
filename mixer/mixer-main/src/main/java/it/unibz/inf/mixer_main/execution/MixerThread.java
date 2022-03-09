@@ -20,54 +20,36 @@ package it.unibz.inf.mixer_main.execution;
  * #L%
  */
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
+import it.unibz.inf.mixer_db_connection.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
-import it.unibz.inf.mixer_main.connection.DBMSConnection;
-import it.unibz.inf.mixer_main.connection.DBMSConnectionMysql;
-import it.unibz.inf.mixer_main.connection.DBMSConnectionPostgres;
 import it.unibz.inf.mixer_main.statistics.SimpleStatistics;
 import it.unibz.inf.mixer_main.statistics.Statistics;
 import it.unibz.inf.mixer_main.time.Chrono;
-import it.unibz.inf.mixer_main.utils.QualifiedName;
-import it.unibz.inf.mixer_main.utils.Template;
 
 public class MixerThread extends Thread {
 
-  private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
-  private static final String POSTGRES_DRIVER = "org.postgresql.Driver";
   static Logger log = LoggerFactory.getLogger(MixerThread.class);
 
   // Logging
-  private Statistics stat;
-  private Mixer mixer;
+  private final Statistics stat;
+  private final Mixer mixer;
 
-  private int nRuns; // Number of total runs
-  private int nWUps; // Number of warm-up runs
-  private int timeout; // timeout time
+  private final int nRuns; // Number of total runs
+  private final int nWUps; // Number of warm-up runs
+  private final int timeout; // timeout time
 
   // Do I (me, thread) have to collect rewriting and unfolding time?
-  boolean rwAndUnf = true; // TODO Remove
+  final boolean rwAndUnf = true; // TODO Remove
 
   // Time statistics
-  private Chrono chrono;
-  private Chrono chronoMix;
+  private final Chrono chrono;
+  private final Chrono chronoMix;
 
   public MixerThread(Mixer m, Statistics stat, File[] listOfFiles) {
     this.stat = stat;
@@ -93,13 +75,28 @@ public class MixerThread extends Thread {
     String driver = conf.getDriverClass();
 
     DBMSConnection db = null;
-    if (driver.equals(MYSQL_DRIVER)) {
-      db = new DBMSConnectionMysql(conf);
-    } if(driver.equals(POSTGRES_DRIVER))
-      db = new DBMSConnectionPostgres(conf);
-    else{
-      db = null;
+    try{
+      switch(driver) {
+        case DBType.MYSQL:
+          db = new DBMSConnectionMysql(conf);
+          break;
+        case DBType.POSTGRES:
+          db = new DBMSConnectionPostgres(conf);
+          break;
+        case DBType.SQLSERVER:
+          db = new DBMSConnectionMSSQL(conf);
+          break;
+        case DBType.DB2:
+          db = new DBMSConnectionDB2(conf);
+          break;
+        case DBType.TEIID:
+          db = new DBMSConnectionTeiid(conf);
+          break;
+      }
+    } catch (SQLException | ClassNotFoundException e) {
+      MixerMain.closeEverything("Falied to instantiate DB connection", e);
     }
+
     TemplateQuerySelector tqs = new TemplateQuerySelector(conf, db);
 
     // Warm up
@@ -133,8 +130,8 @@ public class MixerThread extends Thread {
           stop = true;
         } else if (query.equals("force-timeout")) {
           int forcedTimeout = mixer.getConfiguration().getForcedTimeoutsTimeoutValue();
-          localStat.addTime("execution_time#" + tqs.getCurQueryName(), forcedTimeout * 1000); // Convert to milliseconds
-          forcedTimeoutsSum += forcedTimeout * 1000; // Convert to milliseconds
+          localStat.addTime("execution_time#" + tqs.getCurQueryName(), forcedTimeout * 1000L); // Convert to milliseconds
+          forcedTimeoutsSum += forcedTimeout * 1000L; // Convert to milliseconds
         } else {
           Object resultSet = null;
           chrono.start();
@@ -182,209 +179,4 @@ public class MixerThread extends Thread {
       }
     }
   }
-};
-
-class TemplateQuerySelector {
-
-  private Set<String> executedQueries = new HashSet<>();
-
-  private String templatesDir;
-
-  // Fields to use this class as an iterator
-  private int index;
-  private File[] listOfFiles;
-
-  // Pointers in the database
-  private Map<String, Integer> resultSetPointer = new HashMap<String, Integer>();
-
-  // Connection to the database
-  DBMSConnection db;
-
-  // State
-  private int nExecutedTemplate;
-
-  // Queries to skip
-  private List<String> forceTimeoutQueries;
-
-  public TemplateQuerySelector(Conf configuration, DBMSConnection db) {
-    index = 0;
-    templatesDir = configuration.getTemplatesDir();
-
-    this.db = db;
-
-    // Query templates
-    File folder = new File(templatesDir);
-    listOfFiles = folder.listFiles();
-
-    this.nExecutedTemplate = 0;
-
-    // Force timeouts
-    this.forceTimeoutQueries = configuration.getForcedTimeouts();
-  }
-
-  public String getCurQueryName() {
-    return listOfFiles[index - 1].getName();
-  }
-
-  public String getNextQuery() {
-
-    if (index >= listOfFiles.length) {
-      index = 0;
-      return null;
-    }
-
-    while (!listOfFiles[index].isFile()) {
-      ++index;
-      if (index >= listOfFiles.length) {
-        index = 0;
-        return null;
-      }
-    }
-    ;
-
-    String inFile = templatesDir + "/" + listOfFiles[index].getName();
-
-    String result = null;
-
-    String queryName = listOfFiles[index].getName();
-    if (this.forceTimeoutQueries.contains(queryName)) {
-      // Forcibly timeout the query
-      ++index;
-      return "force-timeout";
-    }
-
-    try {
-      BufferedReader in;
-      in = new BufferedReader(new FileReader(inFile));
-
-      StringBuilder queryBuilder = new StringBuilder();
-      String curLine = null;
-
-      while ((curLine = in.readLine()) != null) {
-        queryBuilder.append(curLine + "\n");
-      }
-      in.close();
-
-      Template sparqlQueryTemplate = new Template(queryBuilder.toString());
-      int maxTries = 200;
-      int i = 0;
-      do {
-        fillPlaceholders(sparqlQueryTemplate);
-      }
-      while (i++ < maxTries && sparqlQueryTemplate.getNumPlaceholders() != 0 && executedQueries.contains(sparqlQueryTemplate.getFilled()));
-
-      result = sparqlQueryTemplate.getFilled();
-      executedQueries.add(result);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    ++index;
-    return result;
-  }
-
-  private void fillPlaceholders(Template sparqlQueryTemplate) {
-
-    MixerThread.log.debug("[mixer-debug] Call fillPlaceholders");
-
-    Map<Template.PlaceholderInfo, String> mapTIToValue = new HashMap<Template.PlaceholderInfo, String>();
-
-    this.resultSetPointer.clear();
-    ++this.nExecutedTemplate;
-
-    if (sparqlQueryTemplate.getNumPlaceholders() == 0) return;
-
-    for (int i = 1; i <= sparqlQueryTemplate.getNumPlaceholders(); ++i) {
-
-      Template.PlaceholderInfo info = sparqlQueryTemplate.getNthPlaceholderInfo(i);
-
-      String toInsert = null;
-      if (mapTIToValue.containsKey(info)) {
-        toInsert = mapTIToValue.get(info);
-      } else {
-        toInsert = findValueToInsert(info.getQN());
-        mapTIToValue.put(info, toInsert);
-      }
-      toInsert = info.applyQuote(toInsert, info.quote());
-      sparqlQueryTemplate.setNthPlaceholder(i, toInsert);
-    }
-  }
-
-  /**
-   * Tries to look in the same row, as long as possible
-   *
-   * @param qN
-   * @return
-   */
-  private String findValueToInsert(QualifiedName qN) {
-
-    String result = null;
-    int pointer = 0;
-
-    if (resultSetPointer.containsKey(qN.toString())) {
-      pointer = resultSetPointer.get(qN.toString());
-      resultSetPointer.put(qN.toString(), pointer + 1);
-    } else {
-      resultSetPointer.put(qN.toString(), 1);
-    }
-
-    pointer += this.nExecutedTemplate;
-
-    String query = "SELECT " + "*" + " FROM "
-            + qN.getFirst() + " WHERE " + qN.getSecond() + " IS NOT NULL "
-            + " LIMIT " + pointer + ", 1";
-
-    if (db.getJdbcConnector().equals("jdbc:postgresql")) {
-      query = "SELECT " +
-              "*" +
-              // qN.getSecond()+
-              " FROM \"" + qN.getFirst() + "\" WHERE \""
-              + qN.getSecond() + "\" IS NOT NULL LIMIT 1" +
-              " OFFSET " + pointer+ ";";
-    }
-
-    Connection conn = db.getConnection();
-
-    PreparedStatement stmt = null;
-
-    try {
-      stmt = conn.prepareStatement(query);
-    } catch (SQLException e1) {
-      e1.printStackTrace();
-    }
-    try {
-      ResultSet rs = stmt.executeQuery();
-      if (!rs.next()) {
-        stmt.close();
-        query = "SELECT  " + "*" + " FROM "
-                + qN.getFirst() + " LIMIT " + 0 + ", 1";
-        resultSetPointer.put(qN.toString(), 1);
-
-        if (db.getJdbcConnector().equals("jdbc:postgresql")) {
-          query = "SELECT  \"" +
-                  qN.getSecond() +
-                  "\" FROM \"" + qN.getFirst() + "\" WHERE \""
-                  + qN.getSecond() + "\" IS NOT NULL LIMIT 1" +
-                  " OFFSET " + 0 + ";";
-        }
-
-        stmt = conn.prepareStatement(query);
-
-        rs = stmt.executeQuery();
-        if (!rs.next()) {
-          String msg = "Unexpected Problem: No result to fill placeholder. Contact the developers.";
-          MixerMain.closeEverything(msg);
-        }
-      }
-      result = rs.getString(qN.getSecond());
-    } catch (SQLException e) {
-      try {
-        conn.close();
-      } catch (SQLException e1) {
-        String msg = "Could not close Connection.";
-        MixerMain.closeEverything(msg, e1);
-      }
-      MixerMain.closeEverything("Error while executing the SQL statement.", e);
-    }
-    return result;
-  }
-};
+}

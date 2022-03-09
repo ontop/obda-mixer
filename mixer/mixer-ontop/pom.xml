@@ -38,11 +38,5 @@
 		  <artifactId>ontop-system-sql-owlapi</artifactId>
 		  <version>4.0.2</version>
 	  </dependency>
-	  <dependency>
-		  <groupId>mysql</groupId>
-		  <artifactId>mysql-connector-java</artifactId>
-		</dependency>
-
-
   </dependencies>
 </project>

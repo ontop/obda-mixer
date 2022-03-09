@@ -14,9 +14,9 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="mixer-interface" />
     <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-owlapi:4.0.2" level="project" />
-    <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.0.2" level="project" />
-    <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.6.4" level="project" />
+    <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.2.3" level="project" />
+    <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.2.3" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.13" level="project" />
     <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-system-owlapi:4.0.2" level="project" />
     <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-system-core:4.0.2" level="project" />
     <orderEntry type="library" name="Maven: it.unibz.inf.ontop:ontop-reformulation-core:4.0.2" level="project" />
@@ -132,6 +132,5 @@
     <orderEntry type="library" name="Maven: com.google.inject.extensions:guice-assistedinject:4.1.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:3.0.2" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.rdf4j:rdf4j-queryparser-api:3.3.0" level="project" />
-    <orderEntry type="library" name="Maven: mysql:mysql-connector-java:5.1.22" level="project" />
   </component>
 </module>
