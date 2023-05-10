@@ -1,2 +1,0 @@
-PREFIX : <http://www.semanticweb.org/skyserver/>
-SELECT ?y (COUNT(?x) as ?cnt) WHERE {?x :spectroscopyClass ?y} GROUP BY ?y  

@@ -18,23 +18,26 @@ public class MixerJDBC extends Mixer {
     }
 
     private void establishConnection() throws SQLException, ClassNotFoundException {
-        String driver = this.getConfiguration().getDriverClass();
         Conf conf = this.getConfiguration();
+        String url = conf.getJdbcModeDatabaseUrl();
+        String user = conf.getJdbcModeDatabaseUser();
+        String pwd = conf.getJdbcModeDatabasePwd();
+        String driver = conf.getJdbcModeDriverClass();
             switch(driver) {
                 case DBType.MYSQL:
-                    conn = new DBMSConnectionMysql(conf);
+                    conn = new DBMSConnectionMysql(url, user, pwd, driver);
                     break;
                 case DBType.POSTGRES:
-                    conn = new DBMSConnectionPostgres(conf);
+                    conn = new DBMSConnectionPostgres(url, user, pwd, driver);
                     break;
                 case DBType.SQLSERVER:
-                    conn = new DBMSConnectionMSSQL(conf);
+                    conn = new DBMSConnectionMSSQL(url, user, pwd, driver);
                     break;
                 case DBType.DB2:
-                    conn = new DBMSConnectionDB2(conf);
+                    conn = new DBMSConnectionDB2(url, user, pwd, driver);
                     break;
                 case DBType.TEIID:
-                    conn = new DBMSConnectionTeiid(conf);
+                    conn = new DBMSConnectionTeiid(url, user, pwd, driver);
                     break;
             }
     }
@@ -58,13 +61,22 @@ public class MixerJDBC extends Mixer {
 
     @Override
     public Object executeQuery(String query, int timeout) {
-        return null;
+        // TODO: timeout currently ignored
+        ResultSet res = null;
+        try {
+            PreparedStatement stmt = conn.getConnection().prepareStatement(query);
+            stmt.setQueryTimeout(timeout);
+            res =  stmt.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return res;
     }
 
     @Override
     public int traverseResultSet(Object resultSet) {
         int cnt = 0;
-        if( resultSet instanceof  ResultSet ){
+        if( resultSet instanceof ResultSet ){
             ResultSet rs = (ResultSet) resultSet;
             try {
                 while(rs.next()){
@@ -136,6 +148,12 @@ public class MixerJDBC extends Mixer {
 
     @Override
     public void executeWarmUpQuery(String query, int timeout) {
-
+        try {
+            PreparedStatement stmt = conn.getConnection().prepareStatement(query);
+            stmt.setQueryTimeout(timeout);
+            stmt.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

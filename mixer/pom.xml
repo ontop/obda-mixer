@@ -188,7 +188,7 @@
         <module>mixer-web</module>
         <module>mixer-shell</module>
         <module>mixer-jdbc</module>
-        <module>inf.unibz.it.mixer-db-connection</module>
+        <module>mixer-db-connection</module>
     </modules>
 
     <scm>

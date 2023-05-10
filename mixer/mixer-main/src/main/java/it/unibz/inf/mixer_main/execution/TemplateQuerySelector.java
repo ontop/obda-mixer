@@ -4,6 +4,8 @@ import it.unibz.inf.mixer_db_connection.DBMSConnection;
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_main.utils.QualifiedName;
 import it.unibz.inf.mixer_main.utils.Template;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,6 +18,8 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class TemplateQuerySelector {
+
+    static Logger log = LoggerFactory.getLogger(MixerThread.class);
 
     private Set<String> executedQueries = new HashSet<>();
     private String templatesDir;
@@ -31,7 +35,7 @@ public class TemplateQuerySelector {
     DBMSConnection db;
 
     // State
-    private int nExecutedTemplate;
+    private int nExecutedTemplateQuery;
 
     // Queries to skip
     private List<String> forceTimeoutQueries;
@@ -45,8 +49,9 @@ public class TemplateQuerySelector {
         // Query templates
         File folder = new File(templatesDir);
         listOfFiles = folder.listFiles();
+        Arrays.sort(listOfFiles);
 
-        this.nExecutedTemplate = 0;
+        this.nExecutedTemplateQuery = 0;
 
         // Force timeouts
         this.forceTimeoutQueries = configuration.getForcedTimeouts();
@@ -81,6 +86,8 @@ public class TemplateQuerySelector {
             ++index;
             return "force-timeout";
         }
+
+        log.info("Doing query: " + queryName);
 
         try {
             BufferedReader in;
@@ -118,7 +125,7 @@ public class TemplateQuerySelector {
         Map<Template.PlaceholderInfo, String> mapTIToValue = new HashMap<Template.PlaceholderInfo, String>();
 
         this.resultSetPointer.clear();
-        ++this.nExecutedTemplate;
+        ++this.nExecutedTemplateQuery;
 
         if (sparqlQueryTemplate.getNumPlaceholders() == 0) return;
 
@@ -156,17 +163,19 @@ public class TemplateQuerySelector {
             resultSetPointer.put(qN.toString(), 1);
         }
 
-        pointer += this.nExecutedTemplate;
+        pointer += this.nExecutedTemplateQuery;
         String query = "SELECT " + "*" + " FROM "
                 + qN.getFirst() + " WHERE " + qN.getSecond() + " IS NOT NULL "
+                + " ORDER BY 1 "
                 + " LIMIT " + pointer + ", 1";
 
         if (db.getJdbcConnector().equals("jdbc:postgresql")) {
             query = "SELECT " +
                     "*" +
-                    // qN.getSecond()+
                     " FROM \"" + qN.getFirst() + "\" WHERE \""
-                    + qN.getSecond() + "\" IS NOT NULL LIMIT 1" +
+                    + qN.getSecond() + "\" IS NOT NULL "
+                    + " ORDER BY 1 "
+                    + " LIMIT 1" +
                     " OFFSET " + pointer+ ";";
         }
 
@@ -183,15 +192,19 @@ public class TemplateQuerySelector {
             if (!rs.next()) {
                 stmt.close();
                 query = "SELECT  " + "*" + " FROM "
-                        + qN.getFirst() + " LIMIT " + 0 + ", 1";
+                        + qN.getFirst()
+                        +" ORDER BY 1 "
+                        + " LIMIT " + 0 + ", 1";
                 resultSetPointer.put(qN.toString(), 1);
 
                 if (db.getJdbcConnector().equals("jdbc:postgresql")) {
                     query = "SELECT  \"" +
                             qN.getSecond() +
                             "\" FROM \"" + qN.getFirst() + "\" WHERE \""
-                            + qN.getSecond() + "\" IS NOT NULL LIMIT 1" +
-                            " OFFSET " + 0 + ";";
+                            + qN.getSecond() + "\" IS NOT NULL "
+                            + " ORDER BY 1 "
+                            + " LIMIT 1"
+                            + " OFFSET " + 0 + ";";
                 }
 
                 stmt = conn.prepareStatement(query);

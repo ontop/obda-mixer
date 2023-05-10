@@ -78,19 +78,19 @@ public class MixerThread extends Thread {
     try{
       switch(driver) {
         case DBType.MYSQL:
-          db = new DBMSConnectionMysql(conf);
+          db = new DBMSConnectionMysql(conf.getDatabaseUrl(), conf.getDatabaseUser(), conf.getDatabasePwd(), conf.getDriverClass());
           break;
         case DBType.POSTGRES:
-          db = new DBMSConnectionPostgres(conf);
+          db = new DBMSConnectionPostgres(conf.getDatabaseUrl(), conf.getDatabaseUser(), conf.getDatabasePwd(), conf.getDriverClass());
           break;
         case DBType.SQLSERVER:
-          db = new DBMSConnectionMSSQL(conf);
+          db = new DBMSConnectionMSSQL(conf.getDatabaseUrl(), conf.getDatabaseUser(), conf.getDatabasePwd(), conf.getDriverClass());
           break;
         case DBType.DB2:
-          db = new DBMSConnectionDB2(conf);
+          db = new DBMSConnectionDB2(conf.getDatabaseUrl(), conf.getDatabaseUser(), conf.getDatabasePwd(), conf.getDriverClass());
           break;
         case DBType.TEIID:
-          db = new DBMSConnectionTeiid(conf);
+          db = new DBMSConnectionTeiid(conf.getDatabaseUrl(), conf.getDatabaseUser(), conf.getDatabasePwd(), conf.getDriverClass());
           break;
       }
     } catch (SQLException | ClassNotFoundException e) {
@@ -123,7 +123,8 @@ public class MixerThread extends Thread {
       while (!stop) {
         chrono.start();
         String query = tqs.getNextQuery();
-        log.debug(query);
+        log.info(query);
+        System.out.println(query);
 
         timeWasted += chrono.stop();
         if (query == null) {
