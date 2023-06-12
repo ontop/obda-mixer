@@ -1,10 +1,14 @@
 package it.unibz.inf.mixer_web.net;
 
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.*;
-import java.io.*;
 
 public class NetQuery {
 	HttpURLConnection conn;
+	InputStream stream;
 	Long start;
 	Long end;
 	String queryString;
@@ -51,7 +55,7 @@ public class NetQuery {
 	    // SELECT Query
 	    conn.setRequestProperty("Accept", "application/sparql-results+xml");
 	}
-	
+
 	public InputStream exec() {
 		try {
 		    conn.connect();
@@ -69,7 +73,8 @@ public class NetQuery {
 				System.err.println(queryString + "\n");
 				
 			}
-			return conn.getInputStream();
+			stream = consumeBeforeClose(conn.getInputStream());
+			return stream;
 		} catch(SocketTimeoutException e) {
 			return null;
 		} catch(IOException e) {
@@ -88,8 +93,43 @@ public class NetQuery {
 	}
 	
 	public void close() {
-	    if (conn != null) 
-		conn.disconnect();
-	    conn = null;
+	    if (conn != null) {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException ex) {
+					System.err.println("Warning: could not properly close SPARQL response stream (" + ex.getMessage() + ")");
+				}
+				stream = null;
+			}
+			conn.disconnect();
+			conn = null;
+		}
 	}
+
+	private static InputStream consumeBeforeClose(InputStream stream) {
+		return new FilterInputStream(stream) {
+
+			private boolean closed = false;
+
+			@Override
+			public void close() throws IOException {
+				if (!closed) {
+					try {
+						while (read() != -1) {
+							//noinspection ResultOfMethodCallIgnored
+							skip(1024 * 1024L);
+						}
+					} catch (IOException ex) {
+						System.err.println("Warning: could not fully consume SPARQL response (" + ex.getMessage() + ")");
+					} finally {
+						closed = true;
+						super.close();
+					}
+				}
+			}
+
+		};
+	}
+
 };
