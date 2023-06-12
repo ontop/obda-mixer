@@ -123,9 +123,10 @@ public class MixerThread extends Thread {
       while (!stop) {
         chrono.start();
         String query = tqs.getNextQuery();
-        log.info(query);
-        System.out.println(query);
-
+        if (query != null) {
+          log.info("Test query:\n{}", query);
+          // System.out.println(query);
+        }
         timeWasted += chrono.stop();
         if (query == null) {
           stop = true;
@@ -168,10 +169,10 @@ public class MixerThread extends Thread {
       boolean stop = false;
       while (!stop) {
         String query = tqs.getNextQuery();
-        log.debug(query);
         if (query == null) {
           stop = true;
         } else {
+          log.debug("Warm-up query:\n{}", query);
           if (!query.equals("force-timeout")) {
             if (timeout == 0) mixer.executeWarmUpQuery(query);
             else mixer.executeWarmUpQuery(query, timeout);
