@@ -191,13 +191,11 @@ public class MixerMain extends MixerOptionsInterface {
 
     FileWriter statsWriter = getLogWriter();
     try {
-      statsWriter.write(mainStat.printStats());
+      mainStat.printStats(statsWriter);
       statsWriter.flush();
-
       for (Statistics s : threadStatistics) {
-        statsWriter.write(s.printStats());
+        s.printStats(statsWriter);
       }
-
       statsWriter.close();
     } catch (IOException e) {
       e.printStackTrace();

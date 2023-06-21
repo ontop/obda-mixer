@@ -9,9 +9,9 @@ package it.unibz.inf.mixer_main.statistics;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,114 +20,99 @@ package it.unibz.inf.mixer_main.statistics;
  * #L%
  */
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+@SuppressWarnings("unused")
 public class SimpleStatistics {
-	private Map<String, Integer> mIntegerStats = new HashMap<String, Integer>();
-	private Map<String, Float> mFloatStats = new HashMap<String, Float>();
-	private Map<String, Long> mTimeStats = new HashMap<String, Long>();
-	private Map<String, Boolean> mBools = new HashMap<String, Boolean>();
-	
-	private String label;
-	
-	public void setBoolean(String key, boolean bool){
-		mBools.put(key, bool);
-	}
-	
-	public void addTime(String key, long increment){
-		if( mTimeStats.containsKey(key) ){
-			long temp = mTimeStats.get(key);
-			temp += increment;
-			mTimeStats.put(key, temp);
-		}
-		else
-			mTimeStats.put(key, increment);
-	}
-	
-	public void setInt(String key, int value){
-		mIntegerStats.put(key, value);
-	}
-	
-	public void setFloat(String key, float value){
-		mFloatStats.put(key, value);
-	}
-	
-	public void setTime(String key, long time){
-		mTimeStats.put(key, time);
-	}
-	
-	public void addInt(String key, int increment){
-		if( mIntegerStats.containsKey(key) ){
-			int temp = mIntegerStats.get(key);
-			temp += increment;
-			mIntegerStats.put(key, temp);
-		}
-		else
-			mIntegerStats.put(key, increment);
-	}
-	
-	public void addFloat(String key, float increment){
-		if( mFloatStats.containsKey(key) ){
-			float temp = mFloatStats.get(key);
-			temp += increment;
-			mFloatStats.put(key, temp);
-		}
-		else
-			mFloatStats.put(key, increment);
-	}
-	
-	public float getFloatStat(String key){
-		return mFloatStats.get(key);
-	}
-	
-	public int getIntStat(String key){
-		return mIntegerStats.get(key);
-	}
-	
-	public String printStats(){
-		
-		StringBuilder result = new StringBuilder();
-		
-		for( String key : mIntegerStats.keySet() ){
-			result.append("["+label+"] "+"[");
-			result.append(key);
-			result.append("] = ");
-			result.append(mIntegerStats.get(key));
-			result.append("\n");
-		}
-		for( String key : mFloatStats.keySet() ){
-			result.append("["+label+"] "+"[");
-			result.append(key);
-			result.append("] = ");
-			result.append(mFloatStats.get(key));
-			result.append("\n");
-		}
-		for( String key : mTimeStats.keySet() ){
-			result.append("["+label+"] "+"[");
-			result.append(key);
-			result.append("] = ");
-			result.append(mTimeStats.get(key));
-			result.append("\n");
-		}
-		for( String key : mBools.keySet() ){
-			result.append("["+label+"] "+"[");
-			result.append(key);
-			result.append("] = ");
-			result.append(mBools.get(key));
-			result.append("\n");
-		}
-		
-		return result.toString();
-	}
-	
-	public void setGlobalLabel(String label){
-		this.label = label;
-	}
-	
-	public void reset(){
-		mFloatStats.clear();
-		mIntegerStats.clear();
-		mTimeStats.clear();
-	}
+
+    private final Map<String, Integer> mIntegerStats = new HashMap<>();
+    private final Map<String, Float> mFloatStats = new HashMap<>();
+    private final Map<String, Long> mTimeStats = new HashMap<>();
+    private final Map<String, Boolean> mBools = new HashMap<>();
+
+    private final String label;
+
+    public SimpleStatistics(String label) {
+        this.label = label;
+    }
+
+    public Boolean getBoolean(String key, boolean bool) {
+        return mBools.get(key);
+    }
+
+    public void setBoolean(String key, boolean bool) {
+        mBools.put(key, bool);
+    }
+
+    public Long getTime(String key) {
+        return mTimeStats.get(key);
+    }
+
+    public void setTime(String key, long time) {
+        mTimeStats.put(key, time);
+    }
+
+    public void addTime(String key, long increment) {
+        mTimeStats.merge(key, increment, Long::sum);
+    }
+
+    public Integer getInt(String key) {
+        return mIntegerStats.get(key);
+    }
+
+    public void setInt(String key, int value) {
+        mIntegerStats.put(key, value);
+    }
+
+    public void addInt(String key, int increment) {
+        mIntegerStats.merge(key, increment, Integer::sum);
+    }
+
+    public Float getFloat(String key) {
+        return mFloatStats.get(key);
+    }
+
+    public void setFloat(String key, float value) {
+        mFloatStats.put(key, value);
+    }
+
+    public void addFloat(String key, float increment) {
+        mFloatStats.merge(key, increment, Float::sum);
+    }
+
+    public String printStats() {
+        try {
+            return printStats(new StringBuilder()).toString();
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+        }
+    }
+
+    public <T extends Appendable> T printStats(T out) throws IOException {
+        for (Map<String, ?> stats : Arrays.asList(mIntegerStats, mFloatStats, mTimeStats, mBools)) {
+            for (String key : stats.keySet()) {
+                out.append("[");
+                out.append(label);
+                out.append("] [");
+                out.append(key);
+                out.append("] = ");
+                out.append(Objects.toString(stats.get(key)));
+                out.append("\n");
+            }
+        }
+        return out;
+    }
+
+    public void reset() {
+        mFloatStats.clear();
+        mIntegerStats.clear();
+        mTimeStats.clear();
+        mBools.clear();
+    }
+
 }
