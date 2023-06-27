@@ -23,13 +23,17 @@ package it.unibz.inf.mixer_main.execution;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import it.unibz.inf.mixer_jdbc.core.MixerJDBC;
+import it.unibz.inf.mixer_main.statistics.StatisticsManager;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -37,7 +41,6 @@ import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
 import it.unibz.inf.mixer_main.configuration.ConfParser;
 import it.unibz.inf.mixer_main.exception.UnsupportedSystemException;
-import it.unibz.inf.mixer_main.statistics.Statistics;
 import it.unibz.inf.mixer_main.time.Chrono;
 import it.unibz.inf.mixer_shell.core.MixerShell;
 import it.unibz.inf.mixer_web.core.MixerWeb;
@@ -49,10 +52,8 @@ public class MixerMain extends MixerOptionsInterface {
   private static Logger log = LoggerFactory.getLogger(MixerMain.class);
 
   private Chrono chrono;
-  private Statistics mainStat;
+  private StatisticsManager statsMgr;
   private Mixer mixer;
-
-  private List<Statistics> threadStatistics;
 
   public MixerMain(String[] args) {
     // Parse command-line options
@@ -63,7 +64,6 @@ public class MixerMain extends MixerOptionsInterface {
   private Conf configure(String[] args) {
     Option.parseOptions(args);
     String confFile = optConfFile.getValue();
-    this.threadStatistics = new ArrayList<Statistics>();
     ConfParser cP = ConfParser.initInstance(confFile);
 
     Conf configuration = new Conf(
@@ -162,7 +162,7 @@ public class MixerMain extends MixerOptionsInterface {
 
   private void do_tests() {
 
-    mainStat = new Statistics("GLOBAL");
+    statsMgr = new StatisticsManager();
     chrono = new Chrono();
 
     // Load the system
@@ -173,7 +173,7 @@ public class MixerMain extends MixerOptionsInterface {
       e.printStackTrace();
       MixerMain.closeEverything("Failed to Load Mixer", e);
     }
-    mainStat.getSimpleStatsInstance("main").addTime("load-time", chrono.stop());
+    statsMgr.getGlobalCollector().add("load-time", chrono.stop());
 
     List<MixerThread> threads = setUpMixerThreads();
     test(threads);
@@ -181,24 +181,12 @@ public class MixerMain extends MixerOptionsInterface {
     logStatistics();
   }
 
-
   private void logStatistics() {
-
-    //		// Join statistics
-    //		for( Statistics s : threadStatistics ){
-    //			mainStat.merge(s);
-    //		}
-
-    FileWriter statsWriter = getLogWriter();
+    Path statsFile = Paths.get(mixer.getConfiguration().getLogFile());
     try {
-      mainStat.printStats(statsWriter);
-      statsWriter.flush();
-      for (Statistics s : threadStatistics) {
-        s.printStats(statsWriter);
-      }
-      statsWriter.close();
+      statsMgr.write(statsFile);
     } catch (IOException e) {
-      e.printStackTrace();
+      MixerMain.closeEverything("Cannot write log file " + statsFile, e);
     }
   }
 
@@ -215,19 +203,6 @@ public class MixerMain extends MixerOptionsInterface {
     }
   }
 
-  private FileWriter getLogWriter() {
-    String statsFileName = mixer.getConfiguration().getLogFile();
-    File statsFile = new File(statsFileName);
-    if (statsFile.exists()) statsFile.delete();
-    FileWriter statsWriter = null;
-    try {
-      statsWriter = new FileWriter(statsFile);
-    } catch (IOException e) {
-      MixerMain.closeEverything("Cannot find log file " + statsFileName, e);
-    }
-    return statsWriter;
-  }
-
   private List<MixerThread> setUpMixerThreads() {
 
     List<MixerThread> threads = new ArrayList<MixerThread>();
@@ -241,9 +216,7 @@ public class MixerMain extends MixerOptionsInterface {
 
     for (int i = 0; i < mixer.getConfiguration().getNumClients(); ++i) {
       // Configure each mixerThread
-      Statistics stat = new Statistics("thread#" + i);
-      this.threadStatistics.add(stat);
-      MixerThread mT = new MixerThread(mixer, stat, listOfFiles);
+      MixerThread mT = new MixerThread(mixer, statsMgr, listOfFiles, i);
       threads.add(mT);
     }
 
@@ -257,7 +230,7 @@ public class MixerMain extends MixerOptionsInterface {
 
   }
 
-  public static void closeEverything(String msg, Exception e) {
+  public static <T> T closeEverything(String msg, Exception e) {
 
     log.error(msg);
     throw new RuntimeException(e);

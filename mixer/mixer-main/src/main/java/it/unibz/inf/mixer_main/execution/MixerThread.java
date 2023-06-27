@@ -24,12 +24,12 @@ import java.io.File;
 import java.sql.SQLException;
 
 import it.unibz.inf.mixer_db_connection.*;
+import it.unibz.inf.mixer_main.statistics.StatisticsCollector;
+import it.unibz.inf.mixer_main.statistics.StatisticsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import it.unibz.inf.mixer_interface.configuration.Conf;
 import it.unibz.inf.mixer_interface.core.Mixer;
-import it.unibz.inf.mixer_main.statistics.SimpleStatistics;
-import it.unibz.inf.mixer_main.statistics.Statistics;
 import it.unibz.inf.mixer_main.time.Chrono;
 
 public class MixerThread extends Thread {
@@ -37,8 +37,9 @@ public class MixerThread extends Thread {
   static Logger log = LoggerFactory.getLogger(MixerThread.class);
 
   // Logging
-  private final Statistics stat;
   private final Mixer mixer;
+  private final StatisticsManager statsMgr;
+  private final int client;
 
   private final int nRuns; // Number of total runs
   private final int nWUps; // Number of warm-up runs
@@ -51,9 +52,10 @@ public class MixerThread extends Thread {
   private final Chrono chrono;
   private final Chrono chronoMix;
 
-  public MixerThread(Mixer m, Statistics stat, File[] listOfFiles) {
-    this.stat = stat;
+  public MixerThread(Mixer m, StatisticsManager statMgr, File[] listOfFiles, int client) {
     this.mixer = m;
+    this.statsMgr = statMgr;
+    this.client = client;
     this.nRuns = m.getConfiguration().getNumRuns();
     this.nWUps = m.getConfiguration().getNumWarmUps();
     this.timeout = m.getConfiguration().getTimeout();
@@ -113,14 +115,13 @@ public class MixerThread extends Thread {
    */
   private void test(TemplateQuerySelector tqs) {
 
-    for (int j = 0; j < nRuns; ++j) {
+    for (int mix = 0; mix < nRuns; ++mix) {
       long forcedTimeoutsSum = 0;
       long timeWasted = 0;
       chronoMix.start();
       //			 int i = 0;
-      SimpleStatistics localStat = stat.getSimpleStatsInstance("run#" + j);
-      boolean stop = false;
-      while (!stop) {
+      StatisticsCollector mixStats = statsMgr.getMixCollector(client, mix);
+      while (true) {
         chrono.start();
         String query = tqs.getNextQuery();
         if (query != null) {
@@ -129,10 +130,12 @@ public class MixerThread extends Thread {
         }
         timeWasted += chrono.stop();
         if (query == null) {
-          stop = true;
-        } else if (query.equals("force-timeout")) {
+          break;
+        }
+        StatisticsCollector queryStats = statsMgr.getQueryCollector(client, mix, tqs.getCurQueryName());
+        if (query.equals("force-timeout")) {
           int forcedTimeout = mixer.getConfiguration().getForcedTimeoutsTimeoutValue();
-          localStat.addTime("execution_time#" + tqs.getCurQueryName(), forcedTimeout * 1000L); // Convert to milliseconds
+          queryStats.add("execution_time", forcedTimeout * 1000L); // Convert to milliseconds
           forcedTimeoutsSum += forcedTimeout * 1000L; // Convert to milliseconds
         } else {
           Object resultSet = null;
@@ -140,27 +143,27 @@ public class MixerThread extends Thread {
 
           if (timeout == 0) resultSet = mixer.executeQuery(query);
           else resultSet = mixer.executeQuery(query, timeout);
-          localStat.addTime("execution_time#" + tqs.getCurQueryName(), chrono.stop());
+          queryStats.add("execution_time", chrono.stop());
           chrono.start();
           int numResults = mixer.traverseResultSet(resultSet);
-          localStat.addTime("resultset_traversal_time#" + tqs.getCurQueryName(), chrono.stop());
-          localStat.addInt("num_results#" + tqs.getCurQueryName(), numResults);
+          queryStats.add("resultset_traversal_time", chrono.stop());
+          queryStats.add("num_results", numResults);
           chrono.start();
           if (this.rwAndUnf) {
-            localStat.addTime("rewriting_time#" + tqs.getCurQueryName(), mixer.getRewritingTime());
-            localStat.addTime("unfolding_time#" + tqs.getCurQueryName(), mixer.getUnfoldingTime());
+            queryStats.add("rewriting_time", mixer.getRewritingTime());
+            queryStats.add("unfolding_time", mixer.getUnfoldingTime());
 
             // Get query statistics
             if (this.nRuns == 1 && this.nWUps == 0) {
-              localStat.setInt("rewritingUCQ_size#" + tqs.getCurQueryName(), mixer.getRewritingSize());
-              localStat.setInt("unfoldingUCQ_size#" + tqs.getCurQueryName(), mixer.getUnfoldingSize());
+              queryStats.set("rewritingUCQ_size", mixer.getRewritingSize());
+              queryStats.set("unfoldingUCQ_size", mixer.getUnfoldingSize());
             }
           }
           timeWasted += chrono.stop();
         }
       }
       // mix time
-      localStat.addTime("mix_time#" + j, chronoMix.stop() - timeWasted + forcedTimeoutsSum);
+      mixStats.add("mix_time", chronoMix.stop() - timeWasted + forcedTimeoutsSum);
     }
   }
 
