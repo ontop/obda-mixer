@@ -257,8 +257,13 @@ public final class StatisticsManager {
                 continue;
             }
 
-            // Retrieve unique scope and corresponding statistics collector
+            // Retrieve unique scope, aborting if it does not refer to a test query
             var scope = scopes.iterator().next();
+            if (scope.getMixId().isPresent() && scope.getMixId().getAsInt() < 0) {
+                continue;
+            }
+
+            // Retrieve statistics collector for the scope
             var collector = getCollector(scope);
 
             // Define a recursive procedure to import nested JSON records into that collector, using filter & prefix

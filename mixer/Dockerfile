@@ -40,8 +40,14 @@ RUN --mount=type=cache,target=/root/.m2 \
 
 FROM eclipse-temurin:11-jre-jammy
 WORKDIR /opt/obda-mixer/run
-RUN groupadd -r ontop && \
-    useradd -r -g ontop -d /opt/ontop -s /sbin/nologin -c "Ontop unprivileged user" ontop
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gettext-base wget netcat jattach && \
+    rm -rf /var/cache/apt/archives /var/lib/apt/lists /var/log/dpkg.log /var/log/lastlog /var/log/faillog && \
+    groupadd -r ontop && \
+    useradd -r -g ontop -d /opt/ontop -s /sbin/nologin -c "Ontop unprivileged user" ontop && \
+    mkdir -p /logs && \
+    chown ontop:ontop /logs && \
+    chmod a+rwx /logs
 LABEL \
     org.opencontainers.image.url="https://github.com/ontop/obda-mixer/tree/master/" \
     org.opencontainers.image.documentation="https://ontop-vkg.org/obda-mixer/v1.2.0/local_index.html" \
