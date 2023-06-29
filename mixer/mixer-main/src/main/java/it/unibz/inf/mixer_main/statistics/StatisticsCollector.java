@@ -1,15 +1,11 @@
 package it.unibz.inf.mixer_main.statistics;
 
+import com.fasterxml.jackson.databind.node.*;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.*;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BinaryOperator;
 
 /**
@@ -22,7 +18,8 @@ import java.util.function.BinaryOperator;
  * and {@code query} (to avoid clashes in serialized statistics);</li>
  * <li>the value is a non-null instance of type {@code String}, {@code Boolean}, {@code Long}, {@code Integer},
  * {@code Double}, {@code Float}, or a {@code List} or {@code Map} of the former scalar types (for maps, the key has to
- * be a string).</li>
+ * be a string); a {@link com.fasterxml.jackson.databind.JsonNode} convertible to one of the these types is also accepted
+ * when setting avalue.</li>
  * </ul>
  * </p>
  * <p>
@@ -32,7 +29,7 @@ import java.util.function.BinaryOperator;
  * classes.
  * </p>
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class StatisticsCollector {
 
     static final Set<String> RESERVED_ATTRIBUTES = ImmutableSet.of("client", "mix", "query");
@@ -59,7 +56,7 @@ public abstract class StatisticsCollector {
 
     public final StatisticsCollector set(String attribute, @Nullable Object value) {
         checkAttribute(attribute);
-        doSet(attribute, checkAllowedAndMakeImmutable(value), null);
+        doSet(attribute, checkAndNormalizeValue(value), null);
         return this;
     }
 
@@ -67,14 +64,14 @@ public abstract class StatisticsCollector {
         checkAttribute(attribute);
         Objects.requireNonNull(value);
         Objects.requireNonNull(merger);
-        doSet(attribute, checkAllowedAndMakeImmutable(value), (oldValue, newValue) -> {
+        doSet(attribute, checkAndNormalizeValue(value), (oldValue, newValue) -> {
             if (oldValue instanceof List<?> && !(newValue instanceof List<?>)
                     || oldValue instanceof Map<?, ?> && !(newValue instanceof Map<?, ?>)
                     || oldValue.getClass() != newValue.getClass()) {
                 throw new IllegalArgumentException("Unmergeable incompatible values " + oldValue + ", " + newValue);
             }
             @SuppressWarnings("unchecked") T mergedValue = merger.apply((T) oldValue, (T) newValue);
-            return checkAllowedAndMakeImmutable(mergedValue);
+            return checkAndNormalizeValue(mergedValue);
         });
         return this;
     }
@@ -114,35 +111,71 @@ public abstract class StatisticsCollector {
     }
 
     @Nullable
-    private Object checkAllowedAndMakeImmutable(@Nullable Object value) {
+    private Object checkAndNormalizeValue(@Nullable Object value) {
 
         // Accept nulls and immutable scalar values
-        if (isAllowedScalar(value)) {
+        if (isNormalizedScalarValue(value)) {
             return value;
         }
 
-        // Accept List<null or scalar>, making it immutable if needed
-        if (value instanceof List<?>) {
-            List<?> list = (List<?>) value;
-            if (list.stream().allMatch(this::isAllowedScalar)) {
-                return list instanceof ImmutableList<?> ? list : ImmutableList.copyOf(list);
+        // Accept scalar JSON ValueNode, converting their value to Java native types
+        if (value instanceof ValueNode) {
+            if (value instanceof BooleanNode) {
+                return ((BooleanNode) value).booleanValue();
+            } else if (value instanceof LongNode) {
+                return ((LongNode) value).longValue();
+            } else if (value instanceof IntNode) {
+                return ((IntNode) value).intValue();
+            } else if (value instanceof FloatNode) {
+                return ((FloatNode) value).floatValue();
+            } else if (value instanceof DoubleNode) {
+                return ((DoubleNode) value).doubleValue();
             }
+            return ((ValueNode) value).textValue();
         }
 
-        // Accept Map<string, null or scalar>, making it immutable if needed
-        if (value instanceof Map<?, ?>) {
-            Map<?, ?> map = (Map<?, ?>) value;
-            if (map.entrySet().stream()
-                    .allMatch(e -> e.getKey() instanceof String && isAllowedScalar(e.getValue()))) {
-                return map instanceof ImmutableMap<?, ?> ? map : ImmutableMap.copyOf(map);
+        // Accept List<?> and JSON ArrayNode, normalizing their values and making the resulting list non-modifiable
+        if (value instanceof List<?> || value instanceof ArrayNode) {
+            if (value instanceof ImmutableList<?> && ((List<?>) value).stream().allMatch(this::isNormalizedScalarValue)) {
+                return value;
             }
+            boolean containsNull = false;
+            int size = value instanceof ArrayNode ? ((ArrayNode) value).size() : ((List<?>) value).size();
+            List<Object> newList = Lists.newArrayListWithCapacity(size);
+            for (Object v : (Iterable<?>) value) {
+                Object v2 = checkAndNormalizeValue(v);
+                containsNull |= (v2 == null);
+                newList.add(v2);
+            }
+            return containsNull ? Collections.unmodifiableList(newList) : ImmutableList.copyOf(newList);
+        }
+
+        // Accept Map<String, ?>, checking and normalizing values and making the resulting map non-modifiable
+        if (value instanceof Map<?, ?> || value instanceof ObjectNode) {
+            if (value instanceof ImmutableMap<?, ?> && ((Map<?, ?>) value).entrySet().stream()
+                    .allMatch(e -> e.getKey() instanceof String && isNormalizedScalarValue(e.getValue()))) {
+                return value;
+            }
+            boolean containsNull = false;
+            Map<String, Object> newMap = Maps.newLinkedHashMap();
+            Iterator<?> i = (value instanceof ObjectNode)
+                    ? ((ObjectNode) value).fields()
+                    : ((Map<?, ?>) value).entrySet().iterator();
+            while (i.hasNext()) {
+                Map.Entry<?, ?> e = (Map.Entry<?, ?>) i.next();
+                Preconditions.checkArgument(e.getKey() instanceof String, "Only String keys accepted in maps");
+                Object v2 = checkAndNormalizeValue(e.getValue());
+                containsNull |= (v2 == null);
+                newMap.put((String) e.getKey(), v2);
+            }
+            return containsNull ? Collections.unmodifiableMap(newMap) : ImmutableMap.copyOf(newMap);
         }
 
         // Fail reporting offending value
         throw new IllegalArgumentException("Unsupported statistics value: " + value);
     }
 
-    private boolean isAllowedScalar(Object v) {
+    private boolean isNormalizedScalarValue(Object v) {
         return v == null
                 || v instanceof String
                 || v instanceof Boolean

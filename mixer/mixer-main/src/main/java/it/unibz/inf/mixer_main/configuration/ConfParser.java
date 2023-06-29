@@ -121,6 +121,18 @@ public class ConfParser {
     return searchTag("log-file");
   }
 
+  public String logImport() {
+    return searchTag("log-import");
+  }
+
+  public String logImportFilter() {
+    return searchTag("log-import-filter");
+  }
+
+  public String logImportPrefix() {
+    return searchTag("log-import-prefix");
+  }
+
   public String javaAPIClass() {
     return searchTag("java-api-class");
   }
@@ -180,6 +192,10 @@ public class ConfParser {
 
   public String rewriting() {
     return searchTag("rewriting");
+  }
+
+  public String lang() {
+    return searchTag("lang");
   }
 
   public String mode() {

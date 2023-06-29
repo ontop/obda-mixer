@@ -81,8 +81,9 @@ public class MixerShell extends Mixer {
     }
 
     @Override
-    public void executeWarmUpQuery(String query) {
-	String cmd = this.cmd + " '"+ query.replaceAll("\n", " ") +"'";
+    public void executeWarmUpQuery(String query, int timeout) {
+		// Timeout to be handled at script-side
+	String cmd = this.cmd + " '"+ query.replaceAll("\n", " ") + "'";
 	ExecuterThread executer = new ExecuterThread(cmd);
 	executer.start();
 	try {
@@ -93,14 +94,9 @@ public class MixerShell extends Mixer {
     }
 
     @Override
-    public void executeWarmUpQuery(String query, int timeout) {
-	// Timeout to be handled at script-side
-	executeWarmUpQuery(query);
-    }
-    
-    @Override
-    public Object executeQuery(String query) {
-	String cmd = this.cmd + " '"+ query.replaceAll("\n", " ") +"'";
+    public Object executeQuery(String query, int timeout) {
+		// Timeout to be handled at script-side
+	String cmd = this.cmd + " '"+ query.replaceAll("\n", " ") + "'";
 	ExecuterThread executer = new ExecuterThread(cmd);
 	executer.start();
 	try {
@@ -109,12 +105,6 @@ public class MixerShell extends Mixer {
 	    e.printStackTrace();
 	}
 	return new NormalShellResult(); 
-    }
-
-    @Override
-    public Object executeQuery(String query, int timeout) {
-	// Timeout to be handled at script-side
-	return executeQuery(query);
     }
 
     @Override

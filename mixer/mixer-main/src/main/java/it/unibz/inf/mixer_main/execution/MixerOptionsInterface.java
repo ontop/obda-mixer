@@ -15,6 +15,9 @@ abstract class MixerOptionsInterface {
     static final IntOption optNumClients = new IntOption("--clients", "Number of clients querying the system in parallel. Rewriting and unfolding times are unavailable in multi-client mode", "Mixer", 1, new IntRange(1, 64, true, true));
     static final BooleanOption optRewriting = new BooleanOption("--rewriting", "If query rewriting is enabled. Either true or false.", "Mixer", false);
 
+	static final StringOptionWithRange optLang = new StringOptionWithRange("--mode", "The query language, "
+			+ "one of: sql, or sparql", "Mixer", "sparql", new StringRange("[sql,sparql]"));
+
     // Command-line option deciding which Mixer implementation should be used
     static final StringOptionWithRange optMode = new StringOptionWithRange("--mode", "The operating mode, "
 	    + "one of: java api mode (java-api), sparql endpoint mode (web), or shell script mode (shell), ", "Mixer", "java-api", new StringRange("[java-api,web,shell]"));
@@ -59,7 +62,19 @@ abstract class MixerOptionsInterface {
 	    new StringOption("--log-file", 
 		    "Path where obda-mixer will write the results of the tests", 
 		    "Mixer", "resources/MixerStats.txt");
-    static final StringOption optJavaApiClass = 
+	static final StringOption optLogImport =
+			new StringOption("--log-import",
+					"Path of files from which to import further statistics at the end of the tests",
+					"Mixer", "");
+	static final StringOption optLogImportFilter =
+			new StringOption("--log-import-filter",
+					"Regex (Java syntax) matching the 'field1.field2...' paths to import from --log-import file",
+					"Mixer", "");
+	static final StringOption optLogImportPrefix =
+			new StringOption("--log-import-prefix",
+					"Prefix to prepend to 'field1.field2...' paths imported from --log-import file",
+					"Mixer", "");
+	static final StringOption optJavaApiClass =
 	    new StringOption("--api-class", 
 		    "Class for the Mixer implementation. This parameter should be used "
 			    + "in combination with the `--mode=java-api` option.", 

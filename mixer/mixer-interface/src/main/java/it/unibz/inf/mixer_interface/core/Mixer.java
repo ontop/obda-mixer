@@ -47,18 +47,11 @@ public abstract class Mixer {
 	 * It loads the OBDA system
 	 */
 	public abstract void load() throws Exception;
-	
+
 	/**
 	 * Issues a query with an execution timeout
-	 * @param query
-	 * @return a result set
-	 */
-	public abstract Object executeQuery(String query);
-	
-	/**
-	 * Issues a query with an execution timeout
-	 * @param query
-	 * @param timeout (seconds)
+	 * @param query query string
+	 * @param timeout timeout in seconds
 	 * @return a result set
 	 */
 	public abstract Object executeQuery(String query, int timeout);
@@ -133,11 +126,8 @@ public abstract class Mixer {
 	 */
 	public abstract void rewritingON();
 	// ------------------------------------------- //
-	
-	public abstract void executeWarmUpQuery(String query);
-	
-	
-	public abstract void executeWarmUpQuery(String query, int timeout);	
+
+	public abstract void executeWarmUpQuery(String query, int timeout);
 	
 	// **************** END OF Abstract Methods Section ****************** //
 	

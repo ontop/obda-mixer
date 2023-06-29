@@ -22,10 +22,12 @@ package it.unibz.inf.mixer_main.execution;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.UUID;
 
 import it.unibz.inf.mixer_db_connection.*;
 import it.unibz.inf.mixer_main.statistics.StatisticsCollector;
 import it.unibz.inf.mixer_main.statistics.StatisticsManager;
+import it.unibz.inf.mixer_main.statistics.StatisticsScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import it.unibz.inf.mixer_interface.configuration.Conf;
@@ -120,29 +122,26 @@ public class MixerThread extends Thread {
       long timeWasted = 0;
       chronoMix.start();
       //			 int i = 0;
-      StatisticsCollector mixStats = statsMgr.getMixCollector(client, mix);
+      StatisticsCollector mixStats = statsMgr.getCollector(StatisticsScope.forMix(client, mix));
       while (true) {
         chrono.start();
         String query = tqs.getNextQuery();
-        if (query != null) {
-          log.info("Test query:\n{}", query);
-          // System.out.println(query);
-        }
-        timeWasted += chrono.stop();
         if (query == null) {
+          timeWasted += chrono.stop();
           break;
         }
-        StatisticsCollector queryStats = statsMgr.getQueryCollector(client, mix, tqs.getCurQueryName());
+        StatisticsScope queryScope = StatisticsScope.forQuery(client, mix, tqs.getCurQueryName());
+        StatisticsCollector queryStats = statsMgr.getCollector(queryScope);
+        String queryWithScope = encodeScopeAsComment(query, queryScope);
+        log.info("Test query:\n{}", queryWithScope);
+        timeWasted += chrono.stop();
         if (query.equals("force-timeout")) {
           int forcedTimeout = mixer.getConfiguration().getForcedTimeoutsTimeoutValue();
           queryStats.add("execution_time", forcedTimeout * 1000L); // Convert to milliseconds
           forcedTimeoutsSum += forcedTimeout * 1000L; // Convert to milliseconds
         } else {
-          Object resultSet = null;
           chrono.start();
-
-          if (timeout == 0) resultSet = mixer.executeQuery(query);
-          else resultSet = mixer.executeQuery(query, timeout);
+          Object resultSet = mixer.executeQuery(queryWithScope, timeout);
           queryStats.add("execution_time", chrono.stop());
           chrono.start();
           int numResults = mixer.traverseResultSet(resultSet);
@@ -175,13 +174,23 @@ public class MixerThread extends Thread {
         if (query == null) {
           stop = true;
         } else {
-          log.debug("Warm-up query:\n{}", query);
+          StatisticsScope scope = StatisticsScope.forQuery(client, -nWUps + j, tqs.getCurQueryName());
+          String queryWithScope = encodeScopeAsComment(query, scope);
+          log.debug("Warm-up query:\n{}", queryWithScope);
           if (!query.equals("force-timeout")) {
-            if (timeout == 0) mixer.executeWarmUpQuery(query);
-            else mixer.executeWarmUpQuery(query, timeout);
+            mixer.executeWarmUpQuery(queryWithScope, timeout);
           }
         }
       }
     }
   }
+
+  private String encodeScopeAsComment(String query, StatisticsScope scope) {
+    if ("sql".equalsIgnoreCase(mixer.getConfiguration().getLang())) {
+      return "-- " + scope + "\n" + query;
+    } else {
+      return "# " + scope + "\n" + query;
+    }
+  }
+
 }

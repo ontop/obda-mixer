@@ -1,45 +1,38 @@
 package it.unibz.inf.mixer_main.statistics;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Ordering;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
  * Manager class for the collection and saving of evaluation statistics.
  * <p>
- * An instance of this class can be created via {@link #StatisticsManager()}, after which statistics can be submitted
- * through {@link StatisticsCollector} at different scopes:
- * <ul>
- *     <li><b>global scope</b>, via {@link #getGlobalCollector()} -
- *     for statistics not related to a specific concurrent client / query mix / query evaluation;</li>
- *     <li><b>client scope</b>, via {@link #getGlobalCollector()} -
- *     for statistics related to a specific concurrent client, but not to a query mix run by that client;</li>
- *     <li><b>mix scope</b>, via {@link #getMixCollector(int, int)} -
- *     for statistics related to a query mix evaluation by a certain concurrent client, but not to a query evaluation
- *     within that mix (e.g., total mix evaluation time);</li>
- *     <li><b>query scope</b>, via {@link #getQueryCollector(int, int, String)} -
- *     for statistics related to a query evaluation in a certain query mix run by a certain concurrent client.</li>
- * </ul>
+ * An instance of this class can be created via {@link #StatisticsManager()}, after which statistics for a given
+ * {@link StatisticsScope} can be submitted by obtaining a {@link StatisticsCollector} for that scope via
+ * {@link #getCollector(StatisticsScope)}.
  * </p>
  * <p>
  * Instances of this class and of all the employed {@code StatisticsCollector} are thread-safe.
@@ -48,7 +41,13 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unused")
 public final class StatisticsManager {
 
-    private final Map<Scope, Collector> collectors;
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsManager.class);
+
+    private static final ObjectMapper MAPPER = new ObjectMapper()
+            .findAndRegisterModules()
+            .enable(SerializationFeature.INDENT_OUTPUT);
+
+    private final Map<StatisticsScope, Collector> collectors;
 
     /**
      * Creates a new {@code StatisticsManager} instance, starting with empty statistics.
@@ -58,67 +57,16 @@ public final class StatisticsManager {
     }
 
     /**
-     * Returns the {@code Collector} for statistics in the <b>global</b> scope, i.e., not associated to any concurrent
-     * client / query mix / query evaluation.
+     * Returns the {@code Collector} for the {@code StatisticsScope} specified.
      *
-     * @return the collector for global-level statistics, not null, possibly reused across calls
+     * @param scope the statistics scope (e.g., for a specific query execution)
+     * @return the collector for the specified scope, not null, possibly reused across calls with the same scope
      */
-    public StatisticsCollector getGlobalCollector() {
-        return doGetCollector(-1, -1, null);
-    }
-
-    /**
-     * Returns the {@code Collector} for statistics in a <b>client</b> scope, i.e., associated to a concurrent client
-     * (identified by non-zero client ID) sending query mixes to the tested system, but not to a specific query mix run.
-     *
-     * @param client the client ID, not negative
-     * @return the collector for client-level statistics, not null, possibly reused across calls
-     */
-    public StatisticsCollector getClientCollector(int client) {
-        Preconditions.checkArgument(client >= 0);
-        return doGetCollector(client, -1, null);
-    }
-
-    /**
-     * Returns the {@code Collector} for statistics in a <b>mix</b> scope, i.e., associated to a specific query mix
-     * evaluation submitted by certain concurrent client (both identified by non-zero numeric ID), but not to a specific
-     * query.
-     *
-     * @param client the client ID, not negative
-     * @param mix    the mix ID, not negative and unique for that client (e.g., the mix sequence number)
-     * @return the collector for mix-level statistics, not null, possibly reused across calls
-     */
-    public StatisticsCollector getMixCollector(int client, int mix) {
-        Preconditions.checkArgument(client >= 0);
-        Preconditions.checkArgument(mix >= 0);
-        return doGetCollector(client, mix, null);
-    }
-
-    /**
-     * Returns the {@code Collector} for statistics in a <b>query</b> scope, i.e., associated to a specific query
-     * execution within a specific query mix run by a specific concurrent client against the tested system.
-     *
-     * @param client the client ID, not negative
-     * @param mix    the mix ID, not negative and unique for that client (e.g., the mix sequence number)
-     * @param query  the query ID, not null (e.g., the name of the query file)
-     * @return the collector for query-level statistics, not null, possibly reused across calls
-     */
-    public StatisticsCollector getQueryCollector(int client, int mix, String query) {
-        Preconditions.checkArgument(client >= 0);
-        Preconditions.checkArgument(mix >= 0);
-        Objects.requireNonNull(query);
-        return doGetCollector(client, mix, query);
-    }
-
-    private StatisticsCollector doGetCollector(int client, int mix, @Nullable String query) {
-        Scope scope = new Scope(client, mix, query);
+    public StatisticsCollector getCollector(StatisticsScope scope) {
+        Objects.requireNonNull(scope);
         synchronized (collectors) {
             return collectors.computeIfAbsent(scope, Collector::new);
         }
-    }
-
-    public void mergeJson(Reader in, String idAttribute) {
-        // TODO
     }
 
     public void write(Path file) throws IOException {
@@ -134,7 +82,7 @@ public final class StatisticsManager {
     /**
      * Writes collected statistics to the supplied {@code Writer} using the original text format of the OBDA Mixer tool.
      *
-     * @param out the sink to write to, open and not closed by this method
+     * @param out the sink to write to, which will not be closed by this method
      * @throws IOException in case of errors while writing to the sink
      */
     public void writeText(Writer out) throws IOException {
@@ -152,18 +100,23 @@ public final class StatisticsManager {
         collectors.sort(Comparator.comparing(c -> c.scope));
 
         // Keep track of the concurrent client for the last emitted scope
-        int lastClient = -1;
+        int lastClientId = -1;
 
         // Iterate over scope statistics in order (starting from global ones)
         for (Collector c : collectors) {
 
+            // Extract scope 'coordinates'
+            StatisticsScope s = c.scope;
+            OptionalInt clientId = s.getClientId();
+            OptionalInt mixId = s.getMixId();
+            Optional<String> queryId = s.getQueryId();
+
             // Emit single line [header], if needed
-            Scope s = c.scope;
-            if (s.client < 0) {
+            if (clientId.isEmpty()) {
                 out.append("[GLOBAL]\n");
-            } else if (s.client != lastClient) {
-                out.append("[thread#").append(Integer.toString(s.client)).append("]\n");
-                lastClient = s.client;
+            } else if (clientId.getAsInt() != lastClientId) {
+                out.append("[thread#").append(Integer.toString(clientId.getAsInt())).append("]\n");
+                lastClientId = clientId.getAsInt();
             }
 
             // Emit scope attribute = value pairs, sorted by attribute name and locking underlying map
@@ -172,14 +125,14 @@ public final class StatisticsManager {
                         .sorted(Entry.comparingByKey())
                         .collect(Collectors.toList())) {
                     out.append("[");
-                    if (s.mix < 0) {
+                    if (mixId.isEmpty()) {
                         out.append("main");
                     } else {
-                        out.append("run#").append(Integer.toString(s.mix));
+                        out.append("run#").append(Integer.toString(mixId.getAsInt()));
                     }
                     out.append("] [").append(e.getKey());
-                    if (s.query != null) {
-                        out.append("#").append(s.query);
+                    if (queryId.isPresent()) {
+                        out.append("#").append(queryId.get());
                     }
                     out.append("] = ").append(Objects.toString(e.getValue())).append("\n");
                 }
@@ -187,6 +140,12 @@ public final class StatisticsManager {
         }
     }
 
+    /**
+     * Writes collected statistics to the supplied {@code Writer} using the JSON format.
+     *
+     * @param out the sink to write to, which will not be closed by this method
+     * @throws IOException in case of errors while writing to the sink
+     */
     public void writeJson(Writer out) throws IOException {
 
         // Check arguments (if null, method may otherwise succeed if statistics are empty)
@@ -201,111 +160,161 @@ public final class StatisticsManager {
         // Sort collectors by scope, i.e., global -> thread -> runs for the thread -> queries for the run
         collectors.sort(Comparator.comparing(c -> c.scope));
 
-        ObjectMapper mapper = new ObjectMapper()
-                .findAndRegisterModules()
-                .enable(SerializationFeature.INDENT_OUTPUT);
-        JsonNodeFactory nf = mapper.getNodeFactory();
-
-        ObjectNode global = null;
+        // Allocate JSON structures for the different scopes
+        JsonNodeFactory nf = MAPPER.getNodeFactory();
         ArrayNode clients = nf.arrayNode();
         ArrayNode mixes = nf.arrayNode();
         ArrayNode queries = nf.arrayNode();
+        ObjectNode global = null;
 
+        // Iterate over statistics scopes, mapping them to JSON
         for (Collector c : collectors) {
 
+            // Extract scope 'coordinates'
+            StatisticsScope s = c.scope;
+            OptionalInt clientId = s.getClientId();
+            OptionalInt mixId = s.getMixId();
+            Optional<String> queryId = s.getQueryId();
+
+            // Create the JSON object containing the <key, value> pairs for the current scope
             ObjectNode stats = nf.objectNode();
 
-            Scope s = c.scope;
+            // Fill the 'client', 'mix', and 'query' attributes, tracking at which level we stopped
             ArrayNode a = null;
-            if (s.client >= 0) {
-                stats.put("client", s.client);
+            if (clientId.isPresent()) {
+                stats.put("client", clientId.getAsInt());
                 a = clients;
             }
-            if (s.mix >= 0) {
-                stats.put("mix", s.mix);
+            if (mixId.isPresent()) {
+                stats.put("mix", mixId.getAsInt());
                 a = mixes;
             }
-            if (s.query != null) {
-                stats.put("query", s.query);
+            if (queryId.isPresent()) {
+                stats.put("query", queryId.get());
                 a = queries;
             }
 
+            // Assign the JSON object to the corresponding global / client / mix / query level
             if (a != null) {
                 a.add(stats);
             } else {
                 global = stats;
             }
 
+            // Map <key, value> statistics attributes to JSON object fields
             synchronized (c.attributes) {
                 for (Entry<String, Object> e : c.attributes.entrySet().stream()
                         .sorted(Entry.comparingByKey())
                         .collect(Collectors.toList())) {
-                    stats.set(e.getKey(), mapper.valueToTree(e.getValue()));
+                    stats.set(e.getKey(), MAPPER.valueToTree(e.getValue()));
                 }
             }
         }
 
+        // Assemble the root JSON object collecting scope statistics at different levels
         ObjectNode root = nf.objectNode();
         root.set("global", global);
         root.set("clients", clients);
         root.set("mixes", mixes);
         root.set("queries", queries);
 
-        mapper.writeValue(out, root);
+        // Serialize
+        MAPPER.writeValue(out, root);
     }
 
-    private static final class Scope implements Comparable<Scope> {
+    public void importJson(Reader in, @Nullable Pattern filter, @Nullable String prefix, String... markers) throws IOException {
 
-        final int client;
+        // Ensure to operate on a buffered reader, for line-based reading
+        BufferedReader bufIn = in instanceof BufferedReader ? (BufferedReader) in : new BufferedReader(in);
 
-        final int mix;
+        // Setup the regex-based function to detect scopes in input lines matching the supplied markers
+        Function<String, List<StatisticsScope>> extractor = StatisticsScope.fromStringWithMarkers(markers);
 
-        final String query;
+        // Track statistics about processed lines / attributes
+        var numLine = new AtomicInteger();
+        var numLinesImported = new AtomicInteger();
+        var numLinesDiscarded = new AtomicInteger();
+        var numAttrsImported = new AtomicInteger();
+        var numAttrsDiscarded = new AtomicInteger();
 
-        Scope(int client, int mix, String query) {
-            this.client = client;
-            this.mix = mix;
-            this.query = query;
-        }
+        // Process the input one line at a time until stream completion
+        while (true) {
 
-        @Override
-        public int compareTo(Scope other) {
-            int result = Ordering.natural().nullsFirst().compare(this.client, other.client);
-            if (result == 0) {
-                result = Ordering.natural().nullsFirst().compare(this.mix, other.mix);
-                if (result == 0) {
-                    result = Ordering.natural().nullsFirst().compare(this.query, other.query);
+            // Read the next line
+            String line = bufIn.readLine();
+            if (line == null) {
+                break;
+            }
+            numLine.incrementAndGet();
+
+            // Extract scopes from current line, skipping it if no scope is found or (emitting warning) if more are found
+            Set<StatisticsScope> scopes = ImmutableSet.copyOf(extractor.apply(line));
+            if (scopes.size() != 1) {
+                if (scopes.size() > 1) {
+                    LOGGER.warn("Multiple scopes in line {} when importing statistics: {}", line, scopes);
+                    numLinesDiscarded.incrementAndGet();
                 }
+                continue;
             }
-            return result;
+
+            // Retrieve unique scope and corresponding statistics collector
+            var scope = scopes.iterator().next();
+            var collector = getCollector(scope);
+
+            // Define a recursive procedure to import nested JSON records into that collector, using filter & prefix
+            class RecordImporter {
+
+                public void importRecord(@Nullable String parentPath, ObjectNode record) {
+                    for (Iterator<Entry<String, JsonNode>> i = record.fields(); i.hasNext(); ) {
+
+                        // Obtain current <name: value> field in the JSON record
+                        Entry<String, JsonNode> e = i.next();
+
+                        // Compute the path leading to this field value, i.e., parent + field name
+                        String path = parentPath == null ? e.getKey() : parentPath + "." + e.getKey();
+
+                        // Either recurse if value is an object, or import the value if it maches the filter
+                        if (e.getValue() instanceof ObjectNode) {
+                            importRecord(path, (ObjectNode) e.getValue());
+                        } else if (filter == null || filter.matcher(path).matches()) {
+                            try {
+                                String attribute = prefix == null ? path : prefix + path;
+                                collector.set(attribute, e.getValue());
+                                numAttrsImported.incrementAndGet();
+                            } catch (Throwable ex) {
+                                LOGGER.error("Could not import attribute " + path + " at line " + numLine + ": " + e.getValue(), ex);
+                                numAttrsDiscarded.incrementAndGet();
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            // Attempt parsing the line into a JSON object, and then try importing (nested) fields matching the filter
+            try {
+                var record = MAPPER.readValue(line, ObjectNode.class);
+                new RecordImporter().importRecord(null, record);
+                numLinesImported.incrementAndGet();
+
+            } catch (Throwable ex) {
+                LOGGER.error("Could not import line content into statistics: " + line, ex);
+                numLinesDiscarded.incrementAndGet();
+            }
         }
 
-        @Override
-        public boolean equals(Object object) {
-            if (object == this) {
-                return true;
-            }
-            if (!(object instanceof Scope)) {
-                return false;
-            }
-            Scope other = (Scope) object;
-            return client == other.client && mix == other.mix && Objects.equals(query, other.query);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(client, mix, query);
-        }
-
+        // Log completion and relevant statistics
+        LOGGER.info("Imported statistics: {}/{}/{} lines read/imported/discarded, {}/{} attributes imported/discarded",
+                numLine, numLinesImported, numLinesDiscarded, numAttrsImported, numAttrsDiscarded);
     }
 
     private static final class Collector extends StatisticsCollector {
 
-        final Scope scope;
+        final StatisticsScope scope;
 
         final Map<String, Object> attributes;
 
-        Collector(Scope scope) {
+        Collector(StatisticsScope scope) {
             this.scope = scope;
             this.attributes = Maps.newHashMap();
         }

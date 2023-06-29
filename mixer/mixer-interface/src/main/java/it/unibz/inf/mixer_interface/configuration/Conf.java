@@ -38,6 +38,9 @@ public class Conf {
 
   // Mixer-specific parameters
   protected final String logFile;
+  protected final String logImport;
+  protected final String logImportFilter;
+  protected final String logImportPrefix;
   protected final String templatesDir;
   private final String propertyFile;
   protected String forcedTimeouts;
@@ -50,6 +53,9 @@ public class Conf {
   protected int timeout;
   protected int numClients;
   protected boolean rewriting;
+
+  // lang
+  protected String lang;
 
   // modes
   protected String mode;
@@ -86,6 +92,7 @@ public class Conf {
           int timeout,
           int numClients,
           boolean rewriting,
+          String lang,
           String mode,
           String serviceUrl,
           String owlFile,
@@ -96,6 +103,9 @@ public class Conf {
           String databaseUser,
           String databasePwd,
           String logFile,
+          String logImport,
+          String logImportFilter,
+          String logImportPrefix,
           String templatesDir,
           String shellCmd,
           boolean shellOutput,
@@ -108,6 +118,7 @@ public class Conf {
     this.timeout = timeout;
     this.numClients = numClients;
     this.rewriting = rewriting;
+    this.lang = lang;
     this.mode = mode;
     this.serviceUrl = serviceUrl;
     this.owlFile = owlFile;
@@ -118,6 +129,9 @@ public class Conf {
     this.databaseUser = databaseUser;
     this.databasePwd = databasePwd;
     this.logFile = logFile;
+    this.logImport = logImport;
+    this.logImportFilter = logImportFilter;
+    this.logImportPrefix = logImportPrefix;
     this.templatesDir = templatesDir;
     this.shellCmd = shellCmd;
     this.shellOutput = shellOutput;
@@ -155,6 +169,10 @@ public class Conf {
     return rewriting;
   }
 
+  public String getLang() {
+    return lang;
+  }
+
   public String getMode() {
     return mode;
   }
@@ -185,6 +203,18 @@ public class Conf {
 
   public String getLogFile() {
     return logFile;
+  }
+
+  public String getLogImport() {
+    return logImport;
+  }
+
+  public String getLogImportFilter() {
+    return logImportFilter;
+  }
+
+  public String getLogImportPrefix() {
+    return logImportPrefix;
   }
 
   public String getTemplatesDir() {

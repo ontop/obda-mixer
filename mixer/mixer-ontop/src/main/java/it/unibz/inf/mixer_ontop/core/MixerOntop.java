@@ -75,7 +75,8 @@ public class MixerOntop extends Mixer {
 
 
   @Override
-  public Object executeQuery(String query) {
+  public Object executeQuery(String query, int timeout) {
+    // TODO handle timeout
     TupleOWLResultSet rs = null;
     try {
       if (conn == null) conn = reasoner.getConnection(); // Warn: this methods will return always
@@ -94,12 +95,6 @@ public class MixerOntop extends Mixer {
       e.printStackTrace();
     }
     return rs;
-  }
-
-  @Override
-  public Object executeQuery(String query, int timeout) {
-    // TODO
-    return executeQuery(query);
   }
 
   @Override
@@ -189,11 +184,6 @@ public class MixerOntop extends Mixer {
     } catch (Exception e) {
       e.printStackTrace();
     }
-  }
-
-  @Override
-  public void executeWarmUpQuery(String query) {
-    executeQuery(query);
   }
 
   @Override

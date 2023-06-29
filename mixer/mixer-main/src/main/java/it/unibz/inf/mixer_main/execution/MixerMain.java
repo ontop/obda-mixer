@@ -20,20 +20,22 @@ package it.unibz.inf.mixer_main.execution;
  * #L%
  */
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import com.google.common.base.Strings;
 import it.unibz.inf.mixer_jdbc.core.MixerJDBC;
+import it.unibz.inf.mixer_main.statistics.StatisticsCollector;
 import it.unibz.inf.mixer_main.statistics.StatisticsManager;
+import it.unibz.inf.mixer_main.statistics.StatisticsScope;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -72,6 +74,7 @@ public class MixerMain extends MixerOptionsInterface {
             optTimeout.parsed() ? optTimeout.getValue() : cP.timeout().equals("") ? optTimeout.getValue() : Integer.valueOf(cP.timeout()),
             optNumClients.parsed() ? optNumClients.getValue() : cP.numClients().equals("") ? optNumClients.getValue() : Integer.valueOf(cP.numClients()),
             optRewriting.parsed() ? optRewriting.getValue() : cP.rewriting().equals("") ? optRewriting.getValue() : Boolean.parseBoolean(cP.rewriting()),
+            optLang.parsed() ? optLang.getValue() : cP.lang().equals("") ? optLang.getValue() : cP.lang(),
             optMode.parsed() ? optMode.getValue() : cP.mode().equals("") ? optMode.getValue() : cP.mode(),
             optServiceUrl.parsed() ? optServiceUrl.getValue() : cP.serviceUrl(),
             optOwlFile.parsed() ? optOwlFile.getValue() : cP.owlFile(),
@@ -82,6 +85,9 @@ public class MixerMain extends MixerOptionsInterface {
             optDbUsername.parsed() ? optDbUsername.getValue() : cP.dbUsername(),
             optDbPassword.parsed() ? optDbPassword.getValue() : cP.dbPassword(),
             optLogFile.parsed() ? optLogFile.getValue() : cP.logFile().equals("") ? optLogFile.getValue() : cP.logFile(),
+            optLogImport.parsed() ? optLogImport.getValue() : cP.logImport().equals("") ? optLogImport.getValue() : cP.logImport(),
+            optLogImportFilter.parsed() ? optLogImportFilter.getValue() : cP.logImportFilter().equals("") ? optLogImportFilter.getValue() : cP.logImportFilter(),
+            optLogImportPrefix.parsed() ? optLogImportPrefix.getValue() : cP.logImportPrefix().equals("") ? optLogImportPrefix.getValue() : cP.logImportPrefix(),
             optQueriesDir.parsed() ? optQueriesDir.getValue() : cP.queriesDir().equals("") ? optQueriesDir.getValue() : cP.queriesDir(),
             optShellCmd.parsed() ? optShellCmd.getValue() : cP.shellCmd(),
             optShellOut.parsed() ? optShellOut.getValue() : Boolean.parseBoolean(cP.shellOut()),
@@ -173,12 +179,35 @@ public class MixerMain extends MixerOptionsInterface {
       e.printStackTrace();
       MixerMain.closeEverything("Failed to Load Mixer", e);
     }
-    statsMgr.getGlobalCollector().add("load-time", chrono.stop());
+
+    StatisticsCollector globalStats = statsMgr.getCollector(StatisticsScope.global());
+    globalStats.add("load-time", chrono.stop());
+    globalStats.add("marker", StatisticsScope.processMarker());
 
     List<MixerThread> threads = setUpMixerThreads();
     test(threads);
 
+    importStatistics();
+
     logStatistics();
+  }
+
+  private void importStatistics() {
+
+    Conf conf = mixer.getConfiguration();
+    if (Strings.isNullOrEmpty(conf.getLogImport())) {
+      return;
+    }
+
+    Path file = Paths.get(conf.getLogImport());
+    Pattern filter = Strings.isNullOrEmpty(conf.getLogImportFilter()) ? null : Pattern.compile(conf.getLogImportFilter());
+    String prefix = conf.getLogImportPrefix();
+
+    try (Reader in = Files.newBufferedReader(file)) {
+      statsMgr.importJson(in, filter, prefix);
+    } catch (IOException ex) {
+      log.error("Cannot import statistics from " + file, ex);
+    }
   }
 
   private void logStatistics() {

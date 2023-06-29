@@ -9,9 +9,9 @@ package it.unibz.inf.mixer_main.utils;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,40 +20,52 @@ package it.unibz.inf.mixer_main.utils;
  * #L%
  */
 
+import java.util.Objects;
+
 public class QualifiedName {
-	private String first;
-	private String second;
-	
-	public QualifiedName(){}
-	
-	public QualifiedName(String tableName, String colName){
-		this.first = tableName;
-		this.second = colName;
-	}
-	
-	public QualifiedName(String csvName){
-		// "\\s+"
-		String[] splits = csvName.split(" ");
-		first = splits[0];
-		second = splits[1];
-	}
-		
-	public String getFirst() {
-		return first;
-	}
-	public void setFirst(String first) {
-		this.first = first;
-	}
-	public String getSecond() {
-		return second;
-	}
-	public void setSecond(String colName) {
-		this.second = colName;
-	}
-	
-	public String toString(){
-		return first + "." + second;
-	}
-	
-	
+
+    private final String first;
+
+    private final String second;
+
+    public QualifiedName(String tableName, String colName) {
+        this.first = Objects.requireNonNull(tableName);
+        this.second = Objects.requireNonNull(colName);
+    }
+
+    public QualifiedName(String csvName) {
+        String[] splits = csvName.split("\\s+|\\.");
+        this.first = splits[0];
+        this.second = splits[1];
+    }
+
+    public String getFirst() {
+        return first;
+    }
+
+    public String getSecond() {
+        return second;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof QualifiedName)) {
+            return false;
+        }
+        QualifiedName other = (QualifiedName) object;
+        return first.equals(other.first) && second.equals(other.second);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(first, second);
+    }
+
+    public String toString() {
+        return first + "." + second;
+    }
+
 }

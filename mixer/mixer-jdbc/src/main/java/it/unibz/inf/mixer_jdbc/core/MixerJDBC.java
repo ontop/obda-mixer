@@ -48,24 +48,14 @@ public class MixerJDBC extends Mixer {
     }
 
     @Override
-    public Object executeQuery(String query) {
-        ResultSet res = null;
-        try {
-            PreparedStatement stmt = conn.getConnection().prepareStatement(query);
-            res =  stmt.executeQuery();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return res;
-    }
-
-    @Override
     public Object executeQuery(String query, int timeout) {
-        // TODO: timeout currently ignored
+        // TODO: timeout currently ignored?
         ResultSet res = null;
         try {
             PreparedStatement stmt = conn.getConnection().prepareStatement(query);
-            stmt.setQueryTimeout(timeout);
+            if (timeout > 0) {
+                stmt.setQueryTimeout(timeout);
+            }
             res =  stmt.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -137,20 +127,12 @@ public class MixerJDBC extends Mixer {
     }
 
     @Override
-    public void executeWarmUpQuery(String query) {
-        try {
-            PreparedStatement stmt = conn.getConnection().prepareStatement(query);
-            stmt.executeQuery();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public void executeWarmUpQuery(String query, int timeout) {
         try {
             PreparedStatement stmt = conn.getConnection().prepareStatement(query);
-            stmt.setQueryTimeout(timeout);
+            if (timeout != 0) {
+                stmt.setQueryTimeout(timeout);
+            }
             stmt.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();

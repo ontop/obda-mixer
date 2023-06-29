@@ -25,13 +25,6 @@ public class MixerWeb extends Mixer {
   }
 
   @Override
-  public void executeWarmUpQuery(String query) {
-    NetQuery q = new NetQuery(configuration.getServiceUrl(), query, 0);
-    q.exec();
-    q.close();
-  }
-
-  @Override
   public void executeWarmUpQuery(String query, int timeout) {
     NetQuery q = new NetQuery(configuration.getServiceUrl(), query, timeout * 1000);
     q.exec();
@@ -39,13 +32,7 @@ public class MixerWeb extends Mixer {
   }
 
   @Override
-  public Object executeQuery(String query) {
-    return executeQuery(query, 0);
-  }
-
-  @Override
   public Object executeQuery(String query, int timeout) {
-
     NetQuery q = new NetQuery(configuration.getServiceUrl(), query, timeout * 1000);
     InputStream resultStream = null;
     resultStream = q.exec();
