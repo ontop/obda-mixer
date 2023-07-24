@@ -19,5 +19,5 @@ done
 # shellcheck disable=SC2086
 exec $JAVA $JAVA_OPTS \
     -cp "$0${jars+:$jars}${JAVA_CLASSPATH+:$JAVA_CLASSPATH}" \
-    it.unibz.inf.mixer_main.execution.MixerMain \
+    it.unibz.inf.mixer.execution.MixerMain \
     "${opts[@]}"
