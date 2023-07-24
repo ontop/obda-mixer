@@ -20,254 +20,178 @@ package it.unibz.inf.mixer_main.execution;
  * #L%
  */
 
-import java.io.*;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import com.google.common.base.Strings;
-import it.unibz.inf.mixer_jdbc.core.MixerJDBC;
+import com.google.common.collect.Lists;
+import it.unibz.inf.mixer_interface.core.Mixer;
+import it.unibz.inf.mixer_interface.core.Mixers;
+import it.unibz.inf.mixer_interface.core.QueryLanguage;
 import it.unibz.inf.mixer_main.statistics.StatisticsCollector;
 import it.unibz.inf.mixer_main.statistics.StatisticsManager;
 import it.unibz.inf.mixer_main.statistics.StatisticsScope;
-import org.slf4j.LoggerFactory;
+import it.unibz.inf.mixer_main.utils.Option;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import it.unibz.inf.mixer_interface.configuration.Conf;
-import it.unibz.inf.mixer_interface.core.Mixer;
-import it.unibz.inf.mixer_main.configuration.ConfParser;
-import it.unibz.inf.mixer_main.exception.UnsupportedSystemException;
-import it.unibz.inf.mixer_main.time.Chrono;
-import it.unibz.inf.mixer_shell.core.MixerShell;
-import it.unibz.inf.mixer_web.core.MixerWeb;
-import it.unibz.inf.utils_options.core.Option;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+public class MixerMain {
 
-public class MixerMain extends MixerOptionsInterface {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MixerMain.class);
 
-  private static Logger log = LoggerFactory.getLogger(MixerMain.class);
+    // Mixer type and config
+    private final String mixerType = MixerOptions.optMode.getValue();
+    @SuppressWarnings("ConstantConditions")
+    private final Map<String, String> mixerConfig = Option.list().stream()
+            .filter(o -> o.getName().startsWith("--" + MixerOptions.optMode.getValue()))
+            .collect(Collectors.toMap(
+                    o -> o.getConfigKey().substring(MixerOptions.optMode.getValue().length() + 1),
+                    o -> o.getValue() == null ? null : o.getValue().toString()));
 
-  private Chrono chrono;
-  private StatisticsManager statsMgr;
-  private Mixer mixer;
+    // Query templates
+    private final String templatesDir = MixerOptions.optQueriesDir.getValue();
+    private final QueryLanguage language = QueryLanguage.valueOf(MixerOptions.optLang.getValue().toUpperCase());
 
-  public MixerMain(String[] args) {
-    // Parse command-line options
-    Conf configuration = configure(args);
-    instantiateMixer(configuration);
-  }
+    // Database access
+    private final String databaseUrl = MixerOptions.optDbUrl.getValue();
+    private final @Nullable String databaseUser = MixerOptions.optDbUsername.getValue();
+    private final @Nullable String databasePwd = MixerOptions.optDbPassword.getValue();
+    private final @Nullable String databaseDriverClass = MixerOptions.optDbDriverClass.getValue();
 
-  private Conf configure(String[] args) {
-    Option.parseOptions(args);
-    String confFile = optConfFile.getValue();
-    ConfParser cP = ConfParser.initInstance(confFile);
+    // Execution settings
+    private final int numClients = MixerOptions.optNumClients.getValue();
+    private final int numWarmUps = MixerOptions.optNumWarmUps.getValue();
+    private final int numRuns = MixerOptions.optNumRuns.getValue();
+    private final int timeout = MixerOptions.optTimeout.getValue();
+    private final @Nullable String forcedTimeouts = MixerOptions.optForceTimeouts.getValue();
 
-    Conf configuration = new Conf(
-            optNumRuns.parsed() ? optNumRuns.getValue() : cP.numRuns().equals("") ? optNumRuns.getValue() : Integer.valueOf(cP.numRuns()),
-            optNumWarmUps.parsed() ? optNumWarmUps.getValue() : cP.numWarmUps().equals("") ? optNumWarmUps.getValue() : Integer.valueOf(cP.numWarmUps()),
-            optTimeout.parsed() ? optTimeout.getValue() : cP.timeout().equals("") ? optTimeout.getValue() : Integer.valueOf(cP.timeout()),
-            optNumClients.parsed() ? optNumClients.getValue() : cP.numClients().equals("") ? optNumClients.getValue() : Integer.valueOf(cP.numClients()),
-            optRewriting.parsed() ? optRewriting.getValue() : cP.rewriting().equals("") ? optRewriting.getValue() : Boolean.parseBoolean(cP.rewriting()),
-            optLang.parsed() ? optLang.getValue() : cP.lang().equals("") ? optLang.getValue() : cP.lang(),
-            optMode.parsed() ? optMode.getValue() : cP.mode().equals("") ? optMode.getValue() : cP.mode(),
-            optServiceUrl.parsed() ? optServiceUrl.getValue() : cP.serviceUrl(),
-            optOwlFile.parsed() ? optOwlFile.getValue() : cP.owlFile(),
-            optMappingsFile.parsed() ? optMappingsFile.getValue() : cP.mappingsFile(),
-            optPropertiesFile.parsed() ? optPropertiesFile.getValue() : cP.propertiesFile(),
-            optDbDriverClass.parsed() ? optDbDriverClass.getValue() : cP.dbDriverClass(),
-            optDbUrl.parsed() ? optDbUrl.getValue() : cP.dbURL(),
-            optDbUsername.parsed() ? optDbUsername.getValue() : cP.dbUsername(),
-            optDbPassword.parsed() ? optDbPassword.getValue() : cP.dbPassword(),
-            optLogFile.parsed() ? optLogFile.getValue() : cP.logFile().equals("") ? optLogFile.getValue() : cP.logFile(),
-            optLogImport.parsed() ? optLogImport.getValue() : cP.logImport().equals("") ? optLogImport.getValue() : cP.logImport(),
-            optLogImportFilter.parsed() ? optLogImportFilter.getValue() : cP.logImportFilter().equals("") ? optLogImportFilter.getValue() : cP.logImportFilter(),
-            optLogImportPrefix.parsed() ? optLogImportPrefix.getValue() : cP.logImportPrefix().equals("") ? optLogImportPrefix.getValue() : cP.logImportPrefix(),
-            optQueriesDir.parsed() ? optQueriesDir.getValue() : cP.queriesDir().equals("") ? optQueriesDir.getValue() : cP.queriesDir(),
-            optShellCmd.parsed() ? optShellCmd.getValue() : cP.shellCmd(),
-            optShellOut.parsed() ? optShellOut.getValue() : Boolean.parseBoolean(cP.shellOut()),
-            optForceTimeouts.parsed() ? optForceTimeouts.getValue() : cP.forceTimeouts(),
-            optForcedTimeoutsValue.parsed() ? optForcedTimeoutsValue.getValue() : cP.forcedTimeoutsValue().equals("") ? optForcedTimeoutsValue.getValue() : Integer.valueOf(cP.forcedTimeoutsValue()),
-            optJavaApiClass.parsed() ? optJavaApiClass.getValue() : cP.javaAPIClass().equals("") ? optJavaApiClass.getValue() : cP.javaAPIClass(),
-            optJDBCModeDbDriverClass.parsed() ? optJDBCModeDbDriverClass.getValue() : cP.jdbcModeDBDriverClass(),
-            optJDBCModeDbUrl.parsed() ? optJDBCModeDbUrl.getValue() : cP.jdbcModeDBURL(),
-            optJDBCModeDbUsername.parsed() ? optJDBCModeDbUsername.getValue() : cP.jdbcModeDBUsername(),
-            optJDBCModeDbPassword.parsed() ? optJDBCModeDbPassword.getValue() : cP.jdbcModeDbPassword());
-    return configuration;
-  }
+    // Log file handling
+    private final String logFile = MixerOptions.optLogFile.getValue();
+    private final @Nullable String logImport = MixerOptions.optLogImport.getValue();
+    private final @Nullable String logImportFilter = MixerOptions.optLogImportFilter.getValue();
+    private final @Nullable String logImportPrefix = MixerOptions.optLogImportPrefix.getValue();
 
-  /**
-   * Modify this method to add other systems
-   **/
-  private void instantiateMixer(Conf configuration) {
+    private void run() {
 
-    String mode = configuration.getMode();
+        // Track exceptions during execution (more than one as we always try to inject and write statistics)
+        List<Throwable> exceptions = Lists.newArrayList();
 
-    switch (mode) {
-      case "java-api":
+        // Initialize the StatisticsManager keeping statistics in memory
+        StatisticsManager statsMgr = new StatisticsManager();
+
+        // Report process marker used to annotate queries in the global scope of statistics
+        StatisticsCollector globalStats = statsMgr.getCollector(StatisticsScope.global());
+        globalStats.add("marker", StatisticsScope.processMarker());
+
         try {
-          this.mixer = instantiateOwlapiMixer(configuration);
-          if (configuration.rewriting()) this.mixer.rewritingON();
-        } catch (Exception e) {
-          String msg = "Error: The class " + configuration.getJavaAPIClass() + " provided as java-api handler does not exist";
-          MixerMain.closeEverything(msg, e);
+            // Instantiate mixer plugin and ensure to close it after use
+            try (Mixer mixer = Mixers.create(mixerType)) {
+
+                // Initialize/load the mixer object, tracking loading time
+                try {
+                    long ts = System.nanoTime();
+                    mixer.init(mixerConfig);
+                    globalStats.add("load-time", (System.nanoTime() - ts) / 1000000L);
+                } catch (Throwable ex) {
+                    throw new RuntimeException("Mixer initialization failed", ex);
+                }
+
+                // Initialize test threads
+                List<MixerThread> threads = new ArrayList<>();
+                for (int i = 0; i < numClients; ++i) {
+                    TemplateQuerySelector tqs = new TemplateQuerySelector(templatesDir, connect(), language);
+                    MixerThread mT = new MixerThread(mixer, tqs, statsMgr, i, numWarmUps, numRuns, timeout,
+                            forcedTimeouts == null ? null : Arrays.asList(forcedTimeouts.split("\\s+")));
+                    threads.add(mT);
+                }
+
+                // Start test threads
+                for (MixerThread mT : threads) {
+                    mT.start();
+                }
+
+                // Wait for test threads termination, forcing it in case of external interruption request
+                while (true) {
+                    try {
+                        for (MixerThread mT : threads) {
+                            mT.join();
+                        }
+                        break;
+                    } catch (InterruptedException ex) {
+                        exceptions.add(new RuntimeException("Test execution interrupted", ex));
+                        for (MixerThread mT : threads) {
+                            mT.interrupt();
+                        }
+                    }
+                }
+            }
+        } catch (Throwable ex) {
+            exceptions.add(ex);
         }
-        break;
-      case "web":
-        this.mixer = instantiateWebMixer(configuration);
-        break;
-      case "shell":
-        this.mixer = instantiateShellMixer(configuration);
-        break;
-      case "jdbc":
-        this.mixer = instantiateJDBCMixer(configuration);
-        break;
-    }
-    if (this.mixer == null) {
-      try {
-        throw new UnsupportedSystemException("The string " + mode + " is not a valid parameter");
-      } catch (UnsupportedSystemException e) {
-        MixerMain.closeEverything("Could not instantiate the OBDA system.", e);
-      }
-    }
-  }
 
-  private Mixer instantiateJDBCMixer(Conf configuration) {
-    Mixer result = null;
-    try {
-      result = new MixerJDBC(configuration);
-    } catch (SQLException | ClassNotFoundException e) {
-      MixerMain.closeEverything("Failed to instantiate JDBCMixer", e);
-    }
-    return result;
-  }
+        // Import statistics from an external log file, if specified (e.g., the one of the OBDA system)
+        if (!Strings.isNullOrEmpty(logImport)) {
+            try (Reader in = Files.newBufferedReader(Paths.get(logImport))) {
+                Pattern filter = Strings.isNullOrEmpty(logImportFilter) ? null : Pattern.compile(logImportFilter);
+                statsMgr.importJson(in, filter, logImportPrefix);
+            } catch (Throwable ex) {
+                exceptions.add(new RuntimeException("Cannot import statistics from " + logImport, ex));
+            }
+        }
 
-  private Mixer instantiateShellMixer(Conf configuration) {
-    Mixer result = new MixerShell(configuration);
-    return result;
-  }
+        // Write statistics
+        try {
+            statsMgr.write(Paths.get(logFile));
+        } catch (Throwable ex) {
+            exceptions.add(new RuntimeException("Cannot write log file " + logFile, ex));
+        }
 
-  private Mixer instantiateWebMixer(Conf configuration) {
-    Mixer result = new MixerWeb(configuration);
-    return result;
-  }
-
-  private Mixer instantiateOwlapiMixer(Conf configuration)
-          throws UnsupportedSystemException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-    Class<?> clazz = Class.forName(configuration.getJavaAPIClass());
-    Constructor<?> ctor = clazz.getConstructor(Conf.class);
-    Mixer result = (Mixer) ctor.newInstance(new Object[]{configuration});
-
-    return result;
-  }
-
-  private void do_tests() {
-
-    statsMgr = new StatisticsManager();
-    chrono = new Chrono();
-
-    // Load the system
-    chrono.start();
-    try {
-      mixer.load();
-    } catch (Exception e) {
-      e.printStackTrace();
-      MixerMain.closeEverything("Failed to Load Mixer", e);
+        // If one or more exceptions were collected, throw a runtime exception reporting their number and list
+        if (!exceptions.isEmpty()) {
+            RuntimeException ex = new RuntimeException("Test execution completed with " + exceptions.size() + " errors");
+            exceptions.forEach(ex::addSuppressed);
+            throw ex;
+        }
     }
 
-    StatisticsCollector globalStats = statsMgr.getCollector(StatisticsScope.global());
-    globalStats.add("load-time", chrono.stop());
-    globalStats.add("marker", StatisticsScope.processMarker());
-
-    List<MixerThread> threads = setUpMixerThreads();
-    test(threads);
-
-    importStatistics();
-
-    logStatistics();
-  }
-
-  private void importStatistics() {
-
-    Conf conf = mixer.getConfiguration();
-    if (Strings.isNullOrEmpty(conf.getLogImport())) {
-      return;
+    private Connection connect() {
+        try {
+            if (databaseDriverClass != null) {
+                Class.forName(databaseDriverClass); // Load driver (might be needed for old drivers)
+            }
+            return DriverManager.getConnection(databaseUrl, databaseUser, databasePwd);
+        } catch (Throwable ex) {
+            throw new RuntimeException("Failed to instantiate DB connection", ex);
+        }
     }
 
-    Path file = Paths.get(conf.getLogImport());
-    Pattern filter = Strings.isNullOrEmpty(conf.getLogImportFilter()) ? null : Pattern.compile(conf.getLogImportFilter());
-    String prefix = conf.getLogImportPrefix();
+    public static void main(String[] args) {
+        try {
+            // Process command line arguments and configuration file (arg. values available from MixerOptions)
+            MixerOptions.parse(args);
 
-    try (Reader in = Files.newBufferedReader(file)) {
-      statsMgr.importJson(in, filter, prefix);
-    } catch (IOException ex) {
-      log.error("Cannot import statistics from " + file, ex);
-    }
-  }
+            // Attempt execution
+            new MixerMain().run();
 
-  private void logStatistics() {
-    Path statsFile = Paths.get(mixer.getConfiguration().getLogFile());
-    try {
-      statsMgr.write(statsFile);
-    } catch (IOException e) {
-      MixerMain.closeEverything("Cannot write log file " + statsFile, e);
-    }
-  }
+            // On success, terminate with exit code 0
+            System.exit(0);
 
-  private void test(List<MixerThread> threads) {
-    for (MixerThread mT : threads) {
-      mT.start();
-    }
-    for (MixerThread mT : threads) {
-      try {
-        mT.join();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
-  }
-
-  private List<MixerThread> setUpMixerThreads() {
-
-    List<MixerThread> threads = new ArrayList<MixerThread>();
-    //		boolean rwAndUnf = false;
-    //		if( numClients == 1 ){
-    //			rwAndUnf = true;
-    //		}
-
-    File folder = new File(mixer.getConfiguration().getTemplatesDir());
-    File[] listOfFiles = folder.listFiles();
-
-    for (int i = 0; i < mixer.getConfiguration().getNumClients(); ++i) {
-      // Configure each mixerThread
-      MixerThread mT = new MixerThread(mixer, statsMgr, listOfFiles, i);
-      threads.add(mT);
+        } catch (Throwable ex) {
+            // On failure, log error and terminate with exit code 1
+            LOGGER.error(ex.getMessage(), ex);
+            System.exit(1);
+        }
     }
 
-    return threads;
-  }
-
-  public static void main(String[] args) {
-
-    MixerMain main = new MixerMain(args);
-    main.do_tests();
-
-  }
-
-  public static <T> T closeEverything(String msg, Exception e) {
-
-    log.error(msg);
-    throw new RuntimeException(e);
-  }
-
-  public static void closeEverything(String msg) {
-    log.error(msg);
-    throw new RuntimeException();
-  }
-};
+}
 

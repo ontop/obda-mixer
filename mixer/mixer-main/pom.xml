@@ -14,28 +14,28 @@
     <dependencies>
         <dependency>
             <groupId>it.unibz.inf.mixer</groupId>
-            <artifactId>mixer-utils</artifactId>
+            <artifactId>mixer-interface</artifactId>
         </dependency>
+
         <dependency>
+            <groupId>it.unibz.inf.mixer</groupId>
             <artifactId>mixer-ontop</artifactId>
-            <groupId>it.unibz.inf.mixer</groupId>
-            <scope>${ontop.scope}</scope>
+            <scope>${mixers-ontop.scope}</scope>
         </dependency>
         <dependency>
+            <groupId>it.unibz.inf.mixer</groupId>
             <artifactId>mixer-web</artifactId>
-            <groupId>it.unibz.inf.mixer</groupId>
+            <scope>${mixers-other.scope}</scope>
         </dependency>
         <dependency>
-            <artifactId>mixer-shell</artifactId>
             <groupId>it.unibz.inf.mixer</groupId>
+            <artifactId>mixer-shell</artifactId>
+            <scope>${mixers-other.scope}</scope>
         </dependency>
         <dependency>
             <groupId>it.unibz.inf.mixer</groupId>
             <artifactId>mixer-jdbc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>it.unibz.inf.mixer</groupId>
-            <artifactId>mixer-db-connection</artifactId>
+            <scope>${mixers-other.scope}</scope>
         </dependency>
 
         <dependency>
@@ -61,6 +61,12 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -134,7 +140,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <phase>${fatjar.phase-prefix}package</phase>
                         <goals>
                             <goal>really-executable-jar</goal>
                         </goals>

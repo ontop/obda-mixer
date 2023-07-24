@@ -1,141 +1,54 @@
 package it.unibz.inf.mixer_jdbc.core;
 
-import it.unibz.inf.mixer_db_connection.*;
-import it.unibz.inf.mixer_interface.configuration.Conf;
-import it.unibz.inf.mixer_interface.core.Mixer;
+import it.unibz.inf.mixer_interface.core.AbstractMixer;
+import it.unibz.inf.mixer_interface.core.Handler;
+import it.unibz.inf.mixer_interface.core.Query;
 
-import java.sql.PreparedStatement;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Map;
 
-public class MixerJDBC extends Mixer {
+public class MixerJDBC extends AbstractMixer {
 
-    DBMSConnection conn;
-
-    public MixerJDBC(Conf conf) throws SQLException, ClassNotFoundException {
-        super(conf);
-        establishConnection();
-    }
-
-    private void establishConnection() throws SQLException, ClassNotFoundException {
-        Conf conf = this.getConfiguration();
-        String url = conf.getJdbcModeDatabaseUrl();
-        String user = conf.getJdbcModeDatabaseUser();
-        String pwd = conf.getJdbcModeDatabasePwd();
-        String driver = conf.getJdbcModeDriverClass();
-            switch(driver) {
-                case DBType.MYSQL:
-                    conn = new DBMSConnectionMysql(url, user, pwd, driver);
-                    break;
-                case DBType.POSTGRES:
-                    conn = new DBMSConnectionPostgres(url, user, pwd, driver);
-                    break;
-                case DBType.SQLSERVER:
-                    conn = new DBMSConnectionMSSQL(url, user, pwd, driver);
-                    break;
-                case DBType.DB2:
-                    conn = new DBMSConnectionDB2(url, user, pwd, driver);
-                    break;
-                case DBType.TEIID:
-                    conn = new DBMSConnectionTeiid(url, user, pwd, driver);
-                    break;
-            }
-    }
+    private Connection conn;
 
     @Override
-    public void load() throws Exception {
-        // Unsupported
-    }
+    public void init(Map<String, String> conf) throws Exception {
+        super.init(conf);
 
-    @Override
-    public Object executeQuery(String query, int timeout) {
-        // TODO: timeout currently ignored?
-        ResultSet res = null;
+        String url = conf.get("db-url");
+        String user = conf.get("db-user");
+        String pwd = conf.get("db-pwd");
+        String driver = conf.get("db-driverclass");
+
         try {
-            PreparedStatement stmt = conn.getConnection().prepareStatement(query);
-            if (timeout > 0) {
-                stmt.setQueryTimeout(timeout);
+            if (driver != null) {
+                Class.forName(driver); // Load driver (might be needed for old drivers)
             }
-            res =  stmt.executeQuery();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            this.conn = DriverManager.getConnection(url, user, pwd);
+        } catch (Throwable ex) {
+            throw new RuntimeException("Failed to instantiate DB connection", ex);
         }
-        return res;
     }
 
     @Override
-    public int traverseResultSet(Object resultSet) {
-        int cnt = 0;
-        if( resultSet instanceof ResultSet ){
-            ResultSet rs = (ResultSet) resultSet;
-            try {
-                while(rs.next()){
+    public void execute(Query query, Handler handler) throws Exception {
+        try (Statement stmt = conn.createStatement()) {
+            if (query.getTimeout() > 0) {
+                stmt.setQueryTimeout(query.getTimeout());
+            }
+            handler.onSubmit();
+            try (ResultSet rs = stmt.executeQuery(query.getString())) {
+                handler.onStartResults();
+                int cnt = 0;
+                while (rs.next()) {
                     ++cnt;
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            finally {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                handler.onEndResults(cnt);
             }
         }
-        return cnt;
     }
 
-    @Override
-    public long getRewritingTime() {
-        return 0;
-    }
-
-    @Override
-    public long getUnfoldingTime() {
-        return 0;
-    }
-
-    @Override
-    public String getUnfolding() {
-        return null;
-    }
-
-    @Override
-    public int getUnfoldingSize() {
-        return 0;
-    }
-
-    @Override
-    public String getRewriting() {
-        return null;
-    }
-
-    @Override
-    public int getRewritingSize() {
-        return 0;
-    }
-
-    @Override
-    public void rewritingOFF() {
-
-    }
-
-    @Override
-    public void rewritingON() {
-
-    }
-
-    @Override
-    public void executeWarmUpQuery(String query, int timeout) {
-        try {
-            PreparedStatement stmt = conn.getConnection().prepareStatement(query);
-            if (timeout != 0) {
-                stmt.setQueryTimeout(timeout);
-            }
-            stmt.executeQuery();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }

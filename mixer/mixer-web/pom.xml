@@ -13,10 +13,9 @@
 
     <dependencies>
         <dependency>
-            <artifactId>mixer-interface</artifactId>
             <groupId>it.unibz.inf.mixer</groupId>
+            <artifactId>mixer-interface</artifactId>
         </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

@@ -24,14 +24,12 @@
     </licenses>
 
     <modules>
-        <module>mixer-ontop</module>
         <module>mixer-interface</module>
         <module>mixer-main</module>
-        <module>mixer-utils</module>
         <module>mixer-web</module>
-        <module>mixer-shell</module>
         <module>mixer-jdbc</module>
-        <module>mixer-db-connection</module>
+        <module>mixer-shell</module>
+        <module>mixer-ontop</module>
     </modules>
 
     <scm>
@@ -58,7 +56,8 @@
         <git-commit-id-maven-plugin-version>5.0.0</git-commit-id-maven-plugin-version>
         <license-maven-plugin.version>2.0.0</license-maven-plugin.version>
         <really-executable-jar.version>2.1.1</really-executable-jar.version>
-        <spring-boot-maven-plugin.version>2.7.9</spring-boot-maven-plugin.version> <!-- 3.0.0+ needs JDK17 (via Spring Boot 3) -->
+        <spring-boot-maven-plugin.version>2.7.9
+        </spring-boot-maven-plugin.version> <!-- 3.0.0+ needs JDK17 (via Spring Boot 3) -->
 
         <!-- Dependency versions -->
         <junit.version>4.10</junit.version>
@@ -77,7 +76,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <fatjar.phase-prefix>disabled-</fatjar.phase-prefix>
         <jdbc-drivers.scope>test</jdbc-drivers.scope>
-        <ontop.scope>provided</ontop.scope>
+        <mixers-ontop.scope>provided</mixers-ontop.scope>
+        <mixers-other.scope>provided</mixers-other.scope>
         <jdk.version>11</jdk.version>
     </properties>
 
@@ -204,6 +204,13 @@
                 <version>31.1-jre</version>
             </dependency>
 
+            <!-- JSpecify -->
+            <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>0.3.0</version>
+            </dependency>
+
             <!-- Junit -->
             <dependency>
                 <groupId>junit</groupId>
@@ -299,7 +306,8 @@
                     <configuration>
                         <dotGitDirectory>${maven.multiModuleProjectDirectory}/.git</dotGitDirectory>
                         <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                        <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                        <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+                        </generateGitPropertiesFilename>
                         <failOnNoGitDirectory>false</failOnNoGitDirectory>
                         <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
                     </configuration>
@@ -357,7 +365,8 @@
         <profile>
             <id>fatjar</id>
             <properties>
-                <fatjar.phase-prefix />
+                <fatjar.phase-prefix/>
+                <mixers-other.scope>runtime</mixers-other.scope>
             </properties>
             <build>
                 <defaultGoal>package</defaultGoal>
@@ -372,7 +381,7 @@
         <profile>
             <id>ontop</id>
             <properties>
-                <ontop.scope>runtime</ontop.scope>
+                <mixers-ontop.scope>runtime</mixers-ontop.scope>
             </properties>
         </profile>
         <profile>

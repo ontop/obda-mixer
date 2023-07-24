@@ -9,9 +9,9 @@ package it.unibz.inf.mixer_interface.core;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,119 +20,34 @@ package it.unibz.inf.mixer_interface.core;
  * #L%
  */
 
-import it.unibz.inf.mixer_interface.configuration.Conf;
+import java.util.Map;
 
 /**
- * 
  * @author Davide Lanti
- *
  */
-public abstract class Mixer {
-	
-	// Configuration parameters
-	protected Conf configuration;
-	
-	protected boolean rewriting;
-		
-	public Mixer(Conf configuration){
-		this.configuration = configuration;
-		this.rewriting = false;
-	}
-		
-	// ******************** Abstract Methods Section ********************* //
-	
-	// --------------- Operations ---------------- //
+public interface Mixer extends AutoCloseable {
 
-	/**
-	 * It loads the OBDA system
-	 */
-	public abstract void load() throws Exception;
+    /**
+     * Initializes the mixer, supplying configuration data. If the mixer embeds the OBDA system, this method can be
+     * used to load the OBDA system and have the corresponding loading time tracked by OBDA Mixer.
+     *
+     * @param configuration {@code <key, value>} configuration properties, not expected to be modified
+     */
+    void init(Map<String, String> configuration) throws Exception;
 
-	/**
-	 * Issues a query with an execution timeout
-	 * @param query query string
-	 * @param timeout timeout in seconds
-	 * @return a result set
-	 */
-	public abstract Object executeQuery(String query, int timeout);
-	
-	/**
-	 * Traverse the set of results obtained by issuing the query
-	 * @return The number of results
-	 */
-	public abstract int traverseResultSet(Object resultSet);
-	// ------------------------------------------- //
-	
-	// ------------- Time statistics ------------- //
-	
-	/**
-	 * 
-	 * @return The time spent by the OBDA system in 
-	 *         the rewriting (reasoning) phase, 
-	 *         in milliseconds.
-	 */
-	public abstract long getRewritingTime();
-	
-	/**
-	 * 
-	 * @return The time spent by the OBDA system in
-	 *         the phase of translation of the 
-	 *         ontological query into a query
-	 *         over the physical data sources.
-	 */
-	public abstract long getUnfoldingTime();
-	// ------------------------------------------- //
-	
-	// -------------- Logs ----------------------- //
-	
-	/**
-	 * 
-	 * @return The translated <b>SQL</b> query.
-	 */
-	public abstract String getUnfolding();
-	
-	/**
-	 * 
-	 * @return The size of the unfolded query, in terms of 
-	 *         number of datalog rules
-	 */
-	public abstract int getUnfoldingSize();
-	
-	/**
-	 * 
-	 * @return The query rewritten in order to 
-	 *         take into account for reasoning.
-	 */
-	public abstract String getRewriting();
-	
-	/**
-	 * 
-	 * @return The size of the rewritten query, in terms of 
-	 *         number of datalog rules
-	 */
-	public abstract int getRewritingSize();
-	// ------------------------------------------- //
-	
-		
-	// ------------- Configuration --------------- //
-	
-	/**
-	 * It turns off the rewriting.
-	 */
-	public abstract void rewritingOFF();
-	
-	/**
-	 * It turns on the rewriting.
-	 */
-	public abstract void rewritingON();
-	// ------------------------------------------- //
+    /**
+     * Executes a query with an optional execution timeout, reporting query results and other execution events to the
+     * supplied {@code Handler} object.
+     *
+     * @param query   query object including the query string and additional information (e.g., timeout, result ignored)
+     *                that may be leveraged for query execution
+     * @param handler handler object where to report query execution events and results
+     */
+    void execute(Query query, Handler handler) throws Exception;
 
-	public abstract void executeWarmUpQuery(String query, int timeout);
-	
-	// **************** END OF Abstract Methods Section ****************** //
-	
-	public Conf getConfiguration(){
-		return configuration;
-	}
+    /**
+     * Releases any resource allocated by the mixer. This method is guaranteed to be called at the end of the evaluation.
+     */
+    void close() throws Exception;
 
-};
+}

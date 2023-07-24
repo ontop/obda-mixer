@@ -1,128 +1,127 @@
 package it.unibz.inf.mixer_main.execution;
 
-import it.unibz.inf.mixer_db_connection.DBMSConnection;
-import it.unibz.inf.mixer_interface.configuration.Conf;
+import com.google.common.base.Charsets;
+import it.unibz.inf.mixer_interface.core.Query;
+import it.unibz.inf.mixer_interface.core.QueryLanguage;
 import it.unibz.inf.mixer_main.utils.QualifiedName;
 import it.unibz.inf.mixer_main.utils.Template;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-public class TemplateQuerySelector {
+public final class TemplateQuerySelector {
 
-    static Logger log = LoggerFactory.getLogger(MixerThread.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TemplateQuerySelector.class);
 
-    private Set<String> executedQueries = new HashSet<>();
-    private String templatesDir;
+    private static final int MAX_FILL_PLACEHOLDERS_ATTEMPTS = 200;
 
-    // Fields to use this class as an iterator
-    private int index;
-    private File[] listOfFiles;
+    private final String[] queryFilenames;
 
-    // Pointers in the database
-    private Map<String, Integer> resultSetPointer = new HashMap<String, Integer>();
+    private final String[] queryTemplates;
 
-    // Connection to the database
-    DBMSConnection db;
+    private final Connection connection;
 
-    // State
-    private int nExecutedTemplateQuery;
+    private final String connectionType;
 
-    // Queries to skip
-    private List<String> forceTimeoutQueries;
+    private final QueryLanguage language;
 
-    public TemplateQuerySelector(Conf configuration, DBMSConnection db) {
-        index = 0;
-        templatesDir = configuration.getTemplatesDir();
+    private final Set<String> generatedQueries = new HashSet<>();
 
-        this.db = db;
+    private final Map<QualifiedName, Integer> resultSetPointer = new HashMap<>(); // Pointers in the database
 
-        // Query templates
-        File folder = new File(templatesDir);
-        listOfFiles = folder.listFiles();
-        Arrays.sort(listOfFiles);
+    private int nExecutedTemplateQuery; // State
 
-        this.nExecutedTemplateQuery = 0;
+    private int index; // Fields to use this class as an iterator
 
-        // Force timeouts
-        this.forceTimeoutQueries = configuration.getForcedTimeouts();
+    public TemplateQuerySelector(String templatesDir, Connection connection, QueryLanguage language) {
+
+        // Check arguments
+        Objects.requireNonNull(templatesDir);
+        Objects.requireNonNull(connection);
+        Objects.requireNonNull(language);
+
+        try {
+            // List and sort query files under specified templates directory
+            String[] filenames = Files.list(Paths.get(templatesDir))
+                    .filter(f -> !Files.isDirectory(f))
+                    .map(p -> p.getFileName().toString())
+                    .sorted()
+                    .toArray(String[]::new);
+
+            // Read the content of query files as string templates
+            String[] templates = new String[filenames.length];
+            for (int i = 0; i < templates.length; ++i) {
+                templates[i] = Files.readString(Paths.get(templatesDir + "/" + filenames[i]), Charsets.UTF_8);
+            }
+
+            // Log loading results
+            LOGGER.info("Loaded {} {} queries", filenames.length, language);
+
+            // Initialize state
+            this.connection = connection;
+            this.connectionType = getConnectionType(connection);
+            this.language = language;
+            this.index = 0;
+            this.nExecutedTemplateQuery = 0;
+            this.queryFilenames = filenames;
+            this.queryTemplates = templates;
+
+        } catch (IOException ex) {
+            // Wrap and propagate
+            throw new UncheckedIOException(ex);
+        }
     }
 
-    public String getCurQueryName() {
-        return listOfFiles[index - 1].getName();
-    }
+    public @Nullable Query nextQuery() {
 
-    public String getNextQuery() {
-
-        if (index >= listOfFiles.length) {
+        // Return null if a query mix has been completed, resetting index so to start a new mix
+        if (index >= queryFilenames.length) {
             index = 0;
             return null;
         }
 
-        while (!listOfFiles[index].isFile()) {
-            ++index;
-            if (index >= listOfFiles.length) {
-                index = 0;
-                return null;
-            }
-        }
-        ;
-
-        String inFile = templatesDir + "/" + listOfFiles[index].getName();
-        String result = null;
-        String queryName = listOfFiles[index].getName();
-
-        if (this.forceTimeoutQueries.contains(queryName)) {
-            // Forcibly timeout the query
-            ++index;
-            return "force-timeout";
-        }
-
-        log.info("Doing query: " + queryName);
-
-        try {
-            BufferedReader in;
-            in = new BufferedReader(new FileReader(inFile));
-
-            StringBuilder queryBuilder = new StringBuilder();
-            String curLine = null;
-
-            while ((curLine = in.readLine()) != null) {
-                queryBuilder.append(curLine + "\n");
-            }
-            in.close();
-
-            Template sparqlQueryTemplate = new Template(queryBuilder.toString());
-            int maxTries = 200;
-            int i = 0;
-            do {
-                fillPlaceholders(sparqlQueryTemplate);
-            }
-            while (i++ < maxTries && sparqlQueryTemplate.getNumPlaceholders() != 0 && executedQueries.contains(sparqlQueryTemplate.getFilled()));
-
-            result = sparqlQueryTemplate.getFilled();
-            executedQueries.add(result);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Retrieve current query ID and template, incrementing the index
+        String queryId = queryFilenames[index];
+        String queryTemplate = queryTemplates[index];
         ++index;
-        return result;
+
+        // Fill placeholders (if any) until an unseen query is generated, or the max number of attempts is reached
+        String queryString = null;
+        List<String> queryPlaceholders = null;
+        Template sparqlQueryTemplate = new Template(queryTemplate);
+        for (int i = 0; i < MAX_FILL_PLACEHOLDERS_ATTEMPTS && (queryString == null || !generatedQueries.add(queryString)); ++i) {
+            fillPlaceholders(sparqlQueryTemplate);
+            queryString = sparqlQueryTemplate.getFilled();
+            queryPlaceholders = IntStream.range(1, sparqlQueryTemplate.getNumPlaceholders() + 1)
+                    .mapToObj(sparqlQueryTemplate::getNthPlaceholder)
+                    .collect(Collectors.toList());
+        }
+
+        // Return a Query object for the selected query ID and filled template
+        return Query.builder(queryString)
+                .withId(queryId)
+                .withPlaceholders(queryPlaceholders)
+                .withLanguage(language)
+                .build();
     }
 
     private void fillPlaceholders(Template sparqlQueryTemplate) {
 
-        MixerThread.log.debug("[mixer-debug] Call fillPlaceholders");
+        LOGGER.debug("[mixer-debug] Call fillPlaceholders");
 
-        Map<Template.PlaceholderInfo, String> mapTIToValue = new HashMap<Template.PlaceholderInfo, String>();
+        Map<Template.PlaceholderInfo, String> mapTIToValue = new HashMap<>();
 
         this.resultSetPointer.clear();
         ++this.nExecutedTemplateQuery;
@@ -130,101 +129,84 @@ public class TemplateQuerySelector {
         if (sparqlQueryTemplate.getNumPlaceholders() == 0) return;
 
         for (int i = 1; i <= sparqlQueryTemplate.getNumPlaceholders(); ++i) {
-
             Template.PlaceholderInfo info = sparqlQueryTemplate.getNthPlaceholderInfo(i);
-
-            String toInsert = null;
-            if (mapTIToValue.containsKey(info)) {
-                toInsert = mapTIToValue.get(info);
-            } else {
-                toInsert = findValueToInsert(info.getQN());
-                mapTIToValue.put(info, toInsert);
-            }
-            toInsert = info.applyQuote(toInsert, info.quote());
-            sparqlQueryTemplate.setNthPlaceholder(i, toInsert);
+            String value = mapTIToValue.computeIfAbsent(info, in -> findValueToInsert(in.getQN()));
+            String valueQuoted = info.applyQuoting(value);
+            sparqlQueryTemplate.setNthPlaceholder(i, valueQuoted);
         }
     }
 
     /**
      * Tries to look in the same row, as long as possible
-     *
-     * @param qN
-     * @return
      */
     private String findValueToInsert(QualifiedName qN) {
 
-        String result = null;
+        // Compute position (pointer) in value list obtained from table
         int pointer = 0;
-
-        if (resultSetPointer.containsKey(qN.toString())) {
-            pointer = resultSetPointer.get(qN.toString());
-            resultSetPointer.put(qN.toString(), pointer + 1);
+        if (resultSetPointer.containsKey(qN)) {
+            pointer = resultSetPointer.get(qN);
+            resultSetPointer.put(qN, pointer + 1);
         } else {
-            resultSetPointer.put(qN.toString(), 1);
+            resultSetPointer.put(qN, 1);
         }
-
         pointer += this.nExecutedTemplateQuery;
-        String query = "SELECT " + "*" + " FROM "
-                + qN.getFirst() + " WHERE " + qN.getSecond() + " IS NOT NULL "
-                + " ORDER BY 1 "
-                + " LIMIT " + pointer + ", 1";
 
-        if (db.getJdbcConnector().equals("jdbc:postgresql")) {
-            query = "SELECT " +
-                    "*" +
-                    " FROM \"" + qN.getFirst() + "\" WHERE \""
-                    + qN.getSecond() + "\" IS NOT NULL "
-                    + " ORDER BY 1 "
-                    + " LIMIT 1" +
-                    " OFFSET " + pointer+ ";";
-        }
-
-        Connection conn = db.getConnection();
-        PreparedStatement stmt = null;
-
-        try {
-            stmt = conn.prepareStatement(query);
-        } catch (SQLException e1) {
-            e1.printStackTrace();
-        }
-        try {
-            ResultSet rs = stmt.executeQuery();
-            if (!rs.next()) {
-                stmt.close();
-                query = "SELECT  " + "*" + " FROM "
-                        + qN.getFirst()
-                        +" ORDER BY 1 "
-                        + " LIMIT " + 0 + ", 1";
-                resultSetPointer.put(qN.toString(), 1);
-
-                if (db.getJdbcConnector().equals("jdbc:postgresql")) {
-                    query = "SELECT  \"" +
-                            qN.getSecond() +
-                            "\" FROM \"" + qN.getFirst() + "\" WHERE \""
-                            + qN.getSecond() + "\" IS NOT NULL "
-                            + " ORDER BY 1 "
-                            + " LIMIT 1"
-                            + " OFFSET " + 0 + ";";
-                }
-
-                stmt = conn.prepareStatement(query);
-
-                rs = stmt.executeQuery();
-                if (!rs.next()) {
-                    String msg = "Unexpected Problem: No result to fill placeholder. Contact the developers.";
-                    MixerMain.closeEverything(msg);
-                }
+        // Try getting value at position, or at 0 in case there is no such value
+        while (true) {
+            // Build the SQL query to fetch possible placeholder values, depending on the DBMS type
+            // NOTE: in principle it would be enough to SELECT the 'second' field instead of '*', but in that case
+            // the DBMS may fetch it from some index instead of iterating over table rows, with implications on selected
+            // values and whether selected placeholders fillers will actually jointly match a row in the referenced table
+            String query;
+            if (connectionType.equals("postgresql")) {
+                query = ""
+                        + "SELECT *\n"
+                        + "FROM \"" + qN.getFirst() + "\"\n"
+                        + "WHERE \"" + qN.getSecond() + "\" IS NOT NULL\n"
+                        + "ORDER BY 1 "
+                        + "LIMIT 1 OFFSET " + pointer;
+            } else {
+                query = ""
+                        + "SELECT *\n"
+                        + "FROM " + qN.getFirst() + "\n"
+                        + "WHERE " + qN.getSecond() + " IS NOT NULL\n"
+                        + "ORDER BY 1\n"
+                        + "LIMIT " + pointer + ", 1";
             }
-            result = rs.getString(qN.getSecond());
-        } catch (SQLException e) {
+
+            // Fetch the value, handling the case it's not available
             try {
-                conn.close();
-            } catch (SQLException e1) {
-                String msg = "Could not close Connection.";
-                MixerMain.closeEverything(msg, e1);
+                try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        if (rs.next()) {
+                            String value = rs.getString(qN.getSecond());
+                            LOGGER.trace("Placeholder for {} = {} via query:\n{}", qN, value, query);
+                            return value;
+                        } else if (pointer > 0) {
+                            pointer = 0; // try seeking back to begin of value list
+                            resultSetPointer.put(qN, 1);
+                        } else {
+                            throw new RuntimeException("Unexpected Problem: No result to fill placeholder. "
+                                    + "Is the referenced table non-empty?");
+                        }
+                    }
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException("Could not fetch placeholder values from DB: " + ex.getMessage(), ex);
             }
-            MixerMain.closeEverything("Error while executing the SQL statement.", e);
         }
-        return result;
     }
-};
+
+    private static String getConnectionType(Connection connection) {
+        try {
+            // Retrieve the connection type as X from JDBC URL 'jdbc:X:...'
+            String url = connection.getMetaData().getURL();
+            int start = "jdbc:".length();
+            int end = url.indexOf(':', start);
+            return url.substring(start, end).toLowerCase();
+        } catch (SQLException ex) {
+            throw new IllegalArgumentException("Could not obtain the connection URL", ex);
+        }
+    }
+
+}

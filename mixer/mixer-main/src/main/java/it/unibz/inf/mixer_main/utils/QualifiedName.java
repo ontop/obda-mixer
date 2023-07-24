@@ -20,9 +20,11 @@ package it.unibz.inf.mixer_main.utils;
  * #L%
  */
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class QualifiedName {
+@SuppressWarnings("unused")
+public final class QualifiedName implements Serializable, Comparable<QualifiedName> {
 
     private final String first;
 
@@ -45,6 +47,15 @@ public class QualifiedName {
 
     public String getSecond() {
         return second;
+    }
+
+    @Override
+    public int compareTo(QualifiedName other) {
+        int result = first.compareTo(other.first);
+        if (result == 0) {
+            result = second.compareTo(other.second);
+        }
+        return result;
     }
 
     @Override
