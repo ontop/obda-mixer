@@ -1,4 +1,4 @@
-package it.unbz.inf.utils.mixer_shell.utils.utils_datatypes.string_manipulation;
+package it.unibz.inf.mixer_shell.core;
 
 public class Template{
 	private String[] splits;
