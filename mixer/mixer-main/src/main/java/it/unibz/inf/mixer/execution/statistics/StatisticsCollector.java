@@ -65,13 +65,14 @@ public abstract class StatisticsCollector {
         Objects.requireNonNull(value);
         Objects.requireNonNull(merger);
         doSet(attribute, checkAndNormalizeValue(value), (oldValue, newValue) -> {
-            if (oldValue instanceof List<?> && !(newValue instanceof List<?>)
-                    || oldValue instanceof Map<?, ?> && !(newValue instanceof Map<?, ?>)
-                    || oldValue.getClass() != newValue.getClass()) {
+            if (oldValue.getClass() == newValue.getClass()
+                    || oldValue instanceof List<?> && newValue instanceof List<?>
+                    || oldValue instanceof Map<?, ?> && newValue instanceof Map<?, ?>) {
+                @SuppressWarnings("unchecked") T mergedValue = merger.apply((T) oldValue, (T) newValue);
+                return checkAndNormalizeValue(mergedValue);
+            } else {
                 throw new IllegalArgumentException("Unmergeable incompatible values " + oldValue + ", " + newValue);
             }
-            @SuppressWarnings("unchecked") T mergedValue = merger.apply((T) oldValue, (T) newValue);
-            return checkAndNormalizeValue(mergedValue);
         });
         return this;
     }
