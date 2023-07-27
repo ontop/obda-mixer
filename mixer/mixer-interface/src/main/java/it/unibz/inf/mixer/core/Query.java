@@ -18,6 +18,8 @@ public final class Query implements Serializable {
 
     private final List<String> placeholders;
 
+    private final @Nullable String executionId;
+
     private final String string;
 
     private final QueryLanguage language;
@@ -31,6 +33,7 @@ public final class Query implements Serializable {
     private Query(Builder builder) {
         this.id = builder.id;
         this.placeholders = builder.placeholders;
+        this.executionId = builder.executionId;
         this.string = builder.string;
         this.language = builder.language;
         this.timeout = builder.timeout;
@@ -44,6 +47,10 @@ public final class Query implements Serializable {
 
     public List<String> getPlaceholders() {
         return placeholders;
+    }
+
+    public @Nullable String getExecutionId() {
+        return executionId;
     }
 
     public String getString() {
@@ -75,15 +82,19 @@ public final class Query implements Serializable {
             return false;
         }
         Query other = (Query) object;
-        return Objects.equals(string, other.string)
+        return Objects.equals(id, other.id)
+                && placeholders.equals(other.placeholders)
+                && Objects.equals(executionId, other.executionId)
+                && string.equals(other.string)
                 && language == other.language
                 && timeout == other.timeout
+                && resultSorted == other.resultSorted
                 && resultIgnored == other.resultIgnored;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(string, language, timeout, resultIgnored);
+        return Objects.hash(id, placeholders, executionId, string, language, timeout, resultSorted, resultIgnored);
     }
 
     public String toString(boolean verbose) {
@@ -91,8 +102,12 @@ public final class Query implements Serializable {
             return string;
         } else {
             String cs = language.getCommentString();
-            return cs + " mixer:language=" + language + "\n" +
+            return cs + " mixer:id=" + id +
+                    cs + " mixer:placeholders=" + placeholders +
+                    cs + " mixer:executionId=" + placeholders +
+                    cs + " mixer:language=" + language + "\n" +
                     cs + " mixer:timeout=" + timeout + "\n" +
+                    cs + " mixer:resultSorted=" + resultSorted + "\n" +
                     cs + " mixer:resultIgnored=" + resultIgnored + "\n" +
                     string;
         }
@@ -119,6 +134,8 @@ public final class Query implements Serializable {
         private @Nullable String id;
 
         private List<String> placeholders = Collections.emptyList();
+
+        private @Nullable String executionId;
 
         private String string;
 
@@ -155,6 +172,11 @@ public final class Query implements Serializable {
                     ? Collections.emptyList()
                     : List.copyOf(placeholders instanceof Collection<?> ? (Collection<String>) placeholders
                     : StreamSupport.stream(placeholders.spliterator(), false).collect(Collectors.toList()));
+            return this;
+        }
+
+        public Builder withExecutionId(@Nullable String executionId) {
+            this.executionId = executionId;
             return this;
         }
 

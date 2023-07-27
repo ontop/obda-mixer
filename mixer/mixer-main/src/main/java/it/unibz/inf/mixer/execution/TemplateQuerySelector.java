@@ -1,10 +1,14 @@
 package it.unibz.inf.mixer.execution;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Table;
 import it.unibz.inf.mixer.core.Query;
 import it.unibz.inf.mixer.core.QueryLanguage;
-import it.unibz.inf.mixer.execution.utils.QualifiedName;
 import it.unibz.inf.mixer.execution.utils.Template;
+import it.unibz.inf.mixer.execution.utils.Template.PlaceholderInfo;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +21,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -39,9 +46,7 @@ public final class TemplateQuerySelector {
 
     private final Set<String> generatedQueries = new HashSet<>();
 
-    private final Map<QualifiedName, Integer> resultSetPointer = new HashMap<>(); // Pointers in the database
-
-    private int nExecutedTemplateQuery; // State
+    private final Table<String, String, Integer> queryPointers = HashBasedTable.create();
 
     private int index; // Fields to use this class as an iterator
 
@@ -74,7 +79,6 @@ public final class TemplateQuerySelector {
             this.connectionType = getConnectionType(connection);
             this.language = language;
             this.index = 0;
-            this.nExecutedTemplateQuery = 0;
             this.queryFilenames = filenames;
             this.queryTemplates = templates;
 
@@ -102,7 +106,7 @@ public final class TemplateQuerySelector {
         List<String> queryPlaceholders = null;
         Template sparqlQueryTemplate = new Template(queryTemplate);
         for (int i = 0; i < MAX_FILL_PLACEHOLDERS_ATTEMPTS && (queryString == null || !generatedQueries.add(queryString)); ++i) {
-            fillPlaceholders(sparqlQueryTemplate);
+            fillPlaceholders(queryId, sparqlQueryTemplate);
             queryString = sparqlQueryTemplate.getFilled();
             queryPlaceholders = IntStream.range(1, sparqlQueryTemplate.getNumPlaceholders() + 1)
                     .mapToObj(sparqlQueryTemplate::getNthPlaceholder)
@@ -117,83 +121,91 @@ public final class TemplateQuerySelector {
                 .build();
     }
 
-    private void fillPlaceholders(Template sparqlQueryTemplate) {
+    private void fillPlaceholders(String queryId, Template sparqlQueryTemplate) {
+        try {
+            // List the placeholders in the query
+            LOGGER.debug("[mixer-debug] Call fillPlaceholders");
+            List<PlaceholderInfo> placeholders = IntStream.range(1, sparqlQueryTemplate.getNumPlaceholders() + 1)
+                    .mapToObj(sparqlQueryTemplate::getNthPlaceholderInfo)
+                    .collect(Collectors.toList());
 
-        LOGGER.debug("[mixer-debug] Call fillPlaceholders");
+            // Iterate over the tables these placeholders refer to
+            for (String table : placeholders.stream().map(p -> p.getQN().getFirst()).collect(Collectors.toSet())) {
 
-        Map<Template.PlaceholderInfo, String> mapTIToValue = new HashMap<>();
+                // Extract the distinct IDs (e.g., 1, 2, ...) and columns referred by placeholders for current table
+                Set<Integer> ids = Sets.newHashSet();
+                Set<String> cols = Sets.newHashSet();
+                placeholders.stream().filter(p -> p.getQN().getFirst().equals(table)).forEach(p -> {
+                    ids.add(p.getId());
+                    cols.add(p.getQN().getSecond());
+                });
 
-        this.resultSetPointer.clear();
-        ++this.nExecutedTemplateQuery;
+                // Define the parameterized query over the table to fetch placeholder values, enforcing these are not
+                // null and extracting as many rows as there are distinct placeholder IDs
+                String query;
+                if (connectionType.equals("postgresql")) {
+                    query = ""
+                            + "SELECT *\n"
+                            + "FROM \"" + table + "\"\n"
+                            + "WHERE " + cols.stream().map(c -> "\"" + c + "\" IS NOT NULL").collect(Collectors.joining(" AND ")) + "\n"
+                            + "ORDER BY 1 "
+                            + "LIMIT " + ids.size() + " OFFSET ?";
+                } else {
+                    query = ""
+                            + "SELECT *\n"
+                            + "FROM " + table + "\n"
+                            + "WHERE " + cols.stream().map(c -> c + " IS NOT NULL").collect(Collectors.joining(" AND ")) + "\n"
+                            + "ORDER BY 1\n"
+                            + "LIMIT ?, " + ids.size();
+                }
 
-        if (sparqlQueryTemplate.getNumPlaceholders() == 0) return;
+                // Resume iterating over query results from where we left before (if first time, start at offset 0)
+                int pointer = MoreObjects.firstNonNull(queryPointers.get(queryId, table), 0);
+                queryPointers.put(queryId, table, pointer + ids.size());
 
-        for (int i = 1; i <= sparqlQueryTemplate.getNumPlaceholders(); ++i) {
-            Template.PlaceholderInfo info = sparqlQueryTemplate.getNthPlaceholderInfo(i);
-            String value = mapTIToValue.computeIfAbsent(info, in -> findValueToInsert(in.getQN()));
-            String valueQuoted = info.applyQuoting(value);
-            sparqlQueryTemplate.setNthPlaceholder(i, valueQuoted);
-        }
-    }
+                // Fetch the values, iterating until placeholders for all IDs for the table have been filled
+                while (!ids.isEmpty()) {
+                    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+                        stmt.setInt(1, pointer);
+                        try (ResultSet rs = stmt.executeQuery()) {
+                            while (!ids.isEmpty()) {
 
-    /**
-     * Tries to look in the same row, as long as possible
-     */
-    private String findValueToInsert(QualifiedName qN) {
+                                // Get the current ID to be served by this row of results
+                                int id = ids.iterator().next();
 
-        // Compute position (pointer) in value list obtained from table
-        int pointer = 0;
-        if (resultSetPointer.containsKey(qN)) {
-            pointer = resultSetPointer.get(qN);
-            resultSetPointer.put(qN, pointer + 1);
-        } else {
-            resultSetPointer.put(qN, 1);
-        }
-        pointer += this.nExecutedTemplateQuery;
+                                // Handle three cases based on whether there is a row of results or not
+                                if (rs.next()) {
+                                    // (1) data present, fill placeholders for this <table, id> combination and move on
+                                    for (int i = 0; i < placeholders.size(); ++i) {
+                                        PlaceholderInfo p = placeholders.get(i);
+                                        if (p.getQN().getFirst().equals(table) && p.getId() == id) {
+                                            String value = rs.getString(p.getQN().getSecond());
+                                            String valueQuoted = p.applyQuoting(value);
+                                            sparqlQueryTemplate.setNthPlaceholder(i + 1, valueQuoted);
+                                        }
+                                    }
+                                    ids.remove(id);
 
-        // Try getting value at position, or at 0 in case there is no such value
-        while (true) {
-            // Build the SQL query to fetch possible placeholder values, depending on the DBMS type
-            // NOTE: in principle it would be enough to SELECT the 'second' field instead of '*', but in that case
-            // the DBMS may fetch it from some index instead of iterating over table rows, with implications on selected
-            // values and whether selected placeholders fillers will actually jointly match a row in the referenced table
-            String query;
-            if (connectionType.equals("postgresql")) {
-                query = ""
-                        + "SELECT *\n"
-                        + "FROM \"" + qN.getFirst() + "\"\n"
-                        + "WHERE \"" + qN.getSecond() + "\" IS NOT NULL\n"
-                        + "ORDER BY 1 "
-                        + "LIMIT 1 OFFSET " + pointer;
-            } else {
-                query = ""
-                        + "SELECT *\n"
-                        + "FROM " + qN.getFirst() + "\n"
-                        + "WHERE " + qN.getSecond() + " IS NOT NULL\n"
-                        + "ORDER BY 1\n"
-                        + "LIMIT " + pointer + ", 1";
-            }
+                                } else if (pointer > 0) {
+                                    // (2) at end of possible non-empty query results: rewind to beginning & repeat
+                                    pointer = 0;
+                                    queryPointers.put(queryId, table, ids.size());
+                                    break;
 
-            // Fetch the value, handling the case it's not available
-            try {
-                try (PreparedStatement stmt = connection.prepareStatement(query)) {
-                    try (ResultSet rs = stmt.executeQuery()) {
-                        if (rs.next()) {
-                            String value = rs.getString(qN.getSecond());
-                            LOGGER.trace("Placeholder for {} = {} via query:\n{}", qN, value, query);
-                            return value;
-                        } else if (pointer > 0) {
-                            pointer = 0; // try seeking back to begin of value list
-                            resultSetPointer.put(qN, 1);
-                        } else {
-                            throw new RuntimeException("Unexpected Problem: No result to fill placeholder. "
-                                    + "Is the referenced table non-empty?");
+                                } else {
+                                    // (3) there are no possible query results: fail reporting the issue
+                                    throw new RuntimeException("Unexpected problem: no data to fill placeholders of "
+                                            + "query " + queryId + " referring to table " + table);
+                                }
+                            }
                         }
                     }
                 }
-            } catch (SQLException ex) {
-                throw new RuntimeException("Could not fetch placeholder values from DB: " + ex.getMessage(), ex);
             }
+
+        } catch (SQLException ex) {
+            // Cast any exception to a runtime one, adding a context message
+            throw new RuntimeException("Could not fetch placeholder values from DB: " + ex.getMessage(), ex);
         }
     }
 

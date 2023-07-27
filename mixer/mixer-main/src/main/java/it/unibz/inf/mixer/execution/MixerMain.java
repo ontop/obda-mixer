@@ -21,6 +21,7 @@ package it.unibz.inf.mixer.execution;
  */
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import it.unibz.inf.mixer.core.Mixer;
 import it.unibz.inf.mixer.core.Mixers;
@@ -43,7 +44,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class MixerMain {
 
@@ -51,12 +51,11 @@ public class MixerMain {
 
     // Mixer type and config
     private final String mixerType = MixerOptions.optMode.getValue();
-    @SuppressWarnings("ConstantConditions")
     private final Map<String, String> mixerConfig = Option.list().stream()
-            .filter(o -> o.getName().startsWith("--" + MixerOptions.optMode.getValue()))
-            .collect(Collectors.toMap(
+            .filter(o -> o.getValue() != null && o.getName().startsWith("--" + MixerOptions.optMode.getValue()))
+            .collect(ImmutableMap.toImmutableMap(
                     o -> o.getConfigKey().substring(MixerOptions.optMode.getValue().length() + 1),
-                    o -> o.getValue() == null ? null : o.getValue().toString()));
+                    o -> o.getValue().toString()));
 
     // Query templates
     private final String templatesDir = MixerOptions.optQueriesDir.getValue();
@@ -74,6 +73,8 @@ public class MixerMain {
     private final int numRuns = MixerOptions.optNumRuns.getValue();
     private final int timeout = MixerOptions.optTimeout.getValue();
     private final @Nullable String forcedTimeouts = MixerOptions.optForceTimeouts.getValue();
+    private final int retryAttempts = MixerOptions.optRetryAttempts.getValue();
+    private final Pattern retryCondition = Pattern.compile(MixerOptions.optRetryCondition.getValue());
 
     // Log file handling
     private final String logFile = MixerOptions.optLogFile.getValue();
@@ -111,7 +112,8 @@ public class MixerMain {
                 for (int i = 0; i < numClients; ++i) {
                     TemplateQuerySelector tqs = new TemplateQuerySelector(templatesDir, connect(), language);
                     MixerThread mT = new MixerThread(mixer, tqs, statsMgr, i, numWarmUps, numRuns, timeout,
-                            forcedTimeouts == null ? null : Arrays.asList(forcedTimeouts.split("\\s+")));
+                            forcedTimeouts == null ? null : Arrays.asList(forcedTimeouts.split("\\s+")),
+                            retryAttempts, retryCondition);
                     threads.add(mT);
                 }
 

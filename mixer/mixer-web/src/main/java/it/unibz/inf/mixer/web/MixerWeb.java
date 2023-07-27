@@ -4,30 +4,36 @@ import it.unibz.inf.mixer.core.AbstractMixer;
 import it.unibz.inf.mixer.core.Handler;
 import it.unibz.inf.mixer.core.Query;
 import it.unibz.inf.mixer.core.QueryLanguage;
+import org.jspecify.annotations.Nullable;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class MixerWeb extends AbstractMixer {
 
     private String serviceUrl;
 
+    private @Nullable Path responsePath;
+
     @Override
     public void init(Map<String, String> configuration) throws Exception {
         super.init(configuration);
         this.serviceUrl = Objects.requireNonNull(getConfiguration().get("url"), "No service URL supplied");
+        this.responsePath = Optional.ofNullable(getConfiguration().get("response-path")).map(Paths::get).orElse(null);
     }
 
     @Override
@@ -49,8 +55,8 @@ public final class MixerWeb extends AbstractMixer {
 
             // Execute the query and wait for response stream (null on timeout)
             handler.onSubmit();
-            InputStream resultStream = qe.submit();
-            if (resultStream == null) {
+            InputStream responseStream = qe.submit();
+            if (responseStream == null) {
                 return; // timed out
             }
             handler.onStartResults(); // not timed out
@@ -61,12 +67,29 @@ public final class MixerWeb extends AbstractMixer {
                 return;
             }
 
+            // Save the raw response body, if configured
+            if (responsePath != null && query.getExecutionId() != null) {
+                // Compute the filename where to store the raw response body
+                String filename = query.getExecutionId()
+                        .replaceAll("[^a-zA-Z0-9]+", "_")
+                        .replaceAll("_+", "_")
+                        .replaceAll("^_|_$", "");
+                Path responseFile = responsePath.resolve(filename + ".xml");
+
+                // Buffer the response to a byte[], save it to file, and switch the response stream to the byte[]
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                responseStream.transferTo(bos);
+                byte[] responseBytes = bos.toByteArray();
+                Files.write(responseFile, responseBytes);
+                responseStream = new ByteArrayInputStream(responseBytes); // reply response through SAX parser
+            }
+
             // Otherwise process results using SAX and a SAX handler reporting to the received Handler object
             SAXParserFactory saxFactory = SAXParserFactory.newInstance();
             saxFactory.setNamespaceAware(false);
             SAXParser saxParser = saxFactory.newSAXParser();
             QueryResultsHandler saxHandler = new QueryResultsHandler(handler);
-            saxParser.parse(resultStream, saxHandler);
+            saxParser.parse(responseStream, saxHandler);
         }
     }
 

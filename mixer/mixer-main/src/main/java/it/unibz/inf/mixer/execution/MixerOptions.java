@@ -100,6 +100,21 @@ public final class MixerOptions {
             .withCategory("EXECUTION")
             .build();
 
+    public static final Option<Integer> optRetryAttempts = Option.builder("--retry-attempts", Integer.class)
+            .withConfigKey("retry-attempts")
+            .withDescription("number of query retry attempts (when error matches the retry condition)")
+            .withCategory("EXECUTION")
+            .withDefaultValue(0)
+            .withAllowedValues(Range.atLeast(0))
+            .build();
+
+    public static final Option<String> optRetryCondition = Option.builder("--retry-condition", String.class)
+            .withConfigKey("retry-condition")
+            .withDescription("regex (Java syntax) matching query error messages for which to retry execution")
+            .withCategory("EXECUTION")
+            .withDefaultValue(".*")
+            .build();
+
     // Log file handling
 
     public static final Option<String> optLogFile = Option.builder("--log-file", String.class)

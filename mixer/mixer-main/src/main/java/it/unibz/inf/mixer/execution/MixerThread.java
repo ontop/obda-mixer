@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
+import java.util.regex.Pattern;
 
 @SuppressWarnings("UnstableApiUsage")
 public final class MixerThread extends Thread {
@@ -65,8 +66,13 @@ public final class MixerThread extends Thread {
 
     private final Set<String> forceTimeoutQueries; // Queries to skip, treating them as timed out
 
+    private final int retryAttempts;
+
+    private final Pattern retryCondition;
+
     public MixerThread(Mixer mixer, TemplateQuerySelector tqs, StatisticsManager statMgr, int clientId,
-                       int numWarmUps, int numRuns, int timeout, @Nullable Iterable<String> forceTimeoutQueries) {
+                       int numWarmUps, int numRuns, int timeout, @Nullable Iterable<String> forceTimeoutQueries,
+                       int retryAttempts, @Nullable Pattern retryCondition) {
 
         // Check arguments
         Objects.requireNonNull(mixer);
@@ -76,6 +82,7 @@ public final class MixerThread extends Thread {
         Preconditions.checkArgument(numWarmUps >= 0);
         Preconditions.checkArgument(numRuns >= 0);
         Preconditions.checkArgument(timeout >= 0);
+        Preconditions.checkArgument(retryAttempts >= 0);
 
         // Initialize state
         this.mixer = mixer;
@@ -88,6 +95,8 @@ public final class MixerThread extends Thread {
         this.forceTimeoutQueries = forceTimeoutQueries != null
                 ? ImmutableSet.copyOf(forceTimeoutQueries)
                 : ImmutableSet.of();
+        this.retryAttempts = retryAttempts;
+        this.retryCondition = retryCondition != null ? retryCondition : Pattern.compile(".*");
     }
 
     public void run() {
@@ -117,6 +126,7 @@ public final class MixerThread extends Thread {
 
                 // Edit the query to set timeout, mark results as ignored, and include scope as query string comment
                 Query queryWithScope = query.toBuilder()
+                        .withExecutionId(queryScope.toString())
                         .withString(query.getLanguage().getCommentString() + " " + queryScope + "\n" + query.getString())
                         .withTimeout(timeout)
                         .withResultIgnored(true)
@@ -185,6 +195,7 @@ public final class MixerThread extends Thread {
 
                 // Edit query to set timeout and include scope as query string comment (to intercept it in server logs)
                 Query queryWithScope = query.toBuilder()
+                        .withExecutionId(queryScope.toString())
                         .withString(query.getLanguage().getCommentString() + " " + queryScope + "\n" + query.getString())
                         .withTimeout(timeout)
                         .build();
@@ -199,17 +210,42 @@ public final class MixerThread extends Thread {
                 // Otherwise, log query going to be executed
                 LOGGER.info("Test query:\n{}", queryWithScope);
 
-                // Run the query and update statistics
-                QueryExecutionHandler handler = new QueryExecutionHandler(queryWithScope.isResultSorted());
+                // Keep track of # of attempts, last exception and handler used to run the query
+                int attempts = 0;
                 Throwable exception = null;
-                try {
-                    mixer.execute(queryWithScope, handler);
-                } catch (Throwable ex) {
-                    failedQueries.put(queryScope.toString(), queryWithScope.toString(true));
-                    LOGGER.warn("Test query execution failed: " + ex.getMessage() + "\n" + queryWithScope, ex);
-                    exception = ex;
+                QueryExecutionHandler handler;
+
+                // Try the query multiple times based on configuration
+                while (true) {
+                    handler = new QueryExecutionHandler(queryWithScope.isResultSorted());
+                    ++attempts;
+                    try {
+                        mixer.execute(queryWithScope, handler);
+                    } catch (Throwable ex) {
+                        exception = ex;
+                        if (attempts < 1 + retryAttempts) { // original attempt + retry attempts
+                            StringWriter w = new StringWriter();
+                            ex.printStackTrace(new PrintWriter(w));
+                            String exStr = w.toString();
+                            if (retryCondition.matcher(exStr).find()) {
+                                // Handler discarded, query statistics not updated, query will be retried
+                                LOGGER.warn("Test query failed, will retry: " + ex.getMessage(), ex);
+                                continue;
+                            }
+                        }
+                    }
+                    break;
                 }
+
+                // Update query statistics
                 handler.complete(queryStats, exception, timeout);
+                queryStats.set("attempts", attempts);
+
+                // Log any failure
+                if (exception != null) {
+                    failedQueries.put(queryScope.toString(), queryWithScope.toString(true));
+                    LOGGER.warn("Test query failed: " + exception.getMessage() + "\n" + queryWithScope, exception);
+                }
 
                 // Aggregate query statistics into mix statistics
                 aggregate(mixStats, queryStats);
