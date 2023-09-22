@@ -108,6 +108,14 @@ public final class MixerOptions {
             .withAllowedValues(Range.atLeast(0))
             .build();
 
+    public static final Option<Integer> optRetryWaitTime = Option.builder("--retry-wait-time", Integer.class)
+            .withConfigKey("retry-wait-time")
+            .withDescription("time to wait for before retrying a failed query, in seconds")
+            .withCategory("EXECUTION")
+            .withDefaultValue(0)
+            .withAllowedValues(Range.atLeast(0))
+            .build();
+
     public static final Option<String> optRetryCondition = Option.builder("--retry-condition", String.class)
             .withConfigKey("retry-condition")
             .withDescription("regex (Java syntax) matching query error messages for which to retry execution")

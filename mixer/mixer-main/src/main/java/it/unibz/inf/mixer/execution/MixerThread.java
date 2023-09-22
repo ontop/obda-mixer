@@ -68,11 +68,13 @@ public final class MixerThread extends Thread {
 
     private final int retryAttempts;
 
+    private final int retryWaitTime;
+
     private final Pattern retryCondition;
 
     public MixerThread(Mixer mixer, TemplateQuerySelector tqs, StatisticsManager statMgr, int clientId,
                        int numWarmUps, int numRuns, int timeout, @Nullable Iterable<String> forceTimeoutQueries,
-                       int retryAttempts, @Nullable Pattern retryCondition) {
+                       int retryAttempts, @Nullable Integer retryWaitTime, @Nullable Pattern retryCondition) {
 
         // Check arguments
         Objects.requireNonNull(mixer);
@@ -96,6 +98,7 @@ public final class MixerThread extends Thread {
                 ? ImmutableSet.copyOf(forceTimeoutQueries)
                 : ImmutableSet.of();
         this.retryAttempts = retryAttempts;
+        this.retryWaitTime = retryWaitTime != null && retryWaitTime > 0 ? retryWaitTime : 0;
         this.retryCondition = retryCondition != null ? retryCondition : Pattern.compile(".*");
     }
 
@@ -222,17 +225,27 @@ public final class MixerThread extends Thread {
                     try {
                         mixer.execute(queryWithScope, handler);
                     } catch (Throwable ex) {
-                        exception = ex;
                         if (attempts < 1 + retryAttempts) { // original attempt + retry attempts
                             StringWriter w = new StringWriter();
                             ex.printStackTrace(new PrintWriter(w));
                             String exStr = w.toString();
                             if (retryCondition.matcher(exStr).find()) {
                                 // Handler discarded, query statistics not updated, query will be retried
-                                LOGGER.warn("Test query failed, will retry: " + ex.getMessage(), ex);
-                                continue;
+                                queryWithScope = queryWithScope.toBuilder()
+                                        .withString(query.getLanguage().getCommentString() + " retry attempt "
+                                                + attempts + "\n" + query.getString())
+                                        .build();
+                                LOGGER.warn("Test query failed, will retry after " + retryWaitTime + "s: " + ex.getMessage(), ex);
+                                try {
+                                    //noinspection BusyWait
+                                    Thread.sleep(retryWaitTime * 1000L);
+                                    continue;
+                                } catch (InterruptedException ex2) {
+                                    Thread.currentThread().interrupt(); // restore interrupted state and end retry loop
+                                }
                             }
                         }
+                        exception = ex;
                     }
                     break;
                 }

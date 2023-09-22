@@ -74,6 +74,7 @@ public class MixerMain {
     private final int timeout = MixerOptions.optTimeout.getValue();
     private final @Nullable String forcedTimeouts = MixerOptions.optForceTimeouts.getValue();
     private final int retryAttempts = MixerOptions.optRetryAttempts.getValue();
+    private final int retryWaitTime = MixerOptions.optRetryWaitTime.getValue();
     private final Pattern retryCondition = Pattern.compile(MixerOptions.optRetryCondition.getValue());
 
     // Log file handling
@@ -113,7 +114,7 @@ public class MixerMain {
                     TemplateQuerySelector tqs = new TemplateQuerySelector(templatesDir, connect(), language);
                     MixerThread mT = new MixerThread(mixer, tqs, statsMgr, i, numWarmUps, numRuns, timeout,
                             forcedTimeouts == null ? null : Arrays.asList(forcedTimeouts.split("\\s+")),
-                            retryAttempts, retryCondition);
+                            retryAttempts, retryWaitTime, retryCondition);
                     threads.add(mT);
                 }
 
