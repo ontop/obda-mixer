@@ -197,9 +197,10 @@ public final class MixerThread extends Thread {
                         .asLong()), 36));
 
                 // Edit query to set timeout and include scope as query string comment (to intercept it in server logs)
+                String queryString = query.getLanguage().getCommentString() + " " + queryScope + "\n" + query.getString();
                 Query queryWithScope = query.toBuilder()
                         .withExecutionId(queryScope.toString())
-                        .withString(query.getLanguage().getCommentString() + " " + queryScope + "\n" + query.getString())
+                        .withString(queryString)
                         .withTimeout(timeout)
                         .build();
 
@@ -210,16 +211,15 @@ public final class MixerThread extends Thread {
                     continue;
                 }
 
-                // Otherwise, log query going to be executed
-                LOGGER.info("Test query:\n{}", queryWithScope);
-
-                // Keep track of # of attempts, last exception and handler used to run the query
+                // Otherwise, proceed keeping track of # of attempts, last exception and handler used to run the query
                 int attempts = 0;
                 Throwable exception = null;
                 QueryExecutionHandler handler;
 
                 // Try the query multiple times based on configuration
                 while (true) {
+                    // Log query going to be executed, then execute it
+                    LOGGER.info("Test query:\n{}", queryWithScope);
                     handler = new QueryExecutionHandler(queryWithScope.isResultSorted());
                     ++attempts;
                     try {
@@ -232,8 +232,8 @@ public final class MixerThread extends Thread {
                             if (retryCondition.matcher(exStr).find()) {
                                 // Handler discarded, query statistics not updated, query will be retried
                                 queryWithScope = queryWithScope.toBuilder()
-                                        .withString(query.getLanguage().getCommentString() + " retry attempt "
-                                                + attempts + "\n" + query.getString())
+                                        .withString(queryWithScope.getLanguage().getCommentString()
+                                                + " retry attempt " + attempts + "\n" + queryString)
                                         .build();
                                 LOGGER.warn("Test query failed, will retry after " + retryWaitTime + "s: " + ex.getMessage(), ex);
                                 try {

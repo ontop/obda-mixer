@@ -230,14 +230,29 @@ public final class StatisticsManager {
         // Setup the regex-based function to detect scopes in input lines matching the supplied markers
         Function<String, List<StatisticsScope>> extractor = StatisticsScope.fromStringWithMarkers(markers);
 
-        // Track statistics about processed lines / attributes
-        var numLine = new AtomicInteger();
+        // Define a record class tracking a line along with its number in the file
+        class NumberedLine {
+
+            final int number;
+
+            final String line;
+
+            NumberedLine(int number, String line) {
+                this.number = number;
+                this.line = line;
+            }
+
+        }
+
+        // Track lines to import and statistics about processed lines / attributes
+        var linesToImport = new HashMap<StatisticsScope, NumberedLine>();
+        var numLines = new AtomicInteger();
         var numLinesImported = new AtomicInteger();
         var numLinesDiscarded = new AtomicInteger();
         var numAttrsImported = new AtomicInteger();
         var numAttrsDiscarded = new AtomicInteger();
 
-        // Process the input one line at a time until stream completion
+        // Process the input one line at a time until stream completion, collecting the lines to import later
         while (true) {
 
             // Read the next line
@@ -245,7 +260,7 @@ public final class StatisticsManager {
             if (line == null) {
                 break;
             }
-            numLine.incrementAndGet();
+            numLines.incrementAndGet();
 
             // Extract scopes from current line, skipping it if no scope is found or (emitting warning) if more are found
             Set<StatisticsScope> scopes = ImmutableSet.copyOf(extractor.apply(line));
@@ -262,6 +277,19 @@ public final class StatisticsManager {
             if (scope.getMixId().isPresent() && scope.getMixId().getAsInt() < 0) {
                 continue;
             }
+
+            // Schedule importing statistics for the scope from that line. If multiple lines match the scope, as it
+            // happens in case of a query retried multiple times, only the LAST line will end up here and be imported
+            linesToImport.put(scope, new NumberedLine(numLines.get(), line));
+        }
+
+        // Process the log lines (assumed to be JSON) that we could associate to some statistics scopes
+        for (Entry<StatisticsScope, NumberedLine> e : linesToImport.entrySet()) {
+
+            // Retrieve current scope and line to import
+            var scope = e.getKey();
+            var lineNumber = e.getValue().number;
+            var line = e.getValue().line;
 
             // Retrieve statistics collector for the scope
             var collector = getCollector(scope);
@@ -287,7 +315,8 @@ public final class StatisticsManager {
                                 collector.set(attribute, e.getValue());
                                 numAttrsImported.incrementAndGet();
                             } catch (Throwable ex) {
-                                LOGGER.error("Could not import attribute " + path + " at line " + numLine + ": " + e.getValue(), ex);
+                                LOGGER.error("Could not import attribute " + path + " at line " + lineNumber + ": "
+                                        + e.getValue(), ex);
                                 numAttrsDiscarded.incrementAndGet();
                             }
                         }
@@ -310,7 +339,7 @@ public final class StatisticsManager {
 
         // Log completion and relevant statistics
         LOGGER.info("Imported statistics: {}/{}/{} lines read/imported/discarded, {}/{} attributes imported/discarded",
-                numLine, numLinesImported, numLinesDiscarded, numAttrsImported, numAttrsDiscarded);
+                numLines, numLinesImported, numLinesDiscarded, numAttrsImported, numAttrsDiscarded);
     }
 
     private static final class Collector extends StatisticsCollector {
