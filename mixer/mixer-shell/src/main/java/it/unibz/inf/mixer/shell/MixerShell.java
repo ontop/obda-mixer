@@ -1,7 +1,8 @@
 package it.unibz.inf.mixer.shell;
 
-import it.unibz.inf.mixer.core.AbstractMixer;
+import it.unibz.inf.mixer.core.AbstractPlugin;
 import it.unibz.inf.mixer.core.Handler;
+import it.unibz.inf.mixer.core.Mixer;
 import it.unibz.inf.mixer.core.Query;
 
 import java.io.BufferedReader;
@@ -9,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 
-public class MixerShell extends AbstractMixer {
+public class MixerShell extends AbstractPlugin implements Mixer {
 
     private String cmd;
     private boolean shellOutput;
@@ -24,7 +25,7 @@ public class MixerShell extends AbstractMixer {
     @Override
     public void execute(Query query, Handler handler) throws Exception {
         handler.onSubmit();
-        Object results = executeQuery(query.getString(), query.getTimeout());
+        Object results = executeQuery(query.toString(), query.getTimeout());
         handler.onStartResults();
         int numSolutions = traverseResultSet(results);
         handler.onEndResults(numSolutions);

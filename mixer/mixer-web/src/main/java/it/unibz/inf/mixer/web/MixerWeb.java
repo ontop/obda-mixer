@@ -1,9 +1,6 @@
 package it.unibz.inf.mixer.web;
 
-import it.unibz.inf.mixer.core.AbstractMixer;
-import it.unibz.inf.mixer.core.Handler;
-import it.unibz.inf.mixer.core.Query;
-import it.unibz.inf.mixer.core.QueryLanguage;
+import it.unibz.inf.mixer.core.*;
 import org.jspecify.annotations.Nullable;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
@@ -23,7 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-public final class MixerWeb extends AbstractMixer {
+public final class MixerWeb extends AbstractPlugin implements Mixer {
 
     private String serviceUrl;
 
@@ -47,7 +44,7 @@ public final class MixerWeb extends AbstractMixer {
         }
 
         // Extract relevant query parameters
-        String queryString = query.getString();
+        String queryString = query.toString();
         int timeout = query.getTimeout() * 1000;
 
         // Create a query object encapsulating HTTP logic and providing for proper resource management

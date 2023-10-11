@@ -354,7 +354,7 @@ public final class StatisticsManager {
         }
 
         @Override
-        Object doGet(String attribute) {
+        @Nullable Object doGet(String attribute) {
             synchronized (attributes) {
                 return attributes.get(attribute);
             }

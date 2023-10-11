@@ -24,8 +24,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import it.unibz.inf.mixer.core.Mixer;
-import it.unibz.inf.mixer.core.Mixers;
-import it.unibz.inf.mixer.core.QueryLanguage;
+import it.unibz.inf.mixer.core.Plugins;
+import it.unibz.inf.mixer.core.QuerySelector;
 import it.unibz.inf.mixer.execution.statistics.StatisticsCollector;
 import it.unibz.inf.mixer.execution.statistics.StatisticsManager;
 import it.unibz.inf.mixer.execution.statistics.StatisticsScope;
@@ -37,8 +37,6 @@ import org.slf4j.LoggerFactory;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,28 +47,27 @@ public class MixerMain {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MixerMain.class);
 
-    // Mixer type and config
-    private final String mixerType = MixerOptions.optMode.getValue();
-    private final Map<String, String> mixerConfig = Option.list().stream()
-            .filter(o -> o.getValue() != null && o.getName().startsWith("--" + MixerOptions.optMode.getValue()))
+    // Query selector name and config
+    private final String selectorName = MixerOptions.optSelector.getValue();
+    private final Map<String, String> selectorConfig = Option.list().stream()
+            .filter(o -> o.getValue() != null && o.getName().startsWith("--" + MixerOptions.optSelector.getValue()))
             .collect(ImmutableMap.toImmutableMap(
-                    o -> o.getConfigKey().substring(MixerOptions.optMode.getValue().length() + 1),
+                    o -> o.getConfigKey().substring(MixerOptions.optSelector.getValue().length() + 1),
                     o -> o.getValue().toString()));
 
-    // Query templates
-    private final String templatesDir = MixerOptions.optQueriesDir.getValue();
-    private final QueryLanguage language = QueryLanguage.valueOf(MixerOptions.optLang.getValue().toUpperCase());
-
-    // Database access
-    private final String databaseUrl = MixerOptions.optDbUrl.getValue();
-    private final @Nullable String databaseUser = MixerOptions.optDbUsername.getValue();
-    private final @Nullable String databasePwd = MixerOptions.optDbPassword.getValue();
-    private final @Nullable String databaseDriverClass = MixerOptions.optDbDriverClass.getValue();
+    // Mixer name and config
+    private final String mixerName = MixerOptions.optMixer.getValue();
+    private final Map<String, String> mixerConfig = Option.list().stream()
+            .filter(o -> o.getValue() != null && o.getName().startsWith("--" + MixerOptions.optMixer.getValue()))
+            .collect(ImmutableMap.toImmutableMap(
+                    o -> o.getConfigKey().substring(MixerOptions.optMixer.getValue().length() + 1),
+                    o -> o.getValue().toString()));
 
     // Execution settings
     private final int numClients = MixerOptions.optNumClients.getValue();
-    private final int numWarmUps = MixerOptions.optNumWarmUps.getValue();
     private final int numRuns = MixerOptions.optNumRuns.getValue();
+    private final int numWarmUps = MixerOptions.optNumWarmUps.getValue();
+    private final int timeWarmUps = MixerOptions.optTimeWarmUps.getValue();
     private final int timeout = MixerOptions.optTimeout.getValue();
     private final @Nullable String forcedTimeouts = MixerOptions.optForceTimeouts.getValue();
     private final int retryAttempts = MixerOptions.optRetryAttempts.getValue();
@@ -91,43 +88,53 @@ public class MixerMain {
         // Initialize the StatisticsManager keeping statistics in memory
         StatisticsManager statsMgr = new StatisticsManager();
 
-        // Report process marker used to annotate queries in the global scope of statistics
+        // Report configuration and process marker used to annotate queries in the global scope of statistics
         StatisticsCollector globalStats = statsMgr.getCollector(StatisticsScope.global());
         globalStats.add("marker", StatisticsScope.processMarker());
+        globalStats.set("settings", Option.list().stream()
+                .filter(o -> o.getValue() != null)
+                .filter(o -> "EXECUTION".equals(o.getCategory()) || "LOGGING".equals(o.getCategory())
+                        || o.getConfigKey().startsWith(MixerOptions.optMixer.getValue())
+                        || o.getConfigKey().startsWith(MixerOptions.optSelector.getValue()))
+                .collect(ImmutableMap.toImmutableMap(Option::getConfigKey, Option::getValue)));
+
+
+        // Define variables for query selector and mixer, whose lifecycle is jointly managed next
+        QuerySelector selector = null;
+        Mixer mixer = null;
 
         try {
-            // Instantiate mixer plugin and ensure to close it after use
-            try (Mixer mixer = Mixers.create(mixerType)) {
+            try {
+                // Initialize/load the query selector object
+                selector = (QuerySelector) Plugins.create(selectorName);
+                selector.init(selectorConfig);
 
                 // Initialize/load the mixer object, tracking loading time
-                try {
-                    long ts = System.nanoTime();
-                    mixer.init(mixerConfig);
-                    globalStats.add("load-time", (System.nanoTime() - ts) / 1000000L);
-                } catch (Throwable ex) {
-                    throw new RuntimeException("Mixer initialization failed", ex);
-                }
+                mixer = (Mixer) Plugins.create(mixerName);
+                long ts = System.nanoTime();
+                mixer.init(mixerConfig);
+                globalStats.add("load-time", (System.nanoTime() - ts) / 1000000L);
 
                 // Initialize test threads
                 List<MixerThread> threads = new ArrayList<>();
                 for (int i = 0; i < numClients; ++i) {
-                    TemplateQuerySelector tqs = new TemplateQuerySelector(templatesDir, connect(), language);
-                    MixerThread mT = new MixerThread(mixer, tqs, statsMgr, i, numWarmUps, numRuns, timeout,
+                    MixerThread thread = new MixerThread(mixer, selector, statsMgr, i,
+                            numRuns, numWarmUps, timeWarmUps, timeout,
                             forcedTimeouts == null ? null : Arrays.asList(forcedTimeouts.split("\\s+")),
                             retryAttempts, retryWaitTime, retryCondition);
-                    threads.add(mT);
+                    threads.add(thread);
                 }
 
                 // Start test threads
-                for (MixerThread mT : threads) {
-                    mT.start();
+                for (MixerThread thread : threads) {
+                    thread.start();
                 }
 
                 // Wait for test threads termination, forcing it in case of external interruption request
                 while (true) {
                     try {
-                        for (MixerThread mT : threads) {
-                            mT.join();
+                        for (MixerThread thread : threads) {
+                            thread.join();
                         }
                         break;
                     } catch (InterruptedException ex) {
@@ -137,6 +144,10 @@ public class MixerMain {
                         }
                     }
                 }
+            } finally {
+                // Close mixer and query selector, if created and initialized before
+                closeQuietly(mixer);
+                closeQuietly(selector);
             }
         } catch (Throwable ex) {
             exceptions.add(ex);
@@ -167,14 +178,13 @@ public class MixerMain {
         }
     }
 
-    private Connection connect() {
-        try {
-            if (databaseDriverClass != null) {
-                Class.forName(databaseDriverClass); // Load driver (might be needed for old drivers)
+    private static void closeQuietly(@Nullable Object object) {
+        if (object instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) object).close();
+            } catch (Throwable ex) {
+                LOGGER.warn("Error while closing " + object.getClass().getSimpleName(), ex);
             }
-            return DriverManager.getConnection(databaseUrl, databaseUser, databasePwd);
-        } catch (Throwable ex) {
-            throw new RuntimeException("Failed to instantiate DB connection", ex);
         }
     }
 

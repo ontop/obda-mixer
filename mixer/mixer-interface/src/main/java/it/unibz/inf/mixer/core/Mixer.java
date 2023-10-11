@@ -20,34 +20,25 @@ package it.unibz.inf.mixer.core;
  * #L%
  */
 
-import java.util.Map;
-
 /**
+ * Interface of OBDA Mixer plugins responsible of running evaluation queries on the tested system.
+ * <p>
+ * A {@code Mixer} plugin is responsible to send the warm up / test {@link Query}/ies used in the evaluation to the
+ * system under test, notifying a supplied {@link Handler} of relevant query execution events and query results.
+ * </p>
+ *
  * @author Davide Lanti
  */
-public interface Mixer extends AutoCloseable {
-
-    /**
-     * Initializes the mixer, supplying configuration data. If the mixer embeds the OBDA system, this method can be
-     * used to load the OBDA system and have the corresponding loading time tracked by OBDA Mixer.
-     *
-     * @param configuration {@code <key, value>} configuration properties, not expected to be modified
-     */
-    void init(Map<String, String> configuration) throws Exception;
+public interface Mixer extends Plugin {
 
     /**
      * Executes a query with an optional execution timeout, reporting query results and other execution events to the
-     * supplied {@code Handler} object.
+     * supplied {@code Handler} object. This method is called sequentially and does not have to be thread-safe.
      *
      * @param query   query object including the query string and additional information (e.g., timeout, result ignored)
      *                that may be leveraged for query execution
      * @param handler handler object where to report query execution events and results
      */
     void execute(Query query, Handler handler) throws Exception;
-
-    /**
-     * Releases any resource allocated by the mixer. This method is guaranteed to be called at the end of the evaluation.
-     */
-    void close() throws Exception;
 
 }

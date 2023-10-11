@@ -372,7 +372,7 @@ public final class Option<T extends Comparable<?>> {
             return this;
         }
 
-        public Builder<T> withDefaultValue(@Nullable Object defaultValue) {
+        public Builder<T> withDefaultValue(@Nullable T defaultValue) {
             this.defaultValue = defaultValue == null || type.isInstance(defaultValue)
                     ? type.cast(defaultValue)
                     : typeParseValue(type, defaultValue.toString());

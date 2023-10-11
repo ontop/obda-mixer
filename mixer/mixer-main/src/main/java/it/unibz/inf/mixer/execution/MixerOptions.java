@@ -1,7 +1,9 @@
 package it.unibz.inf.mixer.execution;
 
 import com.google.common.collect.Range;
-import it.unibz.inf.mixer.core.Mixers;
+import it.unibz.inf.mixer.core.Mixer;
+import it.unibz.inf.mixer.core.Plugins;
+import it.unibz.inf.mixer.core.QuerySelector;
 import it.unibz.inf.mixer.execution.utils.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,51 +16,18 @@ public final class MixerOptions {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MixerOptions.class);
 
-    // Query templates
-
-    public static final Option<String> optQueriesDir = Option.builder("--queries-dir", String.class)
-            .withDescription("Path to the queries directory")
-            .withCategory("QUERY TEMPLATES")
-            .build();
-
-    public static final Option<String> optLang = Option.builder("--lang", String.class)
-            .withDescription("The query language, one of: sql, or sparql")
-            .withCategory("QUERY TEMPLATES")
-            .withDefaultValue("sparql")
-            .withAllowedValues("sql", "sparql")
-            .build();
-
-    // Database access
-
-    public static final Option<String> optDbUrl = Option.builder("--db-url", String.class)
-            .withDescription("URL of the database that the obda-mixer should use for extracting values in order to "
-                    + "instantiate the query templates")
-            .withCategory("DATABASE")
-            .build();
-
-    public static final Option<String> optDbUsername = Option.builder("--db-user", String.class)
-            .withConfigKey("db-username")
-            .withDescription("Username for accessing the database")
-            .withCategory("DATABASE")
-            .build();
-
-    public static final Option<String> optDbPassword = Option.builder("--db-pwd", String.class)
-            .withDescription("Password for accessing the database")
-            .withCategory("DATABASE")
-            .build();
-
-    public static final Option<String> optDbDriverClass = Option.builder("--db-driverclass", String.class)
-            .withConfigKey("driver-class")
-            .withDescription("Database driver class")
-            .withCategory("DATABASE")
-            .build();
-
     // Execution settings
 
-    public static final Option<String> optMode = Option.builder("--mode", String.class)
-            .withDescription("The operating mode, one of: java api mode (java-api), sparql endpoint mode (web), "
-                    + "or shell script mode (shell), ")
+    public static final Option<String> optSelector = Option.builder("--selector", String.class)
+            .withDescription("The query selector to use for generating queries, one of: jdbcsel, csvsel")
             .withCategory("EXECUTION")
+            .withDefaultValue("jdbcsel")
+            .build();
+
+    public static final Option<String> optMixer = Option.builder("--mixer", String.class)
+            .withDescription("The mixer to use for running queries, one of: web (SPARQL endpoint), jdbc, shell, ontop")
+            .withCategory("EXECUTION")
+            .withDefaultValue("web")
             .build();
 
     public static final Option<Integer> optNumClients = Option.builder("--clients", Integer.class)
@@ -70,20 +39,28 @@ public final class MixerOptions {
             .withAllowedValues(Range.closed(1, 64))
             .build();
 
+    public static final Option<Integer> optNumRuns = Option.builder("--runs", Integer.class)
+            .withConfigKey("num-runs")
+            .withDescription("Number of query mix query mixes.")
+            .withCategory("EXECUTION")
+            .withDefaultValue(1)
+            .withAllowedValues(Range.atLeast(1))
+            .build();
+
     public static final Option<Integer> optNumWarmUps = Option.builder("--warm-ups", Integer.class)
             .withConfigKey("num-warmups")
-            .withDescription("Number of warm up runs.")
+            .withDescription("Number of warm up query mixes (min).")
             .withCategory("EXECUTION")
             .withDefaultValue(1)
             .withAllowedValues(Range.atLeast(0))
             .build();
 
-    public static final Option<Integer> optNumRuns = Option.builder("--runs", Integer.class)
-            .withConfigKey("num-runs")
-            .withDescription("Number of query mix runs.")
+    public static final Option<Integer> optTimeWarmUps = Option.builder("--warm-ups-time", Integer.class)
+            .withConfigKey("time-warmups")
+            .withDescription("Time spent for warm up query mixes, in seconds (min).")
             .withCategory("EXECUTION")
-            .withDefaultValue(1)
-            .withAllowedValues(Range.atLeast(1))
+            .withDefaultValue(0)
+            .withAllowedValues(Range.atLeast(0))
             .build();
 
     public static final Option<Integer> optTimeout = Option.builder("--timeout", Integer.class)
@@ -146,16 +123,37 @@ public final class MixerOptions {
             .withCategory("LOGGING")
             .build();
 
-    static {
-        // Iterate over all mixer types registered in the classpath (via "META-INF/mixer.properties" files)
-        for (String mixerType : Mixers.list()) {
+    @SuppressWarnings("unused") // emitted under 'configuration' when iterating over properties
+    public static final Option<String> optLogComment = Option.builder("--log-comment", String.class)
+            .withDescription("Optional comment to include in generated log (e.g., to document experimental setting)")
+            .withCategory("LOGGING")
+            .build();
 
-            // Obtain the mixer type metadata from "META-INF/mixer.properties"
-            Map<String, String> mixerMetadata = Mixers.describe(mixerType);
+    static {
+        // Iterate over all plugin types registered in the classpath (via "META-INF/mixer.properties" files)
+        for (String pluginName : Plugins.list()) {
+
+            // Obtain the plugin metadata from "META-INF/mixer.properties"
+            Map<String, String> pluginMetadata = Plugins.describe(pluginName);
+
+            // Identify the category of the plugin (mixer or query selector)
+            String category;
+            try {
+                Class<?> javaClass = Class.forName(pluginMetadata.get("type"));
+                if (Mixer.class.isAssignableFrom(javaClass)) {
+                    category = "MIXER";
+                } else if (QuerySelector.class.isAssignableFrom(javaClass)) {
+                    category = "QUERY SELECTOR";
+                } else {
+                    continue; // ignore the plugin as we are not going to use it
+                }
+            } catch (Throwable ex) {
+                throw new Error(ex); // unexpected
+            }
 
             // Identify all option names, matching metadata keys 'conf.NAME.xyz'
             String prefix = "conf.";
-            List<String> names = mixerMetadata.keySet().stream()
+            List<String> names = pluginMetadata.keySet().stream()
                     .filter(k -> k.startsWith(prefix)).map(k -> {
                         int idxStart = prefix.length();
                         int idxEnd = k.indexOf('.', idxStart);
@@ -170,14 +168,14 @@ public final class MixerOptions {
                 try {
                     // Extract the properties defining the option
                     //noinspection unchecked,rawtypes
-                    Option.builder("--" + mixerType + "-" + name,
-                                    (Class) Class.forName(mixerMetadata.get(prefix + name + ".type")))
-                            .withDescription(mixerMetadata.get(prefix + name + ".desc"))
-                            .withDefaultValue(mixerMetadata.get(prefix + name + ".default"))
-                            .withCategory("MIXER '" + mixerType + "'")
+                    Option.builder("--" + pluginName + "-" + name,
+                                    (Class) Class.forName(pluginMetadata.get(prefix + name + ".type")))
+                            .withDescription(pluginMetadata.get(prefix + name + ".desc"))
+                            .withDefaultValue(pluginMetadata.get(prefix + name + ".default"))
+                            .withCategory(category + " '" + pluginName + "'")
                             .build();
                 } catch (Throwable ex) {
-                    LOGGER.warn("Invalid definition of option '{}' of '{}': {}", name, mixerType, ex.getMessage());
+                    LOGGER.warn("Invalid definition of option '{}' of '{}': {}", name, pluginName, ex.getMessage());
                 }
             }
         }

@@ -7,9 +7,9 @@ public class QueryTest {
 
     @Test
     public void test() {
-        Assert.assertFalse(Query.builder("SELECT * { ?s ?p ?o }").build().isResultSorted());
-        Assert.assertFalse(Query.builder("# mixer:sorted=false\nSELECT * { ?s ?p ?o }").build().isResultSorted());
-        Assert.assertTrue(Query.builder("# mixer:sorted=true\nSELECT * { ?s ?p ?o }").build().isResultSorted());
+        Assert.assertFalse(Query.builder(new Template("SELECT * { ?s ?p ?o }")).build().isResultSorted());
+        Assert.assertFalse(Query.builder(new Template("# mixer:sorted=false\nSELECT * { ?s ?p ?o }")).build().isResultSorted());
+        Assert.assertTrue(Query.builder(new Template("# mixer:sorted=true\nSELECT * { ?s ?p ?o }")).build().isResultSorted());
     }
 
 }

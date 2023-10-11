@@ -1,7 +1,8 @@
 package it.unibz.inf.mixer.jdbc;
 
-import it.unibz.inf.mixer.core.AbstractMixer;
+import it.unibz.inf.mixer.core.AbstractPlugin;
 import it.unibz.inf.mixer.core.Handler;
+import it.unibz.inf.mixer.core.Mixer;
 import it.unibz.inf.mixer.core.Query;
 
 import java.sql.Connection;
@@ -10,7 +11,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Map;
 
-public class MixerJDBC extends AbstractMixer {
+public class MixerJDBC extends AbstractPlugin implements Mixer {
 
     private Connection conn;
 
@@ -40,7 +41,7 @@ public class MixerJDBC extends AbstractMixer {
                 stmt.setQueryTimeout(query.getTimeout());
             }
             handler.onSubmit();
-            try (ResultSet rs = stmt.executeQuery(query.getString())) {
+            try (ResultSet rs = stmt.executeQuery(query.toString())) {
                 handler.onStartResults();
                 int cnt = 0;
                 while (rs.next()) {
@@ -48,6 +49,17 @@ public class MixerJDBC extends AbstractMixer {
                 }
                 handler.onEndResults(cnt);
             }
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+        try {
+            if (conn != null) {
+                conn.close();
+            }
+        } finally {
+            super.close();
         }
     }
 

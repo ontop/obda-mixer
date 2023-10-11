@@ -3,8 +3,8 @@ package it.unibz.inf.mixer.execution.statistics;
 import com.fasterxml.jackson.databind.node.*;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.*;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BinaryOperator;
 
@@ -34,7 +34,7 @@ public abstract class StatisticsCollector {
 
     static final Set<String> RESERVED_ATTRIBUTES = ImmutableSet.of("client", "mix", "query");
 
-    abstract Object doGet(String attribute);
+    abstract @Nullable Object doGet(String attribute);
 
     abstract void doSet(String attribute, @Nullable Object value, @Nullable BinaryOperator<Object> merger);
 
@@ -43,15 +43,21 @@ public abstract class StatisticsCollector {
         return doGet(attribute) != null;
     }
 
-    public final <T> T get(String attribute) {
+    public final <T> @Nullable T get(String attribute) {
         checkAttribute(attribute);
         //noinspection unchecked
         return (T) doGet(attribute);
     }
 
-    public final <T> T get(String attribute, Class<T> type) {
+    public final <T> @Nullable T get(String attribute, Class<T> type) {
         checkAttribute(attribute);
         return type.cast(doGet(attribute));
+    }
+
+    public final <T> @Nullable T get(String attribute, Class<T> type, @Nullable T defaultValue) {
+        checkAttribute(attribute);
+        Object value = doGet(attribute);
+        return value != null ? type.cast(doGet(attribute)) : defaultValue;
     }
 
     public final StatisticsCollector set(String attribute, @Nullable Object value) {

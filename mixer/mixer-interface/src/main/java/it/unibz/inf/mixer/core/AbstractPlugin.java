@@ -4,13 +4,13 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public abstract class AbstractMixer implements Mixer {
+public abstract class AbstractPlugin implements Plugin {
 
     private Map<String, String> configuration;
 
     public final Map<String, String> getConfiguration() {
         if (configuration == null) {
-            throw new IllegalStateException("Mixer not initialized");
+            throw new IllegalStateException("Plugin not initialized");
         }
         return configuration;
     }

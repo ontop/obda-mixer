@@ -20,8 +20,9 @@ package it.unibz.inf.mixer.ontop;
  * #L%
  */
 
-import it.unibz.inf.mixer.core.AbstractMixer;
+import it.unibz.inf.mixer.core.AbstractPlugin;
 import it.unibz.inf.mixer.core.Handler;
+import it.unibz.inf.mixer.core.Mixer;
 import it.unibz.inf.mixer.core.Query;
 import it.unibz.inf.ontop.injection.OntopSQLOWLAPIConfiguration;
 import it.unibz.inf.ontop.owlapi.OntopOWLFactory;
@@ -40,7 +41,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.Map;
 
-public class MixerOntop extends AbstractMixer {
+public class MixerOntop extends AbstractPlugin implements Mixer {
 
     private static Logger log = LoggerFactory.getLogger(MixerOntop.class);
 
@@ -72,7 +73,7 @@ public class MixerOntop extends AbstractMixer {
     @Override
     public void execute(Query query, Handler handler) throws Exception {
         handler.onSubmit();
-        Object results = executeQuery(query.getString(), query.getTimeout());
+        Object results = executeQuery(query.toString(), query.getTimeout());
         handler.onStartResults();
         int numSolutions = traverseResultSet(results);
         handler.onEndResults(numSolutions);

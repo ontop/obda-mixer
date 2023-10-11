@@ -44,6 +44,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -119,6 +124,7 @@
                         </transformer>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                             <resource>META-INF/DEPENDENCIES</resource>
+                            <resource>META-INF/mixer.properties</resource>
                         </transformer>
                     </transformers>
                 </configuration>
