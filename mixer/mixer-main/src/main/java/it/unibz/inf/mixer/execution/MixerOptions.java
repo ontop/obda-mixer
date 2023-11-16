@@ -71,6 +71,7 @@ public final class MixerOptions {
             .build();
 
     public static final Option<Integer> optTimeoutWarmUps = Option.builder("--timeout-warm-ups", Integer.class)
+            .withConfigKey("timeout-warmups")
             .withDescription("Maximum execution time allowed to a warm up query, in seconds. "
                     + "Defaults to the value of --timeout. A value of zero means no timeout.")
             .withCategory("EXECUTION")
