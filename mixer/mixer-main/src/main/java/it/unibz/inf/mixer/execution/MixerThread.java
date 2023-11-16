@@ -63,6 +63,8 @@ public final class MixerThread extends Thread {
 
     private final int timeout;
 
+    private final int timeoutWarmUps;
+
     private final Set<String> forceTimeoutQueries; // Queries to skip, treating them as timed out
 
     private final int retryAttempts;
@@ -73,9 +75,10 @@ public final class MixerThread extends Thread {
 
     private final MovingAverager mixAverager;
 
-    public MixerThread(Mixer mixer, QuerySelector selector, StatisticsManager statMgr, int clientId,
-                       int numRuns, int numWarmUps, int timeWarmUps, int timeout, @Nullable Iterable<String> forceTimeoutQueries,
-                       int retryAttempts, @Nullable Integer retryWaitTime, @Nullable Pattern retryCondition) {
+    public MixerThread(
+            Mixer mixer, QuerySelector selector, StatisticsManager statMgr, int clientId, int numRuns, int numWarmUps,
+            int timeWarmUps, int timeout, int timeoutWarmUps, @Nullable Iterable<String> forceTimeoutQueries,
+            int retryAttempts, @Nullable Integer retryWaitTime, @Nullable Pattern retryCondition) {
 
         // Check arguments
         Objects.requireNonNull(mixer);
@@ -86,6 +89,7 @@ public final class MixerThread extends Thread {
         Preconditions.checkArgument(numWarmUps >= 0);
         Preconditions.checkArgument(timeWarmUps >= 0);
         Preconditions.checkArgument(timeout >= 0);
+        Preconditions.checkArgument(timeoutWarmUps >= 0);
         Preconditions.checkArgument(retryAttempts >= 0);
 
         // Fetch in advance the query mixes to be used for the test
@@ -103,6 +107,7 @@ public final class MixerThread extends Thread {
         this.numWarmUps = numWarmUps;
         this.timeWarmUps = timeWarmUps;
         this.timeout = timeout;
+        this.timeoutWarmUps = timeoutWarmUps;
         this.forceTimeoutQueries = forceTimeoutQueries != null
                 ? ImmutableSet.copyOf(forceTimeoutQueries)
                 : ImmutableSet.of();
@@ -141,7 +146,7 @@ public final class MixerThread extends Thread {
                 // Edit the query to set timeout, mark results as ignored, and include scope as query string comment
                 Query queryWithScope = query.toBuilder()
                         .withExecutionId(queryScope.toString())
-                        .withTimeout(timeout)
+                        .withTimeout(timeoutWarmUps)
                         // .withResultIgnored(true) // not used anymore as interferes with moving average analysis
                         .build();
 

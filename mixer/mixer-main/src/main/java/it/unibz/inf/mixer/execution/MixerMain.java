@@ -20,6 +20,7 @@ package it.unibz.inf.mixer.execution;
  * #L%
  */
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -69,6 +70,7 @@ public class MixerMain {
     private final int numWarmUps = MixerOptions.optNumWarmUps.getValue();
     private final int timeWarmUps = MixerOptions.optTimeWarmUps.getValue();
     private final int timeout = MixerOptions.optTimeout.getValue();
+    private final int timeoutWarmUps = MoreObjects.firstNonNull(MixerOptions.optTimeoutWarmUps.getValue(), timeout);
     private final @Nullable String forcedTimeouts = MixerOptions.optForceTimeouts.getValue();
     private final int retryAttempts = MixerOptions.optRetryAttempts.getValue();
     private final int retryWaitTime = MixerOptions.optRetryWaitTime.getValue();
@@ -119,7 +121,7 @@ public class MixerMain {
                 List<MixerThread> threads = new ArrayList<>();
                 for (int i = 0; i < numClients; ++i) {
                     MixerThread thread = new MixerThread(mixer, selector, statsMgr, i,
-                            numRuns, numWarmUps, timeWarmUps, timeout,
+                            numRuns, numWarmUps, timeWarmUps, timeout, timeoutWarmUps,
                             forcedTimeouts == null ? null : Arrays.asList(forcedTimeouts.split("\\s+")),
                             retryAttempts, retryWaitTime, retryCondition);
                     threads.add(thread);

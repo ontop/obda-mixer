@@ -70,6 +70,14 @@ public final class MixerOptions {
             .withAllowedValues(Range.atLeast(0))
             .build();
 
+    public static final Option<Integer> optTimeoutWarmUps = Option.builder("--timeout-warm-ups", Integer.class)
+            .withDescription("Maximum execution time allowed to a warm up query, in seconds. "
+                    + "Defaults to the value of --timeout. A value of zero means no timeout.")
+            .withCategory("EXECUTION")
+            .withDefaultValue(null)
+            .withAllowedValues(Range.atLeast(0))
+            .build();
+
     public static final Option<String> optForceTimeouts = Option.builder("--force-timeouts", String.class)
             .withConfigKey("forced-timeouts")
             .withDescription("It forces the specified space-separated queries to timeout. "
