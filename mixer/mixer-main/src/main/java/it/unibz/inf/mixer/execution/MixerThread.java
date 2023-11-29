@@ -56,6 +56,7 @@ public final class MixerThread extends Thread {
     private final int clientId;
 
     private final List<List<Query>> testQueryMixes;
+    
 
     private final int numWarmUps;
 
@@ -163,11 +164,11 @@ public final class MixerThread extends Thread {
 
                 try {
                     // Run the query and update statistics
-                    mixer.execute(queryWithScope, handler);
+                    mixer.prepare(queryWithScope).execute(handler);
                 } catch (Throwable ex) {
                     // On failure, keep track of failed query so to report it in statistics and log the issue
                     failedQueries.put(queryScope.toString(), queryWithScope.toString(true));
-                    LOGGER.warn("Warm up query execution failed: " + ex.getMessage() + "\n" + queryWithScope, ex);
+                    log("Warm up query execution failed", ex);
                 }
 
                 // Obtain the query execution time and update the mix execution time
@@ -254,7 +255,7 @@ public final class MixerThread extends Thread {
                     LOGGER.info("Test query:\n{}", queryWithScope);
                     handler = new TestHandler(queryWithScope.isResultSorted());
                     try {
-                        mixer.execute(queryWithScope, handler);
+                        mixer.prepare(queryWithScope).execute(handler);
                     } catch (Throwable ex) {
                         if (attempt < 1 + retryAttempts) { // original attempt + retry attempts
                             StringWriter w = new StringWriter();
@@ -264,8 +265,8 @@ public final class MixerThread extends Thread {
                                 // Handler discarded, query statistics not updated, query will be retried
                                 ++attempt;
                                 queryWithScope = queryWithScope.toBuilder().withAttempt(attempt).build();
-                                LOGGER.warn("Test query failed, will retry (attempt " + attempt
-                                        + ") after " + retryWaitTime + "s: " + ex.getMessage(), ex);
+                                log("Test query failed, will retry attempt " + attempt + " after "
+                                        + retryWaitTime + "s", ex);
                                 try {
                                     //noinspection BusyWait
                                     Thread.sleep(retryWaitTime * 1000L);
@@ -287,7 +288,7 @@ public final class MixerThread extends Thread {
                 // Log any failure
                 if (exception != null) {
                     failedQueries.put(queryScope.toString(), queryWithScope.toString(true));
-                    LOGGER.warn("Test query failed: " + exception.getMessage() + "\n" + queryWithScope, exception);
+                    log("Test query failed", exception);
                 }
 
                 // Aggregate query statistics into mix statistics
@@ -354,6 +355,15 @@ public final class MixerThread extends Thread {
         }
         if (mixTimeMa != null) {
             parent.set("mix_time_ma", mixTimeMa); // override with last value TODO: average across clients in 'global'
+        }
+    }
+
+    private static void log(String msg, Throwable ex) {
+        if (ex instanceof InterruptedException) {
+            LOGGER.warn(msg + " (interrupted)");
+            LOGGER.trace("Interruption details: " + ex.getMessage(), ex);
+        } else {
+            LOGGER.warn(msg + " (" + ex.getMessage() + ")", ex);
         }
     }
 

@@ -7,7 +7,10 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -20,43 +23,51 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-public final class MixerWeb extends AbstractPlugin implements Mixer {
+public final class MixerWeb extends AbstractMixer {
 
     private String serviceUrl;
-
     private @Nullable Path responsePath;
 
     @Override
     public void init(Map<String, String> configuration) throws Exception {
+
+        // Delegate, storing configuration
         super.init(configuration);
+
+        // Extract relevant configuration options
         this.serviceUrl = Objects.requireNonNull(getConfiguration().get("url"), "No service URL supplied");
         this.responsePath = Optional.ofNullable(getConfiguration().get("response-path")).map(Paths::get).orElse(null);
     }
 
     @Override
-    public void execute(Query query, Handler handler) throws Exception {
+    public QueryExecution prepare(Query query) {
 
-        // Check arguments
-        Objects.requireNonNull(query);
-        Objects.requireNonNull(handler);
+        // Validate query language
         if (query.getLanguage() != QueryLanguage.SPARQL) {
             throw new IllegalArgumentException("Unsupported query language " + query.getLanguage() + " (expected SPARQL)");
         }
 
-        // Extract relevant query parameters
-        String queryString = query.toString();
-        int timeout = query.getTimeout() * 1000;
+        // Delegate
+        return super.prepare(query);
+    }
 
-        // Create a query object encapsulating HTTP logic and providing for proper resource management
-        try (QueryExecution qe = new QueryExecution(serviceUrl, queryString, timeout)) {
+    @Override
+    protected void execute(Query query, Handler handler, Context context) throws Exception {
 
-            // Execute the query and wait for response stream (null on timeout)
+        // Prepare the HttpURLConnection to use for submitting the SPARQL query
+        try (SparqlHttpRequest request = new SparqlHttpRequest(serviceUrl, query)) {
+
+            // Register closing the request object as a way to quickly interrupt query execution
+            context.onInterruptClose(request);
+
+            // Notify the handler prior to submitting the request
             handler.onSubmit();
-            InputStream responseStream = qe.submit();
-            if (responseStream == null) {
-                return; // timed out
-            }
-            handler.onStartResults(); // not timed out
+
+            // Submit the request and obtain the response stream (may fail or timeout)
+            InputStream responseStream = request.submit(context.getTimeoutTs());
+
+            // Notify handler of results availability
+            handler.onStartResults();
 
             // Skip processing of results (reporting unknown # of solutions), if they can be ignored
             if (query.isResultIgnored()) {
@@ -66,130 +77,118 @@ public final class MixerWeb extends AbstractPlugin implements Mixer {
 
             // Save the raw response body, if configured
             if (responsePath != null && query.getExecutionId() != null) {
-                // Compute the filename where to store the raw response body
                 String filename = query.getExecutionId()
                         .replaceAll("[^a-zA-Z0-9]+", "_")
                         .replaceAll("_+", "_")
                         .replaceAll("^_|_$", "");
                 Path responseFile = responsePath.resolve(filename + ".xml");
-
-                // Buffer the response to a byte[], save it to file, and switch the response stream to the byte[]
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 responseStream.transferTo(bos);
                 byte[] responseBytes = bos.toByteArray();
                 Files.write(responseFile, responseBytes);
-                responseStream = new ByteArrayInputStream(responseBytes); // reply response through SAX parser
+                responseStream = new ByteArrayInputStream(responseBytes); // replay from buffer
             }
 
-            // Otherwise process results using SAX and a SAX handler reporting to the received Handler object
+            // Process response budy using SAX and a SAX handler reporting to the supplied Handler object
             SAXParserFactory saxFactory = SAXParserFactory.newInstance();
             saxFactory.setNamespaceAware(false);
             SAXParser saxParser = saxFactory.newSAXParser();
-            QueryResultsHandler saxHandler = new QueryResultsHandler(handler);
-            saxParser.parse(responseStream, saxHandler);
+            saxParser.parse(responseStream, new SparqlHttpResponseHandler(handler));
         }
     }
 
-    public static final class QueryExecution implements Closeable {
+    private static class SparqlHttpRequest implements AutoCloseable {
 
         private final HttpURLConnection conn;
-
         private boolean connected = false;
+        private InputStream stream;
 
-        public QueryExecution(String serviceURL, String query, int timeout) throws IOException {
+        public SparqlHttpRequest(String serviceUrl, Query query) throws IOException {
 
             // Assemble the URL for the HTTP GET operation
-            char delimiter = serviceURL.indexOf('?') == -1 ? '?' : '&';
-            String urlString = serviceURL + delimiter + "query=" + URLEncoder.encode(query, StandardCharsets.UTF_8);
+            char delimiter = serviceUrl.indexOf('?') == -1 ? '?' : '&';
+            String urlString = serviceUrl + delimiter + "query=" + URLEncoder.encode(query.toString(), StandardCharsets.UTF_8);
             URL url = new URL(urlString);
 
             // Obtain an HttpURLConnection object for the URL
             conn = (HttpURLConnection) url.openConnection();
 
-            // Configure the HttpURLConnection object
+            // Configure and return the HttpURLConnection object
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/sparql-results+xml");
             conn.setDefaultUseCaches(false);
             conn.setUseCaches(false);
             conn.setDoOutput(false);
-            if (timeout != 0) {
-                conn.setReadTimeout(timeout);
-            }
         }
 
-        public InputStream submit() throws IOException {
+        public InputStream submit(long timeoutTs) throws IOException, InterruptedException {
             try {
                 // Issue the HTTP request and mark as 'connected' so to ensure 'disconnect' will be called on close
+                conn.setConnectTimeout(timeoutTs <= 0 ? 0 : (int) (timeoutTs - System.currentTimeMillis()));
                 conn.connect();
                 connected = true;
 
                 // Check server response code
+                conn.setReadTimeout(timeoutTs <= 0 ? 0 : (int) (timeoutTs - System.currentTimeMillis()));
                 int rc = conn.getResponseCode();
                 if (rc < 200 || rc >= 300) {
                     throw new IOException("Received error code " + rc + " from server with message: " + conn.getResponseMessage());
                 }
 
                 // Obtain and return response body stream (this operation may fail)
-                return conn.getInputStream();
+                stream = conn.getInputStream();
+                return stream;
 
             } catch (SocketTimeoutException e) {
-                // On read timeout (raised by connect()) return no stream
-                return null;
+                // Convert and propagate
+                throw (InterruptedException) new InterruptedException().initCause(e);
             }
         }
 
-        public void close() throws IOException {
+        public synchronized void close() {
 
-            // Do nothing if not connected
-            if (!connected) {
-                return;
+            // Exhaust (to avoid server side errors) and close the stream, invalidating it
+            if (stream != null) {
+                try {
+                    try {
+                        while (stream.read() != -1) {
+                            //noinspection ResultOfMethodCallIgnored
+                            stream.skip(1024 * 1024L);
+                        }
+                    } finally {
+                        stream.close();
+                    }
+                } catch (Throwable ex) {
+                    // ignore
+                }
+                stream = null;
             }
 
-            try {
+            // Disconnect if needed and mark as not connected
+            if (connected) {
                 try {
-                    // Try to consume the response stream, and in any case close it
-                    try (InputStream stream = conn.getInputStream()) {
-                        try {
-                            while (stream.read() != -1) {
-                                //noinspection ResultOfMethodCallIgnored
-                                stream.skip(1024 * 1024L);
-                            }
-                        } catch (Throwable ex) {
-                            // ignore
-                        }
-                    }
-                } finally {
-                    // In any case, disconnect the HttpURLConnection object
                     conn.disconnect();
+                } catch (Throwable ex) {
+                    // ignore
                 }
-            } finally {
-                // Mark as disconnected
                 connected = false;
             }
         }
 
     }
 
-    private static final class QueryResultsHandler extends DefaultHandler {
+    private static class SparqlHttpResponseHandler extends DefaultHandler {
 
         private final Handler handler;
-
-        private final StringBuilder currentText;
-
+        private final StringBuilder currentText = new StringBuilder(1024);
         private boolean processText;
-
         private String currentVariable;
-
         private String currentDatatype;
-
         private String currentLang;
-
         private int numSolutions;
 
-        public QueryResultsHandler(Handler handler) {
+        public SparqlHttpResponseHandler(Handler handler) {
             this.handler = handler;
-            this.currentText = new StringBuilder();
-            this.currentText.ensureCapacity(1024);
         }
 
         @Override

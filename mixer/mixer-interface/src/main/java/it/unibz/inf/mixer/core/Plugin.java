@@ -25,7 +25,7 @@ public interface Plugin extends AutoCloseable {
      *
      * @param configuration {@code <key, value>} configuration properties, not expected to be modified
      */
-    void init(Map<String, String> configuration) throws Exception;
+    void init(Map<String, String> configuration) throws Throwable;
 
     /**
      * Disposes the plugin and releases any resource allocated by it, if any. This method is guaranteed to be called

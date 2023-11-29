@@ -6,7 +6,13 @@ import java.util.Map;
 
 public abstract class AbstractPlugin implements Plugin {
 
+    private boolean closed = false;
+
     private Map<String, String> configuration;
+
+    public boolean isClosed() {
+        return closed;
+    }
 
     public final Map<String, String> getConfiguration() {
         if (configuration == null) {
@@ -23,6 +29,7 @@ public abstract class AbstractPlugin implements Plugin {
 
     @Override
     public void close() throws Exception {
+        closed = true;
         // Do nothing, may be overridden by subclasses
     }
 

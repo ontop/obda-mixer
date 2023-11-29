@@ -32,13 +32,14 @@ package it.unibz.inf.mixer.core;
 public interface Mixer extends Plugin {
 
     /**
-     * Executes a query with an optional execution timeout, reporting query results and other execution events to the
-     * supplied {@code Handler} object. This method is called sequentially and does not have to be thread-safe.
+     * Prepares the execution of the supplied query, returning a {@code QueryExecution} object that can be used to
+     * actually perform a single execution of the query, with possibility to interrupt it. This method is called
+     * sequentially and does not have to be thread-safe.
      *
-     * @param query   query object including the query string and additional information (e.g., timeout, result ignored)
-     *                that may be leveraged for query execution
-     * @param handler handler object where to report query execution events and results
+     * @param query query object including the query string and additional information (e.g., timeout, result ignored)
+     *              that may be leveraged for query execution
+     * @throws Throwable on failure
      */
-    void execute(Query query, Handler handler) throws Exception;
+    QueryExecution prepare(Query query) throws Throwable;
 
 }

@@ -1,6 +1,8 @@
 package it.unibz.inf.mixer.core;
 
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +15,8 @@ import java.util.function.Consumer;
  */
 @SuppressWarnings("unused")
 public final class Handlers {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Handlers.class);
 
     public static Handler nil() {
         return NilHandler.INSTANCE;
@@ -167,7 +171,7 @@ public final class Handlers {
 
     private static final class LoggingHandler implements Handler {
 
-        public static final LoggingHandler DEFAULT = new LoggingHandler(System.out::println);
+        public static final LoggingHandler DEFAULT = new LoggingHandler(LOGGER::debug);
 
         private final Consumer<String> sink;
 
