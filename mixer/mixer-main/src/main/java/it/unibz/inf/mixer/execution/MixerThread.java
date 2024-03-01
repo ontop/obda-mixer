@@ -56,11 +56,14 @@ public final class MixerThread extends Thread {
     private final int clientId;
 
     private final List<List<Query>> testQueryMixes;
-    
 
     private final int numWarmUps;
 
     private final int timeWarmUps;
+
+    private final int separation;
+
+    private final int separationWarmUps;
 
     private final int timeout;
 
@@ -78,8 +81,9 @@ public final class MixerThread extends Thread {
 
     public MixerThread(
             Mixer mixer, QuerySelector selector, StatisticsManager statMgr, int clientId, int numRuns, int numWarmUps,
-            int timeWarmUps, int timeout, int timeoutWarmUps, @Nullable Iterable<String> forceTimeoutQueries,
-            int retryAttempts, @Nullable Integer retryWaitTime, @Nullable Pattern retryCondition) {
+            int timeWarmUps, int separation, int separationWarmUps, int timeout, int timeoutWarmUps,
+            @Nullable Iterable<String> forceTimeoutQueries, int retryAttempts,
+            @Nullable Integer retryWaitTime, @Nullable Pattern retryCondition) {
 
         // Check arguments
         Objects.requireNonNull(mixer);
@@ -89,6 +93,8 @@ public final class MixerThread extends Thread {
         Preconditions.checkArgument(numRuns >= 0);
         Preconditions.checkArgument(numWarmUps >= 0);
         Preconditions.checkArgument(timeWarmUps >= 0);
+        Preconditions.checkArgument(separation >= 0);
+        Preconditions.checkArgument(separationWarmUps >= 0);
         Preconditions.checkArgument(timeout >= 0);
         Preconditions.checkArgument(timeoutWarmUps >= 0);
         Preconditions.checkArgument(retryAttempts >= 0);
@@ -107,6 +113,8 @@ public final class MixerThread extends Thread {
         this.testQueryMixes = testQueryMixes;
         this.numWarmUps = numWarmUps;
         this.timeWarmUps = timeWarmUps;
+        this.separation = separation;
+        this.separationWarmUps = separationWarmUps;
         this.timeout = timeout;
         this.timeoutWarmUps = timeoutWarmUps;
         this.forceTimeoutQueries = forceTimeoutQueries != null
@@ -119,11 +127,15 @@ public final class MixerThread extends Thread {
     }
 
     public void run() {
-        warmUp();
-        test();
+        try {
+            warmUp();
+            test();
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt(); // restore interrupted status
+        }
     }
 
-    private void warmUp() {
+    private void warmUp() throws InterruptedException {
 
         // Keep a <query_scope, query_string> map of queries whose execution failed, to report it in the statistics
         Map<String, String> failedQueries = new HashMap<>();
@@ -140,6 +152,9 @@ public final class MixerThread extends Thread {
             // Iterate over the queries in the current query mix, tracking the total mix time
             long mixTime = 0;
             for (Query query : queryMix) {
+
+                // Wait for the warm up separation time
+                sleep(separationWarmUps);
 
                 // Retrieve the <clientId, mixId, queryId> query scope
                 StatisticsScope queryScope = StatisticsScope.forQuery(clientId, -mix, query.getId());
@@ -197,7 +212,7 @@ public final class MixerThread extends Thread {
         LOGGER.debug("Warm up completed after {} mixes and {} ms", mix, totalTime);
     }
 
-    private void test() {
+    private void test() throws InterruptedException {
 
         // Retrieve global and client-level statistics collectors
         StatisticsCollector globalStats = statsMgr.getCollector(StatisticsScope.global());
@@ -219,6 +234,9 @@ public final class MixerThread extends Thread {
             // Iterate over the queries in the current query mix
             long mixTime = 0L;
             for (Query query : queryMix) {
+
+                // Wait for the test separation time
+                sleep(separation);
 
                 // Retrieve <clientId, mixId, queryId> query scope and associated statistics collector
                 StatisticsScope queryScope = StatisticsScope.forQuery(clientId, mix, query.getId());
@@ -267,13 +285,8 @@ public final class MixerThread extends Thread {
                                 queryWithScope = queryWithScope.toBuilder().withAttempt(attempt).build();
                                 log("Test query failed, will retry attempt " + attempt + " after "
                                         + retryWaitTime + "s", ex);
-                                try {
-                                    //noinspection BusyWait
-                                    Thread.sleep(retryWaitTime * 1000L);
-                                    continue;
-                                } catch (InterruptedException ex2) {
-                                    Thread.currentThread().interrupt(); // restore interrupted state and end retry loop
-                                }
+                                sleep(retryWaitTime);
+                                continue;
                             }
                         }
                         exception = ex;
@@ -364,6 +377,12 @@ public final class MixerThread extends Thread {
             LOGGER.trace("Interruption details: " + ex.getMessage(), ex);
         } else {
             LOGGER.warn(msg + " (" + ex.getMessage() + ")", ex);
+        }
+    }
+
+    private static void sleep(int seconds) throws InterruptedException {
+        if (seconds > 0) {
+            Thread.sleep(seconds * 1000L);
         }
     }
 

@@ -69,6 +69,8 @@ public class MixerMain {
     private final int numRuns = MixerOptions.optNumRuns.getValue();
     private final int numWarmUps = MixerOptions.optNumWarmUps.getValue();
     private final int timeWarmUps = MixerOptions.optTimeWarmUps.getValue();
+    private final int separation = MixerOptions.optSeparation.getValue();
+    private final int separationWarmUps= MoreObjects.firstNonNull(MixerOptions.optSeparationWarmUps.getValue(), separation);
     private final int timeout = MixerOptions.optTimeout.getValue();
     private final int timeoutWarmUps = MoreObjects.firstNonNull(MixerOptions.optTimeoutWarmUps.getValue(), timeout);
     private final @Nullable String forcedTimeouts = MixerOptions.optForceTimeouts.getValue();
@@ -121,7 +123,7 @@ public class MixerMain {
                 List<MixerThread> threads = new ArrayList<>();
                 for (int i = 0; i < numClients; ++i) {
                     MixerThread thread = new MixerThread(mixer, selector, statsMgr, i,
-                            numRuns, numWarmUps, timeWarmUps, timeout, timeoutWarmUps,
+                            numRuns, numWarmUps, timeWarmUps, separation, separationWarmUps, timeout, timeoutWarmUps,
                             forcedTimeouts == null ? null : Arrays.asList(forcedTimeouts.split("\\s+")),
                             retryAttempts, retryWaitTime, retryCondition);
                     threads.add(thread);

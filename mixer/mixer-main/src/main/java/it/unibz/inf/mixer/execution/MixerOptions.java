@@ -63,6 +63,23 @@ public final class MixerOptions {
             .withAllowedValues(Range.atLeast(0))
             .build();
 
+    public static final Option<Integer> optSeparation = Option.builder("--separation", Integer.class)
+            .withConfigKey("separation")
+            .withDescription("Time to wait for between consecutive query executions, in seconds")
+            .withCategory("EXECUTION")
+            .withDefaultValue(0)
+            .withAllowedValues(Range.atLeast(0))
+            .build();
+
+    public static final Option<Integer> optSeparationWarmUps = Option.builder("--separation-warm-ups", Integer.class)
+            .withConfigKey("separation-warmups")
+            .withDescription("Time to wait for between consecutive warm up query executions, in seconds. "
+                    + "Defaults to the value of --separation")
+            .withCategory("EXECUTION")
+            .withDefaultValue(null)
+            .withAllowedValues(Range.atLeast(0))
+            .build();
+
     public static final Option<Integer> optTimeout = Option.builder("--timeout", Integer.class)
             .withDescription("Maximum execution time allowed to a query, in seconds. A value of zero means no timeout.")
             .withCategory("EXECUTION")
@@ -73,7 +90,7 @@ public final class MixerOptions {
     public static final Option<Integer> optTimeoutWarmUps = Option.builder("--timeout-warm-ups", Integer.class)
             .withConfigKey("timeout-warmups")
             .withDescription("Maximum execution time allowed to a warm up query, in seconds. "
-                    + "Defaults to the value of --timeout. A value of zero means no timeout.")
+                    + "Defaults to the value of --timeout. A value of zero means no timeout")
             .withCategory("EXECUTION")
             .withDefaultValue(null)
             .withAllowedValues(Range.atLeast(0))
