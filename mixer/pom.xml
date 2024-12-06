@@ -5,7 +5,7 @@
 
     <groupId>it.unibz.inf.mixer</groupId>
     <artifactId>mixer</artifactId>
-    <version>1.2</version>
+    <version>1.3</version>
     <packaging>pom</packaging>
 
     <name>mixer</name>
@@ -40,46 +40,49 @@
 
     <properties>
         <!-- Plugin versions -->
-        <maven-assembly-plugin.version>3.5.0</maven-assembly-plugin.version>
-        <maven-clean-plugin.version>3.2.0</maven-clean-plugin.version>
-        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-        <maven-dependency-plugin.version>3.5.0</maven-dependency-plugin.version>
-        <maven-deploy-plugin.version>3.1.0</maven-deploy-plugin.version>
-        <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
-        <maven-install-plugin.version>3.1.0</maven-install-plugin.version>
-        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
-        <maven-resources-plugin.version>3.3.0</maven-resources-plugin.version>
-        <maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
-        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-        <maven-surefire-plugin.version>3.0.0-M9</maven-surefire-plugin.version>
-        <git-commit-id-maven-plugin-version>5.0.0</git-commit-id-maven-plugin-version>
-        <license-maven-plugin.version>2.0.0</license-maven-plugin.version>
+        <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
+        <maven-clean-plugin.version>3.4.0</maven-clean-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
+        <maven-deploy-plugin.version>3.1.3</maven-deploy-plugin.version>
+        <maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version>
+        <maven-install-plugin.version>3.1.3</maven-install-plugin.version>
+        <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
+        <maven-javadoc-plugin.version>3.11.1</maven-javadoc-plugin.version>
+        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
+        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+        <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+        <git-commit-id-maven-plugin-version>9.0.1</git-commit-id-maven-plugin-version>
+        <license-maven-plugin.version>2.5.0</license-maven-plugin.version>
         <really-executable-jar.version>2.1.1</really-executable-jar.version>
-        <spring-boot-maven-plugin.version>2.7.9
-        </spring-boot-maven-plugin.version> <!-- 3.0.0+ needs JDK17 (via Spring Boot 3) -->
+        <spring-boot-maven-plugin.version>2.7.9</spring-boot-maven-plugin.version> <!-- 3.0.0+ needs JDK17 (via Spring Boot 3) -->
 
         <!-- Dependency versions -->
-        <commons-csv.version>1.10.0</commons-csv.version>
-        <jackson.version>2.14.2</jackson.version>
-        <junit.version>4.10</junit.version>
-        <logback.version>1.2.3</logback.version>
+        <commons-csv.version>1.12.0</commons-csv.version>
+        <guava.version>33.3.1-jre</guava.version>
+        <jackson.version>2.18.2</jackson.version>
+        <jspecify.version>1.0.0</jspecify.version>
+        <junit.version>4.13.2</junit.version>
+        <logback.version>1.5.12</logback.version>
         <ontop.version>4.0.2</ontop.version>
-        <slf4j.version>1.7.36</slf4j.version>
+        <slf4j.version>2.0.16</slf4j.version>
 
         <!-- Dependency versions - JDBC drivers -->
-        <postgresql.version>42.5.4</postgresql.version>
-        <mysql.version>8.0.33</mysql.version>
-        <mssql.version>12.2.0.jre11</mssql.version>
-        <db2.version>2.16.4.Final</db2.version>
+        <postgresql.version>42.7.4</postgresql.version>
+        <mysql.version>9.1.0</mysql.version>
+        <mssql.version>12.8.1.jre11</mssql.version>
+        <db2.version>3.17.3</db2.version>
         <teiid.version>16.0.0</teiid.version>
 
         <!-- Other properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <fatjar.phase-prefix>disabled-</fatjar.phase-prefix>
         <jdbc-drivers.scope>test</jdbc-drivers.scope>
-        <mixers-ontop.scope>provided</mixers-ontop.scope>
-        <mixers-other.scope>provided</mixers-other.scope>
+        <plugin-jdbc.scope>provided</plugin-jdbc.scope>
+        <plugin-ontop.scope>provided</plugin-ontop.scope>
+        <plugin-shell.scope>provided</plugin-shell.scope>
+        <plugin-web.scope>provided</plugin-web.scope>
         <jdk.version>11</jdk.version>
     </properties>
 
@@ -210,14 +213,14 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>31.1-jre</version>
+                <version>${guava.version}</version>
             </dependency>
 
             <!-- JSpecify -->
             <dependency>
                 <groupId>org.jspecify</groupId>
                 <artifactId>jspecify</artifactId>
-                <version>0.3.0</version>
+                <version>${jspecify.version}</version>
             </dependency>
 
             <!-- Junit -->
@@ -375,7 +378,9 @@
             <id>fatjar</id>
             <properties>
                 <fatjar.phase-prefix/>
-                <mixers-other.scope>runtime</mixers-other.scope>
+                <plugin-jdbc.scope>runtime</plugin-jdbc.scope>
+                <plugin-shell.scope>runtime</plugin-shell.scope>
+                <plugin-web.scope>runtime</plugin-web.scope>
             </properties>
             <build>
                 <defaultGoal>package</defaultGoal>
@@ -390,7 +395,7 @@
         <profile>
             <id>ontop</id>
             <properties>
-                <mixers-ontop.scope>runtime</mixers-ontop.scope>
+                <plugin-ontop.scope>runtime</plugin-ontop.scope>
             </properties>
         </profile>
         <profile>

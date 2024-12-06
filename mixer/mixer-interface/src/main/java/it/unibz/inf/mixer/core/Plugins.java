@@ -1,5 +1,8 @@
 package it.unibz.inf.mixer.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -12,6 +15,8 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("unused")
 public final class Plugins {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Plugins.class);
 
     private static final Map<String, Map<String, String>> METADATA = loadClasspathMetadata();
 
@@ -119,30 +124,27 @@ public final class Plugins {
                         }
                     }
                 } catch (Throwable ex) {
-                    // Report error (using stderr as no logging library is used here)
-                    System.err.println("Could not load plugins properties from " + url);
-                    ex.printStackTrace();
+                    // Report error
+                    LOGGER.error("Could not load plugins properties from " + url, ex);
                 }
             }
         } catch (Throwable ex) {
-            // Report error (using stderr as no logging library is used here)
-            System.err.println("Could not load plugins properties");
-            ex.printStackTrace();
+            // Report error
+            LOGGER.error("Could not load plugins properties", ex);
         }
 
         // Remove plugins lacking or with a wrong implementation class ('type' property)
         metadata.entrySet().removeIf(e -> {
             String javaClassName = e.getValue().get("type");
             if (javaClassName == null) {
-                System.err.println("Ignoring plugin '" + e.getKey() + "': missing property 'plugins." + e.getKey()
-                        + ".type' with the Java class to instantiate");
+                LOGGER.warn("Ignoring plugin '{}': missing property 'plugins.{}.type' with the Java class to instantiate",
+                        e.getKey(), e.getKey());
                 return true;
             }
             try {
                 Class.forName(javaClassName).asSubclass(Plugin.class);
             } catch (Throwable ex) {
-                System.err.println("Ignoring plugin " + e.getKey() + ": '" + javaClassName
-                        + "' is not a valid Plugin Java class");
+                LOGGER.warn("Ignoring plugin '{}': '{}' is not a valid Plugin Java class", e.getKey(), javaClassName);
                 return true;
             }
             return false;

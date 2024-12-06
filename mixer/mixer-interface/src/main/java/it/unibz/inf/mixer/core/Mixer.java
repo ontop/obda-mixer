@@ -21,7 +21,7 @@ package it.unibz.inf.mixer.core;
  */
 
 /**
- * Interface of OBDA Mixer plugins responsible of running evaluation queries on the tested system.
+ * Interface of OBDA Mixer plugins responsible for running evaluation queries on the tested system.
  * <p>
  * A {@code Mixer} plugin is responsible to send the warm up / test {@link Query}/ies used in the evaluation to the
  * system under test, notifying a supplied {@link Handler} of relevant query execution events and query results.

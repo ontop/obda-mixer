@@ -2,6 +2,13 @@ package it.unibz.inf.mixer.core;
 
 import org.jspecify.annotations.Nullable;
 
+/**
+ * Abstract implementation of {@code Handler} via extensible no-op callbacks.
+ * <p>
+ * This class can be conveniently extended to define a custom {@link Handler}, if the ones produced via {@link Handlers}
+ * are not suitable.
+ * </p>
+ */
 public abstract class AbstractHandler implements Handler {
 
     @Override

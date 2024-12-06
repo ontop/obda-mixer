@@ -8,7 +8,7 @@
     <parent>
         <artifactId>mixer</artifactId>
         <groupId>it.unibz.inf.mixer</groupId>
-        <version>1.2</version>
+        <version>1.3</version>
     </parent>
 
     <artifactId>mixer-jdbc</artifactId>
@@ -32,5 +32,46 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>drivers</id>
+            <dependencies>
+                <dependency>
+                    <groupId>it.unibz.inf.mixer</groupId>
+                    <artifactId>mixer-interface</artifactId>
+                    <version>1.2</version>
+                    <scope>compile</scope>
+                </dependency>
+
+                <!-- JDBC drivers (either provided or runtime dependencies) -->
+                <dependency>
+                    <groupId>org.postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                    <scope>${jdbc-drivers.scope}</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.mysql</groupId>
+                    <artifactId>mysql-connector-j</artifactId>
+                    <scope>${jdbc-drivers.scope}</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.microsoft.sqlserver</groupId>
+                    <artifactId>mssql-jdbc</artifactId>
+                    <scope>${jdbc-drivers.scope}</scope>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-jdbc-db2</artifactId>
+                    <scope>${jdbc-drivers.scope}</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.teiid.connectors</groupId>
+                    <artifactId>translator-jdbc</artifactId>
+                    <scope>${jdbc-drivers.scope}</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
 </project>

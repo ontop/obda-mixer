@@ -8,6 +8,29 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+/**
+ * Abstract implementation of {@code Mixer} dealing with creation and closing of {@code QueryExecution} objects.
+ * <p>
+ * This class can be conveniently extended when defining a custom {@link Mixer}. This class provides all the logic
+ * required to implement the {@code QueryExecution} abstraction useful when using a {@code Mixer}, delegating the actual
+ * execution to method {@link #execute(Query, Handler, Context)} to be implemented in sub-classes.
+ * </p>
+ * <p>
+ * Implemented logic comprises:
+ * <ul>
+ *     <li>implementing {@link QueryExecution#execute(Handler)} in terms of the {@code execute()} sub-class method;</li>
+ *     <li>enforce the configured timeout, automatically closing the QueryExecution and trying to interrupt a running
+ *     {@code execute()} sub-class method;</li>
+ *     <li>enforcing that execution occurs at most once;</li>
+ *     <li>tracking and closing of pending {@code QueryExecution}s when the {@code Mixer} is closed.</li>
+ * </ul>
+ * </p>
+ * <p>
+ * Method {@link #execute(Query, Handler, Context)} is invoked when {@link QueryExecution#execute(Handler)} is called.
+ * It receives a {@link Context} object that allows accessing timing information (start time, timeout time) and checking
+ * and reacting to the interruption of the query execution done by the user of the {@code Mixer}.
+ * </p>
+ */
 @SuppressWarnings("unused")
 public abstract class AbstractMixer extends AbstractPlugin implements Mixer {
 

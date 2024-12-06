@@ -2,6 +2,9 @@ package it.unibz.inf.mixer.core;
 
 import org.jspecify.annotations.Nullable;
 
+/**
+ * Callback interface for notifying relevant events during query execution.
+ */
 public interface Handler {
 
     void onSubmit();

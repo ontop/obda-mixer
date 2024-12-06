@@ -4,11 +4,11 @@
 #
 # Generate the Docker image without embedding JDBC drives or Ontop (minimum size):
 #
-#   docker build -t obda-mixer:1.2 .
+#   docker build -t obda-mixer:latest .
 #
 # Generate the Docker image with embedded JDBC drives and Ontop:
 #
-#   docker build --build-arg MAVEN_ARGS='-Pontop -Pdrivers' -t obda-mixer:1.2 .
+#   docker build --build-arg MAVEN_ARGS='-Pontop -Pdrivers' -t obda-mixer:latest .
 #
 # Run via docker, displaying the help:
 #
@@ -25,8 +25,8 @@
 #
 # Notes:
 #   - we use here --network=host in case the endpoint/dbms to connect to are on the Docker host machine
-#   - we may mount a directory with JDBC drivers (JAR files) under /opt/obda-mixer/jdbc (vs. passing --jar=...)
-#   - we may mount a directory with the configuration and queries under /opt/obda-mixer/run (the empty working dir)
+#   - we may mount a directory with JDBC drivers (JAR files) under /opt/obda-mixer/jdbc (vs. passing --jars=...)
+#   - we may mount a directory with the configuration and queries under /opt/obda-mixer/run (the empty working dir);
 #     the generated mixerStats.txt file will be written here
 #   - we pass -u to run the container as the current user, so to allow writing mixerStats.txt in the mounted dir
 #

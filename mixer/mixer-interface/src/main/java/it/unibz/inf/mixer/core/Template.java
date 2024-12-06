@@ -7,6 +7,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
+/**
+ * A generic string template providing placeholders and instantiable with concrete placeholder fillers.
+ * <p>
+ * Placeholders follow syntax {@code ${name:quoting}}, or simply {@code ${name}} that assumes {@code none} as quoting:
+ * <ul>
+ *     <li>{@code name} refers to a variable supplied at template instantiation time;</li>
+ *     <li>{@code quoting} optionally specify how to quote the variable value at instantiation time, by either replacing
+ *     spaces with underscores or {@code %20} sequences.</li>
+ * </ul>
+ * </p>
+ */
 @SuppressWarnings("unused")
 public final class Template {
 

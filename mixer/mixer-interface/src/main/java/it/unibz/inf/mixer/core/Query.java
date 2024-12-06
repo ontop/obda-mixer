@@ -11,6 +11,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+/**
+ * A fully instantiated query with template, placeholder fillers, and other metadata controlling query execution.
+ */
 @SuppressWarnings("unused")
 public final class Query implements Serializable {
 

@@ -1,5 +1,8 @@
 package it.unibz.inf.mixer.core;
 
+/**
+ * Enumeration of query languages.
+ */
 @SuppressWarnings("unused")
 public enum QueryLanguage {
 

@@ -3,7 +3,7 @@ package it.unibz.inf.mixer.core;
 import java.util.List;
 
 /**
- * Interface of OBDA Mixer plugins responsible of generating the evaluation queries.
+ * Interface of OBDA Mixer plugins responsible for generating the evaluation queries.
  * <p>
  * A {@code QuerySelector} plugin is responsible to generate the query mixes used for warm up and test during the
  * evaluation. which is achieved by calling method {@link #nextQueryMix()} whose implementation has to be thread-safe.

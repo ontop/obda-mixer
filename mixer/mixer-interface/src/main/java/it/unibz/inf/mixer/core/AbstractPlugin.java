@@ -4,6 +4,12 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Abstract implementation of {@code Plugin} providing basic initialization, configuration and closing logic.
+ * <p>
+ * Please extend the more specific {@link AbstractMixer} when defining a custom {@link Mixer} class.
+ * </p>
+ */
 public abstract class AbstractPlugin implements Plugin {
 
     private boolean closed = false;
