@@ -38,10 +38,10 @@ ARG MAVEN_ARGS=
 RUN --mount=type=cache,target=/root/.m2 \
     mvn clean package -DskipTests -Pfatjar ${MAVEN_ARGS}
 
-FROM eclipse-temurin:11-jre-jammy
+FROM eclipse-temurin:11-jre-noble
 WORKDIR /opt/obda-mixer/run
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gettext-base wget netcat jattach && \
+    apt-get install -y --no-install-recommends gettext-base wget netcat-openbsd jattach && \
     rm -rf /var/cache/apt/archives /var/lib/apt/lists /var/log/dpkg.log /var/log/lastlog /var/log/faillog && \
     groupadd -r ontop && \
     useradd -r -g ontop -d /opt/ontop -s /sbin/nologin -c "Ontop unprivileged user" ontop && \
