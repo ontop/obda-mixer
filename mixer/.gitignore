@@ -1,4 +1,5 @@
-/target
+target/
 *~
 mixer-ontop/.codepro/
 *#
+.idea/

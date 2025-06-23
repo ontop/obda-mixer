@@ -1,110 +1,159 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>it.unibz.inf.mixer</groupId>
-    <artifactId>mixer</artifactId>
-    <version>1.2</version>
-  </parent>
-  <artifactId>mixer-main</artifactId>
-  
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
-      </plugin>
-      <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-assembly-plugin</artifactId>
-      <configuration>
-        <archive>
-          <manifest>
-          <addClasspath>true</addClasspath>
-      	   <classpathPrefix>lib/</classpathPrefix>
-            <mainClass>it.unibz.inf.mixer_main.execution.MixerMain</mainClass>
-          </manifest>
-        </archive>
-        <descriptorRefs>
-          <descriptorRef>jar-with-dependencies</descriptorRef>
-        </descriptorRefs>
-      </configuration>
-    </plugin>
-    <plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-surefire-plugin</artifactId>
-    <version>2.14.1</version>
-  </plugin>
-  <plugin>
-    <!-- Build an executable JAR -->
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-jar-plugin</artifactId>
-    <configuration>
-    <archive>
-      <manifest>
-      <addClasspath>true</addClasspath>
-      <classpathPrefix>lib/</classpathPrefix>
-          <mainClass>it.unibz.inf.mixer_main.execution.MixerMain</mainClass>
-      </manifest>
-    </archive>
-     </configuration>
-    </plugin>
-    </plugins>
-  </build>
-  
-  <dependencies>
- <!--   	<dependency>
-  		<groupId>it.unibz.inf.mixer</groupId>
-   		<artifactId>mixer-interface</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
-    	<scope>compile</scope>
-  	</dependency>
-  	-->
-  	<dependency>
-	 	<groupId>it.unibz.inf.mixer</groupId>
-    	<artifactId>mixer-utils</artifactId>	
-    	<version>1.2</version>
-	</dependency> 
-    <dependency>
-  		<artifactId>mixer-ontop</artifactId>
-  		<groupId>it.unibz.inf.mixer</groupId>	
-  		<version>1.2</version>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-  		<artifactId>mixer-web</artifactId>
-  		<groupId>it.unibz.inf.mixer</groupId>	
-  		<version>1.2</version>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-  		<artifactId>mixer-shell</artifactId>
-  		<groupId>it.unibz.inf.mixer</groupId>	
-  		<version>1.2</version>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-		<groupId>mysql</groupId>
-		<artifactId>mysql-connector-java</artifactId>
-		<scope>compile</scope>
-  </dependency>
-  <dependency>
-		<groupId>postgresql</groupId>
-		<artifactId>postgresql</artifactId>
-		<!-- <version>9.1-901.jdbc4</version> -->
-		<scope>compile</scope>
-	</dependency>
-  	<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>			
-		</dependency>
-		
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-		</dependency>
-  </dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>it.unibz.inf.mixer</groupId>
+        <artifactId>mixer</artifactId>
+        <version>1.3</version>
+    </parent>
+
+    <artifactId>mixer-main</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>it.unibz.inf.mixer</groupId>
+            <artifactId>mixer-interface</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>it.unibz.inf.mixer</groupId>
+            <artifactId>mixer-ontop</artifactId>
+            <scope>${plugin-ontop.scope}</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.unibz.inf.mixer</groupId>
+            <artifactId>mixer-web</artifactId>
+            <scope>${plugin-web.scope}</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.unibz.inf.mixer</groupId>
+            <artifactId>mixer-shell</artifactId>
+            <scope>${plugin-shell.scope}</scope>
+        </dependency>
+        <dependency>
+            <groupId>it.unibz.inf.mixer</groupId>
+            <artifactId>mixer-jdbc</artifactId>
+            <scope>${plugin-jdbc.scope}</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <configuration>
+                    <finalName>obda-mixer</finalName>
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <shadedClassifierName>shaded</shadedClassifierName>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>module-info.class</exclude>
+                                <exclude>LICENSE</exclude>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                                <exclude>META-INF/LICENSE.md</exclude>
+                                <exclude>META-INF/MANIFEST.MF</exclude>
+                                <exclude>META-INF/NOTICE.md</exclude>
+                                <exclude>META-INF/versions/9/module-info.class</exclude>
+                                <exclude>META-INF/build-info.properties</exclude>
+                                <exclude>git.properties</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                    <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <mainClass>it.unibz.inf.mixer.execution.MixerMain</mainClass>
+                            <manifestEntries>
+                                <X-Compile-Source-JDK>${jdk.version}</X-Compile-Source-JDK>
+                                <X-Compile-Target-JDK>${jdk.version}</X-Compile-Target-JDK>
+                            </manifestEntries>
+                        </transformer>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer" />
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                            <addHeader>false</addHeader>
+                        </transformer>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                            <resource>META-INF/DEPENDENCIES</resource>
+                            <resource>META-INF/mixer.properties</resource>
+                        </transformer>
+                    </transformers>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>${fatjar.phase-prefix}package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.skife.maven</groupId>
+                <artifactId>really-executable-jar-maven-plugin</artifactId>
+                <configuration>
+                    <inputFile>target/obda-mixer.jar</inputFile>
+                    <scriptFile>${project.basedir}/src/assembly/fatjar-embedded-run-script.sh</scriptFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>${fatjar.phase-prefix}package</phase>
+                        <goals>
+                            <goal>really-executable-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
